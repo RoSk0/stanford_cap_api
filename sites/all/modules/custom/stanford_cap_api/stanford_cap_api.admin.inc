@@ -336,3 +336,73 @@ function stanford_cap_api_import_result_form_submit($form, &$form_state) {
   // @todo Import should happen here.
   drupal_set_message(t('Imported!'));
 }
+
+/**
+ * Form builder for import result page.
+ */
+function stanford_cap_api_profile_test($form, &$form_state) {
+  $form['description_wrapper'] = array(
+    '#type' => 'container',
+  );
+  $description = 'Please use the options below to test the faculty profile'
+    . ' structure synchronization.';
+  $form['description_wrapper']['description'] = array(
+    '#markup' => $description,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['sync'] = array(
+    '#type' => 'submit',
+    '#value' => t('Synchronize fields in the faculty profile'),
+    '#submit' => array('stanford_cap_api_test_synchronize'),
+  );
+  $form['actions']['reset'] = array(
+    '#type' => 'submit',
+    '#value' => t('Reset faculty profile content type.'),
+    '#submit' => array('stanford_cap_api_reset'),
+  );
+
+  return $form;
+}
+
+function stanford_cap_api_test_synchronize() {
+
+  $fields_from_service = array(
+    'homepage' => array(
+      'type' => 'link',
+      'label' => 'Homepage',
+    ),
+    'birthdate' => array(
+      'type' => 'date',
+      'label' => 'Date of birth',
+    ),
+    'fullname' => array(
+      'type' => 'string',
+      'label' => 'Full name',
+    ),
+    'honors' => array(
+      'type' => 'text',
+      'label' => 'Honors and awards',
+    ),
+    'background' => array(
+      'type' => 'text',
+      'label' => 'Professional background',
+    ),
+  );
+  timer_start('fields_sync');
+  stanford_cap_api_synchronize_fields($fields_from_service);
+  $timer = timer_stop('fields_sync');
+  drupal_set_message(t('Fields successfully synchronized.'));
+  drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000) )));
+}
+
+function stanford_cap_api_reset() {
+  $fields = db_select('cap_api_fields', 'f')->fields('f', array('field_name'))
+    ->execute()->fetchCol();
+  foreach ($fields as $field) {
+    field_delete_field($field);
+  }
+  field_purge_batch(10);
+  db_delete('cap_api_fields')->execute();
+  drupal_set_message(t('Faculty profile content type has being resetted to default.'));
+}

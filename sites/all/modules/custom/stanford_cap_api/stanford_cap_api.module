@@ -66,5 +66,380 @@ function stanford_cap_api_menu() {
     'file' => 'stanford_cap_api.admin.inc',
   );
 
+  $items['admin/config/cap/profile_test'] = array(
+    'title' => 'Faculty Profile Structure Synchronization',
+    'description' => 'Faculty Profile Structure Synchronization',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_profile_test'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
   return $items;
+}
+
+
+function stanford_cap_api_synchronize_fields($fields) {
+  foreach ($fields as $field_name => $field_info) {
+    $field_name = 'cap_' . $field_name;
+    $info = field_info_field($field_name);
+    // Field not exists yet.
+    if (empty($info)) {
+      $info = _cap_api_get_field_base_def($field_info['type'], $field_name);
+      // Do we know about this field type?
+      if (!empty($info)) {
+        field_create_field($info);
+        // Logging field creation.
+        _cap_api_log_field($field_name);
+        $info_instance = field_info_instance('node', $field_name, 'cap_faculty_profile');
+        if (empty($info_instance)) {
+          $instance = _cap_api_get_field_instance_def($field_info['type'], $field_name, $field_info['label']);
+          field_create_instance($instance);
+        }
+      }
+    }
+  }
+}
+
+function _cap_api_get_field_base_def($type, $name) {
+  $info = FALSE;
+  switch($type) {
+    case 'link':
+      $info = array(
+        'active' => 1,
+        'cardinality' => 1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(),
+        'indexes' => array(),
+        'locked' => 0,
+        'module' => 'link',
+        'settings' => array(
+          'attributes' => array(
+            'class' => '',
+            'rel' => '',
+            'target' => 'default',
+          ),
+          'display' => array(
+            'url_cutoff' => 80,
+          ),
+          'enable_tokens' => 1,
+          'title' => 'optional',
+          'title_maxlength' => 128,
+          'title_value' => '',
+          'url' => 0,
+        ),
+        'translatable' => 0,
+        'type' => 'link_field',
+      );
+      break;
+
+    case 'date':
+      $info = array(
+        'active' => 1,
+        'cardinality' => 1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(),
+        'indexes' => array(),
+        'locked' => 0,
+        'module' => 'date',
+        'settings' => array(
+          'cache_count' => 4,
+          'cache_enabled' => 0,
+          'granularity' => array(
+            'day' => 'day',
+            'hour' => 0,
+            'minute' => 0,
+            'month' => 'month',
+            'second' => 0,
+            'year' => 'year',
+          ),
+          'timezone_db' => '',
+          'todate' => '',
+          'tz_handling' => 'none',
+        ),
+        'translatable' => 0,
+        'type' => 'datestamp',
+      );
+      break;
+
+    case 'string':
+      $info = array(
+        'active' => 1,
+        'cardinality' => 1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(
+          'format' => array(
+            'columns' => array(
+              'format' => 'format',
+            ),
+            'table' => 'filter_format',
+          ),
+        ),
+        'indexes' => array(
+          'format' => array(
+            0 => 'format',
+          ),
+        ),
+        'locked' => 0,
+        'module' => 'text',
+        'settings' => array(
+          'max_length' => 255,
+        ),
+        'translatable' => 0,
+        'type' => 'text',
+      );
+      break;
+
+    case 'text':
+      $info = array(
+        'active' => 1,
+        'cardinality' => 1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(
+          'format' => array(
+            'columns' => array(
+              'format' => 'format',
+            ),
+            'table' => 'filter_format',
+          ),
+        ),
+        'indexes' => array(
+          'format' => array(
+            0 => 'format',
+          ),
+        ),
+        'locked' => 0,
+        'module' => 'text',
+        'settings' => array(),
+        'translatable' => 0,
+        'type' => 'text_long',
+      );
+      break;
+
+  }
+
+  return $info;
+}
+
+function _cap_api_get_field_instance_def($type, $name, $label) {
+  $info = FALSE;
+  $label = check_plain($label);
+  switch($type) {
+    case 'link':
+      $info = array(
+        'bundle' => 'cap_faculty_profile',
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'link',
+            'settings' => array(),
+            'type' => 'link_default',
+            'weight' => 4,
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'attributes' => array(
+            'class' => '',
+            'configurable_title' => 0,
+            'rel' => '',
+            'target' => 'default',
+            'title' => '',
+          ),
+          'display' => array(
+            'url_cutoff' => 80,
+          ),
+          'enable_tokens' => 1,
+          'rel_remove' => 'default',
+          'title' => 'none',
+          'title_maxlength' => 128,
+          'title_value' => '',
+          'url' => 0,
+          'user_register_form' => FALSE,
+          'validate_url' => 1,
+        ),
+        'widget' => array(
+          'active' => 0,
+          'module' => 'link',
+          'settings' => array(),
+          'type' => 'link_field',
+          'weight' => 44,
+        ),
+      );
+      break;
+
+    case 'date':
+      $info = array(
+        'bundle' => 'cap_faculty_profile',
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'date',
+            'settings' => array(
+              'format_type' => 'long',
+              'fromto' => 'both',
+              'multiple_from' => '',
+              'multiple_number' => '',
+              'multiple_to' => '',
+            ),
+            'type' => 'date_default',
+            'weight' => 1,
+          ),
+          'stanford_cap_instructor' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'default_value' => 'now',
+          'default_value2' => 'same',
+          'default_value_code' => '',
+          'default_value_code2' => '',
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'date',
+          'settings' => array(
+            'display_all_day' => 0,
+            'increment' => 15,
+            'input_format' => 'm/d/Y - H:i:s',
+            'input_format_custom' => '',
+            'label_position' => 'above',
+            'text_parts' => array(),
+            'year_range' => '-3:+3',
+          ),
+          'type' => 'date_select',
+          'weight' => 41,
+        ),
+      );
+      break;
+
+    case 'string':
+      $info = array(
+        'bundle' => 'cap_faculty_profile',
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'text',
+            'settings' => array(),
+            'type' => 'text_default',
+            'weight' => 2,
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'text_processing' => 0,
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'text',
+          'settings' => array(
+            'size' => 60,
+          ),
+          'type' => 'text_textfield',
+          'weight' => 42,
+        ),
+      );
+      break;
+
+    case 'text':
+      $info = array(
+        'bundle' => 'cap_faculty_profile',
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'text',
+            'settings' => array(),
+            'type' => 'text_default',
+            'weight' => 5,
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'text_processing' => 0,
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'text',
+          'settings' => array(
+            'rows' => 5,
+          ),
+          'type' => 'text_textarea',
+          'weight' => 45,
+        ),
+      );
+      break;
+
+  }
+
+  return $info;
+}
+
+function _cap_api_log_field($field_name){
+  $record = array('field_name' => $field_name);
+  drupal_write_record('cap_api_fields', $record);
+  watchdog('stanford_cap_api', 'Field @field was created by stanford_cap_api module.', array('@field' => $field_name));
 }
