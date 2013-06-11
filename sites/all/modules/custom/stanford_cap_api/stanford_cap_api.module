@@ -1,0 +1,69 @@
+<?php
+/**
+ * @file
+ * Code for the Stanford CAP API feature.
+ */
+
+include_once 'stanford_cap_api.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function stanford_cap_api_menu() {
+  $items = array();
+
+  $items['admin/config/cap'] = array(
+    'title' => 'Community Academic Profiles',
+    'description' => 'Community Academic Profiles API screens.',
+    'position' => 'right',
+    'weight' => -5,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+  );
+
+  $items['admin/config/cap/details'] = array(
+    'title' => 'Details',
+    'description' => "Displays information about the site's connection to the CAP API.",
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_details_form'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'weight' => -10,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
+  $items['admin/config/cap/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Provides administrators ability to change CAP API access settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_settings_form'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'weight' => 10,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
+  $items['admin/config/cap/import'] = array(
+    'title' => 'Import profiles',
+    'description' => 'Provides administrators ability to import CAP profiles.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_import_form'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'weight' => 5,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
+  $items['admin/config/cap/import/result'] = array(
+    'title' => 'Import profiles',
+    'description' => 'Provides administrators ability to import CAP profiles.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_import_result_form'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
+  return $items;
+}

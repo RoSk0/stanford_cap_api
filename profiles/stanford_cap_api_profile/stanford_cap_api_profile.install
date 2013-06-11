@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the stanford_cap_api_profile installation profile.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ *
+ * @see system_install()
+ */
+function stanford_cap_api_profile_install() {
+  require_once drupal_get_path('profile', 'standard') . '/standard.install';
+  standard_install();
+}
+
