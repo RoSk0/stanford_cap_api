@@ -122,7 +122,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Allow user to create custom fields?'),
     '#description' => t($custom_fields_description),
-    '#default_value' => variable_get('cap_custom_fields', ''),
+    '#default_value' => variable_get('cap_custom_fields', FALSE),
   );
 
   $custom_fields_description = 'Check this box to allow users to edit the'
@@ -133,7 +133,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Allow user to edit CAP profile information?'),
     '#description' => t($custom_fields_description),
-    '#default_value' => variable_get('cap_allow_edit', ''),
+    '#default_value' => variable_get('cap_allow_edit', FALSE),
   );
 
   $form['advanced'] = array(

@@ -453,3 +453,39 @@ function _cap_api_log_field($field_name){
   drupal_write_record('cap_api_fields', $record);
   watchdog('stanford_cap_api', 'Field @field was created by stanford_cap_api module.', array('@field' => $field_name));
 }
+
+/**
+ * Implements hook_menu_alter().
+ */
+function stanford_cap_api_menu_alter(&$items) {
+  $items['node/%node/edit']['access callback'] = 'stanford_cap_api_node_access';
+  $items['admin/structure/types/manage/%node_type/fields']['access callback'] = 'stanford_cap_api_user_access';
+  $items['admin/structure/types/manage/%node_type/fields']['access arguments'][] = 4;
+}
+
+/**
+ * Access check callback.
+ */
+function stanford_cap_api_node_access($op, $node) {
+  $access = node_access($op, $node);
+  if ($access && $node->type == 'cap_faculty_profile') {
+    if (!variable_get('cap_allow_edit', FALSE)) {
+      $access = FALSE;
+    }
+  }
+  return $access;
+}
+
+
+/**
+ * Access check callback.
+ */
+function stanford_cap_api_user_access($permission, $node_type) {
+  $access = user_access($permission);
+  if ($access && $node_type->type == 'cap_faculty_profile') {
+    if (!variable_get('cap_custom_fields', FALSE)) {
+      $access = FALSE;
+    }
+  }
+  return $access;
+}
