@@ -406,3 +406,10 @@ function stanford_cap_api_reset() {
   db_delete('cap_api_fields')->execute();
   drupal_set_message(t('Faculty profile content type has being resetted to default.'));
 }
+
+/**
+ * Manage profiles page callback.
+ */
+function stanford_cap_api_manage() {
+  return views_embed_view('cap_api_manage_profiles');
+}

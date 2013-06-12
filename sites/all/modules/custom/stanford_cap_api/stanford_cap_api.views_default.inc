@@ -97,10 +97,6 @@ function stanford_cap_api_views_default_views() {
   $handler->display->display_options['filters']['type']['value'] = array(
     'cap_faculty_profile' => 'cap_faculty_profile',
   );
-
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'admin/config/cap/manage';
   $export['cap_api_manage_profiles'] = $view;
 
   return $export;

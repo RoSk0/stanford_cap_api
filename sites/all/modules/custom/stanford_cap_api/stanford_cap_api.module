@@ -76,6 +76,16 @@ function stanford_cap_api_menu() {
     'file' => 'stanford_cap_api.admin.inc',
   );
 
+  $items['admin/config/cap/manage'] = array(
+    'title' => 'Manage profiles',
+    'description' => 'Provides administrators ability to manage CAP profiles.',
+    'page callback' => 'stanford_cap_api_manage',
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'weight' => 6,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
   return $items;
 }
 
