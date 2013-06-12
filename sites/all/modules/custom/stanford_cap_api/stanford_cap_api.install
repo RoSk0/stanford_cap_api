@@ -21,5 +21,70 @@ function stanford_cap_api_schema() {
       ),
     ),
   );
+
+  $schema['cap_api_orgs'] = array(
+    'description' => 'Stores information about organizations exposed by CAP API.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'orgid' => array(
+        'description' => 'Organization ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'alias' => array(
+        'description' => 'Alias.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'browsable' => array(
+        'description' => 'Browsable?',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'size' => 'tiny',
+      ),
+      'children' => array(
+        'type' => 'blob',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of the org ID of children(departments).',
+      ),
+      'name' => array(
+        'description' => 'Human name of organization.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'orgCodes' => array(
+        'type' => 'blob',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of the organization codes.',
+      ),
+      'type' => array(
+        'description' => 'Organization type.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'url' => array(
+        'description' => 'Organization URL.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
   return $schema;
 }

@@ -144,11 +144,11 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#description' => t('Advanced setting for CAP API and authentication URIs'),
   );
 
-  $form['advanced']['cap_endpoint_uri'] = array(
+  $form['advanced']['cap_api_base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Endpoint'),
     '#description' => t('CAP API endpoint URI, only useful when switching between development/production environment.'),
-    '#default_value' => variable_get('cap_endpoint_uri', 'http://irt-dev.stanford.edu/cap-api/api/profiles/v1'),
+    '#default_value' => variable_get('cap_api_base_url', 'http://irt-dev.stanford.edu/cap-api'),
   );
 
   $form['advanced']['cap_auth_uri'] = array(
@@ -183,7 +183,7 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
     'cap_password',
     'cap_custom_fields',
     'cap_allow_edit',
-    'cap_endpoint_uri',
+    'cap_api_base_url',
     'cap_auth_uri',
   );
   foreach ($config_vars as $config_var) {
