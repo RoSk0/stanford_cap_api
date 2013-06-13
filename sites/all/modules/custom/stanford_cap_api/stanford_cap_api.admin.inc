@@ -171,7 +171,13 @@ function stanford_cap_api_settings_form($form, &$form_state) {
  * Validation handler for settings form.
  */
 function stanford_cap_api_settings_form_validate($form, &$form_state) {
-  // @todo Validate CAP API access here.
+  $auth_token = stanford_cap_api_auth($form_state['values']['cap_username'], $form_state['values']['cap_password']);
+  if (!$auth_token) {
+    $msg = "Error. Can't connect to Stanford CAP API."
+      . " Please check your username and password.";
+    form_set_error('cap_username', t($msg));
+    form_set_error('cap_password');
+  }
 }
 
 /**

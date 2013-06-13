@@ -489,16 +489,21 @@ function stanford_cap_api_user_access($permission, $node_type) {
 }
 
 /**
- * Authenticate with CAP and reutrn an authentication token.
+ * Authenticate with CAP and return an authentication token.
  *
- * @return string
- *   An authentication token that can be used for API calls
+ * @param string $user
+ *   User name to use to authenticate in CAP API instead of saved one.
+ * @param string $pass
+ *   Password to use to authenticate in CAP API instead of saved one.
+ *
+ * @return string|FALSE
+ *   An authentication token that can be used for API calls or FALSE.
  */
-function stanford_cap_api_auth() {
+function stanford_cap_api_auth($user = '', $pass = '') {
 
   $auth_uri = variable_get('cap_auth_uri', 'https://authz-test.stanford.edu/oauth/token');
-  $user = variable_get('cap_username', '');
-  $pass = variable_get('cap_password', '');
+  $user = empty($user) ? variable_get('cap_username', '') : $user;
+  $pass = empty($pass) ? variable_get('cap_password', '') : $pass;
 
   $params = array(
     'grant_type' => 'client_credentials',
@@ -611,14 +616,10 @@ function stanford_cap_api_request($endpoint, $params = array()) {
 function stanford_cap_api_test() {
   $endpoint = '/api/cap/v1/orgs';
   $params = array('orgCodes' => 'VAAA');
-//  $params = array('orgCodes' => 'VDAB');
-//  AADW -President's Office Financials
-//  $params = array('orgCodes' => 'AADW');
-  $data = stanford_cap_api_request($endpoint, $params);
-  dpm($data, 'Raw data');
-  foreach ($data as $orgid => $organization) {
-    stanford_cap_api_save_organization($organization, $orgid);
-  }
+
+  $response = stanford_cap_api_request($endpoint, $params);
+  dpm($response, 'Raw response');
+
 }
 
 /**
