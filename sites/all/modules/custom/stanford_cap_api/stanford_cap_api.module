@@ -496,8 +496,6 @@ function stanford_cap_api_user_access($permission, $node_type) {
  */
 function stanford_cap_api_auth() {
 
-  // @todo: ATM we are using user/pass authentication,
-  // later will be private/pub key.
   $auth_uri = variable_get('cap_auth_uri', 'https://authz-test.stanford.edu/oauth/token');
   $user = variable_get('cap_username', '');
   $pass = variable_get('cap_password', '');
@@ -518,19 +516,31 @@ function stanford_cap_api_auth() {
   $auth_url = str_replace($uri['host'], $host, $auth_uri);
 
   $auth_url = url($auth_url, array('query' => $params, 'external' => TRUE));
-  $request = drupal_http_request($auth_url);
+  $response = drupal_http_request($auth_url);
   // Error could be here as well.
-  if (property_exists($request, 'error')) {
-    // @todo Improve debug text.
-    watchdog('stanford_cap_api', $request->status_message, array(), WATCHDOG_NOTICE);
+  if (property_exists($response, 'error')) {
+    $error_msg = 'Failed to fetch data from CAP API service. Error code is'
+      . ' %code, error message is "%msg", request string was "%request".';
+    $vars = array(
+      '%code' => $response->code,
+      '%msg' => $response->status_message,
+      '%request' => $response->request,
+    );
+    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
 
     return FALSE;
   }
 
   // Log bad API authentication.
-  $data = json_decode($request->data, TRUE);
+  $data = json_decode($response->data, TRUE);
   if (array_key_exists('error', $data)) {
-    watchdog('stanford_cap_api', $data['error_description'], array(), WATCHDOG_NOTICE);
+    $error_msg = 'Error found in CAP API response. Error message is "%msg",'
+      . ' response data was "%data".';
+    $vars = array(
+      '%msg' => $data['error_description'],
+      '%data' => print_r($data, TRUE),
+    );
+    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
 
     return FALSE;
   }
@@ -568,8 +578,14 @@ function stanford_cap_api_request($endpoint, $params = array()) {
   $response = drupal_http_request($request_url);
   // Error could be here as well.
   if (property_exists($response, 'error')) {
-    // @todo Improve debug text.
-    watchdog('stanford_cap_api', $response->status_message, array(), WATCHDOG_NOTICE);
+    $error_msg = 'Failed to fetch data from CAP API service. Error code is'
+      . ' %code, error message is "%msg", request string was "%request".';
+    $vars = array(
+      '%code' => $response->code,
+      '%msg' => $response->status_message,
+      '%request' => $response->request,
+    );
+    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
 
     return FALSE;
   }
@@ -577,8 +593,13 @@ function stanford_cap_api_request($endpoint, $params = array()) {
   // Log bad API authentication.
   $data = json_decode($response->data, TRUE);
   if (array_key_exists('error', $data)) {
-    // @todo Improve debug text.
-    watchdog('stanford_cap_api', $data['error_description'], array(), WATCHDOG_NOTICE);
+    $error_msg = 'Error found in CAP API response. Error message is "%msg",'
+     . ' response data was "%data".';
+    $vars = array(
+      '%msg' => $data['error_description'],
+      '%data' => print_r($data, TRUE),
+    );
+    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
 
     return FALSE;
   }
@@ -600,6 +621,15 @@ function stanford_cap_api_test() {
   }
 }
 
+/**
+ * Save organization fetch from CAP API.
+ *
+ * @param array $organization
+ *   Array containing organization description.
+ * @param int $orgid
+ *   Organization ID inside Stanford University. Could be 0 for root entry,
+ * Stanford University itself.
+ */
 function stanford_cap_api_save_organization($organization, $orgid = 0) {
   $organization['orgid'] = $orgid;
   if (isset($organization['children'])) {
@@ -614,16 +644,37 @@ function stanford_cap_api_save_organization($organization, $orgid = 0) {
   drupal_write_record('cap_api_orgs', $organization);
 }
 
+/**
+ * Imports organizations from CAP API.
+ *
+ * Organizations have tree structure. To import them we must specify top level
+ * organization code. This can be code of root entry - Stanford University(AA00)
+ * itself, or code of one of departments, like School of Medicine(VAAA).
+ *
+ * @param string $top
+ *   Top level organization code.
+ */
 function stanford_cap_api_import_organizations($top = 'AA00') {
   db_delete('cap_api_orgs')->execute();
   // Organizations endpoint.
   $endpoint = '/api/cap/v1/orgs';
-  // This is "Medical school" code.
-  // $params = array('orgCodes' => 'VAAA');
   $params = array('orgCodes' => $top);
   $data = stanford_cap_api_request($endpoint, $params);
   dpm($data, 'Raw data');
   foreach ($data as $orgid => $organization) {
     stanford_cap_api_save_organization($organization, $orgid);
   }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function stanford_cap_api_cron() {
+  $last_run_time = variable_get('stanford_cap_api_cron_last_run', REQUEST_TIME);
+  $time_since_last_run = REQUEST_TIME - $last_run_time;
+  // Check if last run wsa more then one day ago.
+  if ($time_since_last_run > 86400) {
+    stanford_cap_api_import_organizations();
+  }
+  variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
 }
