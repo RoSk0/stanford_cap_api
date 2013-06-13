@@ -4,6 +4,8 @@
  * Administrative pages for Stanford CAP API module.
  */
 
+define('ENTRY_PER_PAGE', 25);
+
 /**
  * Form builder for details page.
  */
@@ -203,7 +205,7 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
  */
 function stanford_cap_api_import_form($form, &$form_state) {
 
-  $values = isset($form_state['values']) ? $form_state['values'] : array('');
+  $values = isset($form_state['values']) ? $form_state['values'] : array();
 
   $form['description_wrapper'] = array(
     '#type' => 'container',
@@ -242,23 +244,18 @@ function stanford_cap_api_import_form($form, &$form_state) {
     '#empty_option' => t('--Please select--'),
     '#empty_value' => '',
     '#default_value' => isset($values['school']) ? $values['school'] : '',
+    '#disabled' => TRUE,
   );
 
   $form['organization'] = array(
-    '#type' => 'select',
+    '#type' => 'textfield',
     '#title' => t('Organization'),
-    '#options' => $options,
-    '#empty_option' => t('--Please select--'),
-    '#empty_value' => '',
     '#default_value' => isset($values['organization']) ? $values['organization'] : '',
   );
 
   $form['workgroup'] = array(
-    '#type' => 'select',
+    '#type' => 'textfield',
     '#title' => t('Workgroup'),
-    '#options' => $options,
-    '#empty_option' => t('--Please select--'),
-    '#empty_value' => '',
     '#default_value' => isset($values['workgroup']) ? $values['workgroup'] : '',
   );
 
@@ -287,10 +284,59 @@ function stanford_cap_api_import_form($form, &$form_state) {
  * Submit handler for import form.
  */
 function stanford_cap_api_import_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
 
-  // @todo Grab search results based on submitted values.
+  $params = array('ps' => ENTRY_PER_PAGE);
+
+  if (!empty($values['first_name'])) {
+    $params['name'] = check_plain($values['first_name']);
+  }
+  if (!empty($values['last_name'])) {
+    if (isset($params['name'])) {
+      $params['name'] .= ' ' . check_plain($values['last_name']);
+    }
+    else {
+      $params['name'] = check_plain($values['last_name']);
+    }
+  }
+  if (!empty($values['organization'])) {
+    $params['orgCodes'] = _cap_api_prepare_list_str($values['organization']);
+  }
+  if (!empty($values['workgroup'])) {
+    $params['privGroups'] = _cap_api_prepare_list_str($values['workgroup']);
+  }
+  if (!empty($values['university_id'])) {
+    $params['universityId'] = check_plain($values['university_id']);
+  }
+  if (!empty($values['sunet_id'])) {
+    $params['uid'] = check_plain($values['sunet_id']);
+  }
+
+  $_SESSION['search_params'] = $params;
+  $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $params);
 
   $form_state['redirect'] = 'admin/config/cap/import/result';
+}
+
+/**
+ * Helper to prepare list for search.
+ *
+ * Input string could contain white space or special chars which not good for
+ * API call.
+ *
+ * @param string $str
+ *   String containing list.
+ *
+ * @return string
+ *   Prepared string.
+ */
+function _cap_api_prepare_list_str($str) {
+
+  $list = explode(',', $str);
+  array_walk($list, 'check_plain');
+  array_walk($list, 'trim');
+
+  return implode(',', $list);
 }
 
 /**
@@ -298,39 +344,117 @@ function stanford_cap_api_import_form_submit($form, &$form_state) {
  */
 function stanford_cap_api_import_result_form($form, &$form_state) {
 
-  $form['description_wrapper'] = array(
-    '#type' => 'container',
-  );
-  $description = 'Please select the CAP profiles you would like to import'
-    . ' into your site.';
-  $form['description_wrapper']['description'] = array(
-    '#markup' => t($description),
-  );
+  if (!empty($_SESSION['search_response'])) {
 
-  $form['results_wrapper'] = array(
-    '#type' => 'container',
-  );
+    $form['description_wrapper'] = array(
+      '#type' => 'container',
+    );
+    $link = l(t('Start new search.'), 'admin/config/cap/import');
+    $description = 'Please select the CAP profiles you would like to import'
+      . ' into your site. !link';
+    $form['description_wrapper']['description'] = array(
+      '#markup' => t($description, array('!link' => $link)),
+    );
 
-  // @todo Replace with real values from search results.
-  $start = 1;
-  $end = 5;
-  $total = 10;
+    $form['results_wrapper'] = array(
+      '#type' => 'container',
+    );
 
-  $form['results_wrapper']['results'] = array(
-    '#markup' => t('Viewing @start-@end of @total.', array(
-      '@start' => $start,
-      '@end' => $end,
-      '@total' => $total,
-    )),
-  );
+    if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+      $page_num = (int) $_GET['page'] + 1;
+    }
+    else {
+      $page_num = 1;
+    }
+    $search_params = $_SESSION['search_params'];
+    if ($page_num != 1) {
+      $search_params['p'] = $page_num;
+      $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $search_params);
+      $search_response = $_SESSION['search_response'];
+    }
+    else {
+      if ($_SESSION['search_response']['page'] == $page_num) {
+        $search_response = $_SESSION['search_response'];
+      }
+      else {
+        $search_params['p'] = $page_num;
+        $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $search_params);
+        $search_response = $_SESSION['search_response'];
+      }
+    }
 
-  // @todo Render tableselect with search results here.
+    $start = $search_response['firstPage'] ? 1 : ENTRY_PER_PAGE * ($search_response['page'] - 1) + 1;
+    $end = $search_response['lastPage'] ? $search_response['totalCount'] : ENTRY_PER_PAGE * $search_response['page'];
+    $total = $search_response['totalCount'];
 
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Import profiles'),
-  );
+    $form['results_wrapper']['results'] = array(
+      '#markup' => t('Viewing profiles @start - @end of @total.', array(
+        '@start' => $start,
+        '@end' => $end,
+        '@total' => $total,
+      )),
+    );
+
+    $header = array(
+      'name' => t('Name'),
+      'link' => t('Profile link'),
+    );
+    $options = array();
+    foreach ($search_response['values'] as $profile) {
+      $options[$profile['profileId']] = array(
+        'name' => array(
+          'data' => array(
+            '#type' => 'link',
+            '#title' => check_plain($profile['displayName']),
+            '#href' => 'https://med.stanford.edu/profiles/auth/frdActionServlet?choiceId=profile&fid=' . $profile['profileId'],
+          ),
+        ),
+        'link' => array(
+          'data' => array(
+            '#type' => 'link',
+            '#title' => t('View in CAP'),
+            '#href' => 'https://med.stanford.edu/profiles/auth/frdActionServlet?choiceId=profile&fid=' . $profile['profileId'],
+          ),
+        ),
+      );
+    }
+    $form['profiles'] = array(
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $options,
+    );
+    $element = 0;
+    $parameters = array();
+    $quantity = 9;
+    global $pager_page_array, $pager_total;
+    $pager_page_array = array($element => $page_num - 1);
+    $pager_total = array($element => $search_response['totalPages']);
+
+    $form['pager'] = array(
+      '#markup' => theme_pager(array(
+        'tags' => array(),
+        'element' => $element,
+        'parameters' => $parameters,
+        'quantity' => $quantity,
+      )),
+    );
+
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Import profiles'),
+    );
+  }
+  else {
+    $form['description_wrapper'] = array(
+      '#type' => 'container',
+    );
+    $description = "Search has returned no results. !link";
+    $link = l(t('Want to try again?'), 'admin/config/cap/import');
+    $form['description_wrapper']['description'] = array(
+      '#markup' => t($description, array('!link' => $link)),
+    );
+  }
 
   return $form;
 }
@@ -399,7 +523,7 @@ function stanford_cap_api_test_synchronize() {
   stanford_cap_api_synchronize_fields($fields_from_service);
   $timer = timer_stop('fields_sync');
   drupal_set_message(t('Fields successfully synchronized.'));
-  drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000) )));
+  drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000))));
 }
 
 function stanford_cap_api_reset() {

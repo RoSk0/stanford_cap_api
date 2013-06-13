@@ -661,7 +661,6 @@ function stanford_cap_api_import_organizations($top = 'AA00') {
   $endpoint = '/api/cap/v1/orgs';
   $params = array('orgCodes' => $top);
   $data = stanford_cap_api_request($endpoint, $params);
-  dpm($data, 'Raw data');
   foreach ($data as $orgid => $organization) {
     stanford_cap_api_save_organization($organization, $orgid);
   }
