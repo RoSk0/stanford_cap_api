@@ -401,19 +401,31 @@ function stanford_cap_api_import_result_form($form, &$form_state) {
     );
     $options = array();
     foreach ($search_response['values'] as $profile) {
+      $href = 'https://med.stanford.edu/profiles/';
+      if (isset($profile['names']['legal'])) {
+        $href .= 'stanford/';
+        $href .= $profile['names']['legal']['firstName'];
+        $href .= '_' . $profile['names']['legal']['lastName'];
+      }
+      elseif (isset($profile['names']['preferred'])) {
+        $href .= 'stanford/';
+        $href .= $profile['names']['preferred']['firstName'];
+        $href .= '_' . $profile['names']['preferred']['lastName'];
+      }
+
       $options[$profile['profileId']] = array(
         'name' => array(
           'data' => array(
             '#type' => 'link',
             '#title' => check_plain($profile['displayName']),
-            '#href' => 'https://med.stanford.edu/profiles/auth/frdActionServlet?choiceId=profile&fid=' . $profile['profileId'],
+            '#href' => $href,
           ),
         ),
         'link' => array(
           'data' => array(
             '#type' => 'link',
             '#title' => t('View in CAP'),
-            '#href' => 'https://med.stanford.edu/profiles/auth/frdActionServlet?choiceId=profile&fid=' . $profile['profileId'],
+            '#href' => $href,
           ),
         ),
       );
