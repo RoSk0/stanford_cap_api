@@ -6,6 +6,7 @@ version = 7.x-1.0-dev
 project = stanford_cap_api
 dependencies[] = ctools
 dependencies[] = date
+dependencies[] = entity
 dependencies[] = features
 dependencies[] = link
 dependencies[] = strongarm

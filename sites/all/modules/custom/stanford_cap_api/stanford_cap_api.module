@@ -761,7 +761,7 @@ function stanford_cap_api_profile_import($profile_id) {
   foreach ($_SESSION['search_response']['values'] as $profile) {
     if ($profile['profileId'] == $profile_id) {
       stanford_cap_api_synchronize_fields($profile);
-      //  $profile_node = stanford_cap_api_profile_sync($profile);
+      stanford_cap_api_profile_sync($profile);
     }
   }
 }
@@ -834,9 +834,44 @@ function _cap_api_format_cap_profile_url($profile) {
 
 function stanford_cap_api_profile_sync($profile) {
   $query = new EntityFieldQuery();
-  $node = $query->entityCondition('entity_type', 'node')
+  $result = $query->entityCondition('entity_type', 'node')
     ->entityCondition('bundle', 'cap_faculty_profile')
-    ->fieldCondition('cap_profileid', 'cap_profileid_value', $profile['cap_profileid'])
+    ->fieldCondition('cap_profileid', 'value', $profile['profileId'])
     ->execute();
-  dpm($node);
+  if(count($result['node']) == 1){
+    // Updating.
+
+  }
+  elseif(count($result['node']) > 1) {
+    // More then 1 node contains this profile's ID, error?
+    // @todo Add more description.
+    watchdog('stanford_cap_api', 'Error! More than one node per profile.');
+  }
+  else{
+    // Importing.
+    $node = new stdClass();
+    $node->title = $profile['displayName'];
+    $node->uid = 0;
+    $node->status = 1;
+    $node->type = 'cap_faculty_profile';
+    $node->created = REQUEST_TIME;
+    $node->changed = REQUEST_TIME;
+    $node->is_new = TRUE;
+    $node->language = LANGUAGE_NONE;
+    node_save($node);
+    $node = node_load($node->nid);
+    stanford_cap_api_profile_sync_fields($node, $profile);
+  }
+}
+
+/**
+ * Sync profile fields to node.
+ *
+ * @param $node
+ * @param $profile
+ */
+function stanford_cap_api_profile_sync_fields($node, $profile){
+  foreach ($profile['drupal_fields'] as $profile_field => $drupal_field) {
+    $node->{$drupal_field}[LANGUAGE_NONE];
+  }
 }
