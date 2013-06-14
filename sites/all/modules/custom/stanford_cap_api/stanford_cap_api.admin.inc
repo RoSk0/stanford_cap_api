@@ -204,7 +204,7 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
  * Form builder for import page.
  */
 function stanford_cap_api_import_form($form, &$form_state) {
-
+  dpm($_SESSION);
   $values = isset($form_state['values']) ? $form_state['values'] : array();
 
   $form['description_wrapper'] = array(
@@ -343,7 +343,7 @@ function _cap_api_prepare_list_str($str) {
  * Form builder for import result page.
  */
 function stanford_cap_api_import_result_form($form, &$form_state) {
-
+  dpm($_SESSION);
   if (!empty($_SESSION['search_response'])) {
 
     $form['description_wrapper'] = array(
@@ -401,17 +401,7 @@ function stanford_cap_api_import_result_form($form, &$form_state) {
     );
     $options = array();
     foreach ($search_response['values'] as $profile) {
-      $href = 'https://med.stanford.edu/profiles/';
-      if (isset($profile['names']['legal'])) {
-        $href .= 'stanford/';
-        $href .= $profile['names']['legal']['firstName'];
-        $href .= '_' . $profile['names']['legal']['lastName'];
-      }
-      elseif (isset($profile['names']['preferred'])) {
-        $href .= 'stanford/';
-        $href .= $profile['names']['preferred']['firstName'];
-        $href .= '_' . $profile['names']['preferred']['lastName'];
-      }
+      $href = _cap_api_format_cap_profile_url($profile);
 
       $options[$profile['profileId']] = array(
         'name' => array(
@@ -475,8 +465,29 @@ function stanford_cap_api_import_result_form($form, &$form_state) {
  * Submit handler for import result form.
  */
 function stanford_cap_api_import_result_form_submit($form, &$form_state) {
-  // @todo Import should happen here.
-  drupal_set_message(t('Imported!'));
+
+  if (empty($form_state['values']['profiles'])) {
+    drupal_set_message(t('Nothing to import. Profiles list is empty.'));
+  }
+  else {
+    $profiles = $form_state['values']['profiles'];
+    $operations = array();
+    foreach ($profiles as $profile) {
+      if ($profile != 0) {
+        $operations[] = array('stanford_cap_api_profile_import', array($profile));
+      }
+    }
+
+    $batch = array(
+      'title' => t('Importing profiles'),
+      'operations' => $operations,
+      'progress_message' => t('Current: @current | Remaining:
+    @remaining | Total: @total | Percentage: @percentage | Estimate:
+    @estimate | Elapsed: @elapsed'),
+      'finished' => 'stanford_cap_api_import_result_finished',
+    );
+    batch_set($batch);
+  }
 }
 
 /**

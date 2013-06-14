@@ -89,28 +89,45 @@ function stanford_cap_api_menu() {
   return $items;
 }
 
-function stanford_cap_api_synchronize_fields($fields) {
-  foreach ($fields as $field_name => $field_info) {
-    $field_name = 'cap_' . $field_name;
-    $info = field_info_field($field_name);
+function stanford_cap_api_synchronize_fields(&$profile) {
+
+  // Adding custom field for profile link, because existing profile fields
+  // didn't provide valid.
+  $profile['profile_link'] = _cap_api_format_cap_profile_url($profile);
+  $drupal_fields = array();
+  foreach ($profile as $field_name => &$field_data) {
+    $node_field_name = 'cap_' . strtolower($field_name);
+    $field_info = field_info_field($node_field_name);
     // Field not exists yet.
-    if (empty($info)) {
-      $info = _cap_api_get_field_base_def($field_info['type'], $field_name);
+    if (empty($field_info)) {
+
+      // @todo Here we should grab field metadata from JSON schema.
+      $field_type = _tmp_cap_api_get_field_type($field_name);
+      $field_info = _cap_api_get_field_base_def($field_type, $node_field_name);
       // Do we know about this field type?
-      if (!empty($info)) {
-        field_create_field($info);
+      if (!empty($field_info)) {
+        field_create_field($field_info);
+        // Saving field name for further usage.
+        $drupal_fields[$field_name] = $node_field_name;
         // Logging field creation.
-        _cap_api_log_field($field_name);
-        $info_instance = field_info_instance('node', $field_name, 'cap_faculty_profile');
-        if (empty($info_instance)) {
-          $instance = _cap_api_get_field_instance_def($field_info['type'], $field_name, $field_info['label']);
-          field_create_instance($instance);
+        _cap_api_log_field($node_field_name);
+        $field_instance = field_info_instance('node', $node_field_name, 'cap_faculty_profile');
+        if (empty($field_instance)) {
+          // @todo Grab field label from JSON schema.
+          $instance = _cap_api_get_field_instance_def($field_type, $node_field_name, $field_name);
+
+          $instance = field_create_instance($instance);
         }
       }
     }
   }
+  // Saving mapping of original fields to Drupal fields.
+  $profile['drupal_fields'] = $drupal_fields;
 }
 
+/**
+ * Returns Drupal base field definition based of JSON field type.
+ */
 function _cap_api_get_field_base_def($type, $name) {
   $info = FALSE;
   switch ($type) {
@@ -231,6 +248,22 @@ function _cap_api_get_field_base_def($type, $name) {
         'settings' => array(),
         'translatable' => 0,
         'type' => 'text_long',
+      );
+      break;
+    case 'integer':
+      $info = array(
+        'active' => 1,
+        'cardinality' => 1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(),
+        'indexes' => array(),
+        'locked' => 0,
+        'module' => 'number',
+        'settings' => array(),
+        'translatable' => 0,
+        'type' => 'number_integer',
       );
       break;
   }
@@ -440,6 +473,52 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
         ),
       );
       break;
+    case 'integer':
+      $info = array(
+        'bundle' => 'cap_faculty_profile',
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'number',
+            'settings' => array(
+              'decimal_separator' => '.',
+              'prefix_suffix' => TRUE,
+              'scale' => 0,
+              'thousand_separator' => ' ',
+            ),
+            'type' => 'number_integer',
+            'weight' => 1,
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'max' => '',
+          'min' => '',
+          'prefix' => '',
+          'suffix' => '',
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 0,
+          'module' => 'number',
+          'settings' => array(),
+          'type' => 'number',
+          'weight' => 10,
+        ),
+      );
+      break;
   }
 
   return $info;
@@ -599,7 +678,7 @@ function stanford_cap_api_request($endpoint, $params = array()) {
   $data = json_decode($response->data, TRUE);
   if (array_key_exists('error', $data)) {
     $error_msg = 'Error found in CAP API response. Error message is "%msg",'
-     . ' response data was "%data".';
+      . ' response data was "%data".';
     $vars = array(
       '%msg' => $data['error_description'],
       '%data' => print_r($data, TRUE),
@@ -619,7 +698,6 @@ function stanford_cap_api_test() {
 
   $response = stanford_cap_api_request($endpoint, $params);
   dpm($response, 'Raw response');
-
 }
 
 /**
@@ -672,9 +750,93 @@ function stanford_cap_api_import_organizations($top = 'AA00') {
 function stanford_cap_api_cron() {
   $last_run_time = variable_get('stanford_cap_api_cron_last_run', REQUEST_TIME);
   $time_since_last_run = REQUEST_TIME - $last_run_time;
-  // Check if last run wsa more then one day ago.
+  // Check if last run was more then one day ago.
   if ($time_since_last_run > 86400) {
     stanford_cap_api_import_organizations();
   }
   variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
+}
+
+function stanford_cap_api_profile_import($profile_id) {
+  foreach ($_SESSION['search_response']['values'] as $profile) {
+    if ($profile['profileId'] == $profile_id) {
+      stanford_cap_api_synchronize_fields($profile);
+      //  $profile_node = stanford_cap_api_profile_sync($profile);
+    }
+  }
+}
+
+function stanford_cap_api_import_result_finished() {
+  drupal_set_message(t('Profiles imported!'));
+  unset($_SESSION['search_params']);
+  unset($_SESSION['search_response']);
+  drupal_goto('admin/config/cap/import');
+}
+
+function cap_api_schema_test() {
+  $product = file_get_contents(drupal_get_path('module', 'stanford_cap_api') . '/product.json');
+  $product = json_decode($product);
+
+  $product_schema = file_get_contents(drupal_get_path('module', 'stanford_cap_api') . '/product_schema.json');
+  $product_schema = json_decode($product_schema);
+  dpm($product);
+  dpm($product_schema);
+}
+
+/**
+ * Introduce field type while we have no JSON schema.
+ *
+ * @todo Drop as we will get access to JSON schema.
+ */
+function _tmp_cap_api_get_field_type($field_name) {
+  $type = FALSE;
+  switch ($field_name) {
+    case 'displayName':
+    case 'longTitle':
+    case 'uid':
+    case 'bio':
+    case 'currentRoleAtStanford':
+      $type = 'string';
+      break;
+    case 'profile_link':
+      $type = 'link';
+      break;
+    case 'lastModified':
+      $type = 'date';
+      break;
+    case 'profileId':
+      $type = 'integer';
+      break;
+    case 'honorsAndAwards':
+    case 'professionalInterests':
+      $type = 'text';
+      break;
+  }
+
+  return $type;
+}
+
+function _cap_api_format_cap_profile_url($profile) {
+  $href = 'https://med.stanford.edu/profiles/';
+  if (!empty($profile['names']['legal'])) {
+    $href .= 'stanford/';
+    $href .= $profile['names']['legal']['firstName'];
+    $href .= '_' . $profile['names']['legal']['lastName'];
+  }
+  elseif (!empty($profile['names']['preferred'])) {
+    $href .= 'stanford/';
+    $href .= $profile['names']['preferred']['firstName'];
+    $href .= '_' . $profile['names']['preferred']['lastName'];
+  }
+
+  return $href;
+}
+
+function stanford_cap_api_profile_sync($profile) {
+  $query = new EntityFieldQuery();
+  $node = $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'cap_faculty_profile')
+    ->fieldCondition('cap_profileid', 'cap_profileid_value', $profile['cap_profileid'])
+    ->execute();
+  dpm($node);
 }
