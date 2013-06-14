@@ -97,6 +97,8 @@ function stanford_cap_api_synchronize_fields(&$profile) {
   $drupal_fields = array();
   foreach ($profile as $field_name => &$field_data) {
     $node_field_name = 'cap_' . strtolower($field_name);
+    // Saving field name for further usage.
+    $drupal_fields[$node_field_name] = $field_name;
     $field_info = field_info_field($node_field_name);
     // Field not exists yet.
     if (empty($field_info)) {
@@ -107,16 +109,13 @@ function stanford_cap_api_synchronize_fields(&$profile) {
       // Do we know about this field type?
       if (!empty($field_info)) {
         field_create_field($field_info);
-        // Saving field name for further usage.
-        $drupal_fields[$field_name] = $node_field_name;
         // Logging field creation.
         _cap_api_log_field($node_field_name);
         $field_instance = field_info_instance('node', $node_field_name, 'cap_faculty_profile');
         if (empty($field_instance)) {
           // @todo Grab field label from JSON schema.
           $instance = _cap_api_get_field_instance_def($field_type, $node_field_name, $field_name);
-
-          $instance = field_create_instance($instance);
+          field_create_instance($instance);
         }
       }
     }
@@ -838,16 +837,16 @@ function stanford_cap_api_profile_sync($profile) {
     ->entityCondition('bundle', 'cap_faculty_profile')
     ->fieldCondition('cap_profileid', 'value', $profile['profileId'])
     ->execute();
-  if(count($result['node']) == 1){
+  if (count($result['node']) == 1) {
     // Updating.
 
   }
-  elseif(count($result['node']) > 1) {
+  elseif (count($result['node']) > 1) {
     // More then 1 node contains this profile's ID, error?
     // @todo Add more description.
     watchdog('stanford_cap_api', 'Error! More than one node per profile.');
   }
-  else{
+  else {
     // Importing.
     $node = new stdClass();
     $node->title = $profile['displayName'];
@@ -859,7 +858,7 @@ function stanford_cap_api_profile_sync($profile) {
     $node->is_new = TRUE;
     $node->language = LANGUAGE_NONE;
     node_save($node);
-    $node = node_load($node->nid);
+    $node = node_load($node->nid, NULL, TRUE);
     stanford_cap_api_profile_sync_fields($node, $profile);
   }
 }
@@ -870,8 +869,17 @@ function stanford_cap_api_profile_sync($profile) {
  * @param $node
  * @param $profile
  */
-function stanford_cap_api_profile_sync_fields($node, $profile){
-  foreach ($profile['drupal_fields'] as $profile_field => $drupal_field) {
-    $node->{$drupal_field}[LANGUAGE_NONE];
+function stanford_cap_api_profile_sync_fields($node, $profile) {
+  $nw = entity_metadata_wrapper('node', $node);
+  $drupal_fields = db_select('cap_api_fields', 'f')
+    ->fields('f', array('field_name'))
+    ->execute()->fetchCol();
+  foreach ($drupal_fields as $drupal_field) {
+    $profile_field = $profile['drupal_fields'][$drupal_field];
+    // @todo We must have some kind a field handlers to fetch data from profile fields.
+    if (!empty($profile[$profile_field])) {
+      $nw->{$drupal_field}->set($profile[$profile_field]);
+    }
   }
+  $nw->save();
 }
