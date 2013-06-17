@@ -204,7 +204,6 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
  * Form builder for import page.
  */
 function stanford_cap_api_import_form($form, &$form_state) {
-  dpm($_SESSION);
   $values = isset($form_state['values']) ? $form_state['values'] : array();
 
   $form['description_wrapper'] = array(
@@ -343,7 +342,6 @@ function _cap_api_prepare_list_str($str) {
  * Form builder for import result page.
  */
 function stanford_cap_api_import_result_form($form, &$form_state) {
-  dpm($_SESSION);
   if (!empty($_SESSION['search_response'])) {
 
     $form['description_wrapper'] = array(
