@@ -60,8 +60,62 @@ function stanford_cap_api_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-cap_faculty_profile-field_cap_sync_date'
-  $field_instances['node-cap_faculty_profile-field_cap_sync_date'] = array(
+  // Exported field_instance: 'node-cap_faculty_profile-cap_profile_link'
+  $field_instances['node-cap_faculty_profile-cap_profile_link'] = array(
+    'bundle' => 'cap_faculty_profile',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'link',
+        'settings' => array(),
+        'type' => 'link_default',
+        'weight' => 2,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'cap_profile_link',
+    'label' => 'CAP profile link',
+    'required' => 0,
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'configurable_title' => 0,
+        'rel' => '',
+        'target' => '_blank',
+        'title' => '',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'rel_remove' => 'default',
+      'title' => 'none',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+      'user_register_form' => FALSE,
+      'validate_url' => 0,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'link',
+      'settings' => array(),
+      'type' => 'link_field',
+      'weight' => 42,
+    ),
+  );
+
+  // Exported field_instance: 'node-cap_faculty_profile-cap_sync_date'
+  $field_instances['node-cap_faculty_profile-cap_sync_date'] = array(
     'bundle' => 'cap_faculty_profile',
     'default_value' => NULL,
     'deleted' => 0,
@@ -94,7 +148,7 @@ function stanford_cap_api_field_default_field_instances() {
       ),
     ),
     'entity_type' => 'node',
-    'field_name' => 'field_cap_sync_date',
+    'field_name' => 'cap_sync_date',
     'label' => 'Date last synced',
     'required' => 0,
     'settings' => array(
@@ -124,6 +178,7 @@ function stanford_cap_api_field_default_field_instances() {
   // Translatables
   // Included for use with string extractors like potx.
   t('Body');
+  t('CAP profile link');
   t('Date last synced');
 
   return $field_instances;

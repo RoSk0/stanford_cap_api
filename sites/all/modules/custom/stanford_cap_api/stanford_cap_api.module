@@ -97,9 +97,6 @@ function stanford_cap_api_menu() {
  */
 function stanford_cap_api_synchronize_fields(&$profile) {
 
-  // Adding custom field for profile link, because existing profile fields
-  // didn't provide valid.
-  $profile['profile_link'] = _cap_api_format_cap_profile_url($profile);
   $drupal_fields = array();
   foreach ($profile as $field_name => &$field_data) {
     $node_field_name = 'cap_' . strtolower($field_name);
@@ -799,16 +796,6 @@ function stanford_cap_api_import_result_finished() {
   drupal_goto('admin/config/cap/import');
 }
 
-function cap_api_schema_test() {
-  $product = file_get_contents(drupal_get_path('module', 'stanford_cap_api') . '/product.json');
-  $product = json_decode($product);
-
-  $product_schema = file_get_contents(drupal_get_path('module', 'stanford_cap_api') . '/product_schema.json');
-  $product_schema = json_decode($product_schema);
-  dpm($product);
-  dpm($product_schema);
-}
-
 /**
  * Introduce field type while we have no JSON schema.
  *
@@ -821,10 +808,6 @@ function _tmp_cap_api_get_field_type($field_name) {
     case 'longTitle':
     case 'uid':
       $type = 'string';
-      break;
-
-    case 'profile_link':
-      $type = 'link';
       break;
 
     case 'lastModified':
@@ -953,14 +936,11 @@ function stanford_cap_api_node_fields_update($node, $profile) {
         case 'longTitle':
           $nw->{$drupal_field}->set($profile[$profile_field]['title']);
           break;
-
-        case 'profile_link':
-          $nw->{$drupal_field}->set(array('url' => $profile[$profile_field]));
-          break;
       }
     }
   }
-  $nw->field_cap_sync_date->set(REQUEST_TIME);
+  $nw->cap_profile_link->set(array('url' => _cap_api_format_cap_profile_url($profile)));
+  $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
 }
 

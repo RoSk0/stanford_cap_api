@@ -49,12 +49,6 @@ function stanford_cap_api_views_default_views() {
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'Currently no CAP profiles being imported in the site.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
-  /* Field: Content: Link */
-  $handler->display->display_options['fields']['view_node']['id'] = 'view_node';
-  $handler->display->display_options['fields']['view_node']['table'] = 'views_entity_node';
-  $handler->display->display_options['fields']['view_node']['field'] = 'view_node';
-  $handler->display->display_options['fields']['view_node']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['view_node']['text'] = 'View in CAP';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -62,22 +56,27 @@ function stanford_cap_api_views_default_views() {
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
   /* Field: Content: Date last synced */
-  $handler->display->display_options['fields']['field_cap_sync_date']['id'] = 'field_cap_sync_date';
-  $handler->display->display_options['fields']['field_cap_sync_date']['table'] = 'field_data_field_cap_sync_date';
-  $handler->display->display_options['fields']['field_cap_sync_date']['field'] = 'field_cap_sync_date';
-  $handler->display->display_options['fields']['field_cap_sync_date']['settings'] = array(
+  $handler->display->display_options['fields']['cap_sync_date']['id'] = 'cap_sync_date';
+  $handler->display->display_options['fields']['cap_sync_date']['table'] = 'field_data_cap_sync_date';
+  $handler->display->display_options['fields']['cap_sync_date']['field'] = 'cap_sync_date';
+  $handler->display->display_options['fields']['cap_sync_date']['settings'] = array(
     'format_type' => 'long',
     'fromto' => 'both',
     'multiple_number' => '',
     'multiple_from' => '',
     'multiple_to' => '',
   );
-  /* Field: Global: Custom text */
-  $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
-  $handler->display->display_options['fields']['nothing']['table'] = 'views';
-  $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
-  $handler->display->display_options['fields']['nothing']['label'] = 'Operations';
-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[view_node]';
+  /* Field: Content: CAP profile link */
+  $handler->display->display_options['fields']['cap_profile_link']['id'] = 'cap_profile_link';
+  $handler->display->display_options['fields']['cap_profile_link']['table'] = 'field_data_cap_profile_link';
+  $handler->display->display_options['fields']['cap_profile_link']['field'] = 'cap_profile_link';
+  $handler->display->display_options['fields']['cap_profile_link']['label'] = 'Operations';
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['text'] = 'View in CAP';
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['path'] = '[cap_profile_link-url]';
+  $handler->display->display_options['fields']['cap_profile_link']['click_sort_column'] = 'url';
+  $handler->display->display_options['fields']['cap_profile_link']['type'] = 'link_plain';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
