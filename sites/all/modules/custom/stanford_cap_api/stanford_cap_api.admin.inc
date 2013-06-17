@@ -11,8 +11,7 @@ define('ENTRY_PER_PAGE', 25);
  */
 function stanford_cap_api_details_form($form, &$form_state) {
 
-  // @todo Check connection status here.
-  $status = FALSE;
+  $status = stanford_cap_api_auth();
   $status_message = t("Currently, your site can't connect to CAP API.");
   if ($status) {
     $status_message = t('Currently, your site can connect to CAP API.');
@@ -38,7 +37,7 @@ function stanford_cap_api_details_form($form, &$form_state) {
     '#markup' => t('There are %count CAP profiles being synchronized with your website.', array('%count' => $count)),
   );
 
-  $sync_date_stamp = variable_get('cap_sync_date', '');
+  $sync_date_stamp = variable_get('stanford_cap_api_cron_last_run', 0);
   if (empty($sync_date_stamp)) {
     $sync_text = t('CAP profiles were not synchronized yet.');
   }
@@ -66,8 +65,12 @@ function stanford_cap_api_details_form($form, &$form_state) {
  */
 function stanford_cap_api_details_form_submit() {
 
-  variable_set('cap_sync_date', REQUEST_TIME);
-  // @todo Call synchronization here.
+  variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
+  $batch = array(
+    'title' => t('Synchronizing profiles'),
+    'operations' => array(array('stanford_cap_api_update_profiles', array())),
+  );
+  batch_set($batch);
 }
 
 /**
@@ -173,12 +176,14 @@ function stanford_cap_api_settings_form($form, &$form_state) {
  * Validation handler for settings form.
  */
 function stanford_cap_api_settings_form_validate($form, &$form_state) {
-  $auth_token = stanford_cap_api_auth($form_state['values']['cap_username'], $form_state['values']['cap_password']);
-  if (!$auth_token) {
-    $msg = "Error. Can't connect to Stanford CAP API."
-      . " Please check your username and password.";
-    form_set_error('cap_username', t($msg));
-    form_set_error('cap_password');
+  if (!empty($form_state['values']['cap_username']) && !empty($form_state['values']['cap_password'])) {
+    $auth_token = stanford_cap_api_auth($form_state['values']['cap_username'], $form_state['values']['cap_password']);
+    if (!$auth_token) {
+      $msg = "Error. Can't connect to Stanford CAP API."
+        . " Please check your username and password.";
+      form_set_error('cap_username', t($msg));
+      form_set_error('cap_password');
+    }
   }
 }
 
@@ -189,14 +194,17 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
   $config_vars = array(
     'cap_username',
     'cap_password',
-    'cap_custom_fields',
-    'cap_allow_edit',
     'cap_api_base_url',
     'cap_auth_uri',
   );
+  $values = $form_state['values'];
   foreach ($config_vars as $config_var) {
-    variable_set($config_var, $form_state['values'][$config_var]);
+    if (!empty($values[$config_var])) {
+      variable_set($config_var, $values[$config_var]);
+    }
   }
+  variable_set('cap_custom_fields', $values['cap_custom_fields']);
+  variable_set('cap_allow_edit', $values['cap_allow_edit']);
   drupal_set_message(t('Configuration saved.'));
 }
 

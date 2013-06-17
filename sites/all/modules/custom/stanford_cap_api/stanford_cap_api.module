@@ -783,7 +783,7 @@ function stanford_cap_api_profile_import($profile_id) {
       stanford_cap_api_profile_sync($profile);
     }
     else {
-      $message = 'There is no profile with %id in Stanford CAP Network.';
+      $message = 'There is no profile with ID %id in Stanford CAP Network.';
       watchdog('stanford_cap_api', $message, array('%id' => $profile_id));
     }
   }
