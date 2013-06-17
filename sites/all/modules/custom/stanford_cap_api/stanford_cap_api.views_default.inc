@@ -70,13 +70,26 @@ function stanford_cap_api_views_default_views() {
   $handler->display->display_options['fields']['cap_profile_link']['id'] = 'cap_profile_link';
   $handler->display->display_options['fields']['cap_profile_link']['table'] = 'field_data_cap_profile_link';
   $handler->display->display_options['fields']['cap_profile_link']['field'] = 'cap_profile_link';
-  $handler->display->display_options['fields']['cap_profile_link']['label'] = 'Operations';
+  $handler->display->display_options['fields']['cap_profile_link']['exclude'] = TRUE;
   $handler->display->display_options['fields']['cap_profile_link']['alter']['alter_text'] = TRUE;
   $handler->display->display_options['fields']['cap_profile_link']['alter']['text'] = 'View in CAP';
   $handler->display->display_options['fields']['cap_profile_link']['alter']['make_link'] = TRUE;
   $handler->display->display_options['fields']['cap_profile_link']['alter']['path'] = '[cap_profile_link-url]';
   $handler->display->display_options['fields']['cap_profile_link']['click_sort_column'] = 'url';
   $handler->display->display_options['fields']['cap_profile_link']['type'] = 'link_plain';
+  /* Field: Content: Delete link */
+  $handler->display->display_options['fields']['delete_node']['id'] = 'delete_node';
+  $handler->display->display_options['fields']['delete_node']['table'] = 'views_entity_node';
+  $handler->display->display_options['fields']['delete_node']['field'] = 'delete_node';
+  $handler->display->display_options['fields']['delete_node']['label'] = 'Stop syncing';
+  $handler->display->display_options['fields']['delete_node']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['delete_node']['text'] = 'Stop syncing';
+  /* Field: Global: Custom text */
+  $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
+  $handler->display->display_options['fields']['nothing']['table'] = 'views';
+  $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+  $handler->display->display_options['fields']['nothing']['label'] = 'Operations';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[cap_profile_link] | [delete_node]';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
