@@ -89,6 +89,12 @@ function stanford_cap_api_menu() {
   return $items;
 }
 
+/**
+ * Synchronize fields from CAP profile to Drupal.
+ *
+ * @param array $profile
+ *   CAP profile.
+ */
 function stanford_cap_api_synchronize_fields(&$profile) {
 
   // Adding custom field for profile link, because existing profile fields
@@ -756,13 +762,33 @@ function stanford_cap_api_cron() {
   variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
 }
 
+/**
+ * Import CAP profile.
+ *
+ * @param int $profile_id
+ *   Profile ID.
+ */
 function stanford_cap_api_profile_import($profile_id) {
-  foreach ($_SESSION['search_response']['values'] as $profile) {
-    if ($profile['profileId'] == $profile_id) {
+  if (isset($_SESSION['search_response']['values'])) {
+    foreach ($_SESSION['search_response']['values'] as $profile) {
+      if ($profile['profileId'] == $profile_id) {
+        stanford_cap_api_synchronize_fields($profile);
+        stanford_cap_api_profile_sync($profile);
+      }
+    }
+  }
+  else {
+    $profile = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
+    if ($profile) {
       stanford_cap_api_synchronize_fields($profile);
       stanford_cap_api_profile_sync($profile);
     }
+    else {
+      $message = 'There is no profile with %id in Stanford CAP Network.';
+      watchdog('stanford_cap_api', $message, array('%id' => $profile_id));
+    }
   }
+
 }
 
 function stanford_cap_api_import_result_finished() {
@@ -793,21 +819,25 @@ function _tmp_cap_api_get_field_type($field_name) {
     case 'displayName':
     case 'longTitle':
     case 'uid':
-    case 'bio':
-    case 'currentRoleAtStanford':
       $type = 'string';
       break;
+
     case 'profile_link':
       $type = 'link';
       break;
+
     case 'lastModified':
       $type = 'date';
       break;
+
     case 'profileId':
       $type = 'integer';
       break;
+
     case 'honorsAndAwards':
     case 'professionalInterests':
+    case 'currentRoleAtStanford':
+    case 'bio':
       $type = 'text';
       break;
   }
@@ -838,8 +868,9 @@ function stanford_cap_api_profile_sync($profile) {
     ->fieldCondition('cap_profileid', 'value', $profile['profileId'])
     ->execute();
   if (count($result['node']) == 1) {
-    // Updating.
-
+    $node = array_shift($result['node']);
+    $node = node_load($node->nid);
+    stanford_cap_api_node_fields_update($node, $profile);
   }
   elseif (count($result['node']) > 1) {
     // More then 1 node contains this profile's ID, error?
@@ -859,7 +890,7 @@ function stanford_cap_api_profile_sync($profile) {
     $node->language = LANGUAGE_NONE;
     node_save($node);
     $node = node_load($node->nid, NULL, TRUE);
-    stanford_cap_api_profile_sync_fields($node, $profile);
+    stanford_cap_api_node_fields_update($node, $profile);
   }
 }
 
@@ -869,7 +900,7 @@ function stanford_cap_api_profile_sync($profile) {
  * @param $node
  * @param $profile
  */
-function stanford_cap_api_profile_sync_fields($node, $profile) {
+function stanford_cap_api_node_fields_update($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
   $drupal_fields = db_select('cap_api_fields', 'f')
     ->fields('f', array('field_name'))
@@ -878,8 +909,39 @@ function stanford_cap_api_profile_sync_fields($node, $profile) {
     $profile_field = $profile['drupal_fields'][$drupal_field];
     // @todo We must have some kind a field handlers to fetch data from profile fields.
     if (!empty($profile[$profile_field])) {
-      $nw->{$drupal_field}->set($profile[$profile_field]);
+      switch ($profile_field) {
+        case 'displayName'://1
+        case 'uid'://2
+        case 'bio'://3
+        case 'currentRoleAtStanford'://4
+        case 'profileId'://5
+        case 'professionalInterests'://6
+          $nw->{$drupal_field}->set($profile[$profile_field]);
+          break;
+
+        case 'lastModified'://7
+          $nw->{$drupal_field}->set(strtotime($profile[$profile_field]));
+          break;
+
+        case 'honorsAndAwards'://8
+          $value = '';
+          foreach ($profile[$profile_field] as $award) {
+            $value .= $award['label']['html'];
+            $value .= "\n";
+          }
+          $nw->{$drupal_field}->set($value);
+          break;
+
+        case 'longTitle'://9
+          $nw->{$drupal_field}->set($profile[$profile_field]['title']);
+          break;
+
+        case 'profile_link'://10
+          $nw->{$drupal_field}->set(array('url' => $profile[$profile_field]));
+          break;
+      }
     }
   }
+  $nw->field_cap_sync_date->set(REQUEST_TIME);
   $nw->save();
 }
