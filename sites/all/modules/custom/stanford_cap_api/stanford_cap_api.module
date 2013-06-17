@@ -753,13 +753,15 @@ function stanford_cap_api_import_organizations($top = 'AA00') {
  * Implements hook_cron().
  */
 function stanford_cap_api_cron() {
-  $last_run_time = variable_get('stanford_cap_api_cron_last_run', REQUEST_TIME);
+  $last_run_time = variable_get('stanford_cap_api_cron_last_run', 0);
   $time_since_last_run = REQUEST_TIME - $last_run_time;
   // Check if last run was more then one day ago.
   if ($time_since_last_run > 86400) {
     stanford_cap_api_import_organizations();
+    stanford_cap_api_update_profiles();
+    // Update execution time.
+    variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
   }
-  variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
 }
 
 /**
@@ -788,7 +790,6 @@ function stanford_cap_api_profile_import($profile_id) {
       watchdog('stanford_cap_api', $message, array('%id' => $profile_id));
     }
   }
-
 }
 
 function stanford_cap_api_import_result_finished() {
@@ -845,6 +846,17 @@ function _tmp_cap_api_get_field_type($field_name) {
   return $type;
 }
 
+/**
+ * Generates CAP network profile URL.
+ *
+ * @todo Remove this when appropriate field would be available.
+ *
+ * @param array $profile
+ *   CAP network profile.
+ *
+ * @return string
+ *   CAP network profile URL.
+ */
 function _cap_api_format_cap_profile_url($profile) {
   $href = 'https://med.stanford.edu/profiles/';
   if (!empty($profile['names']['legal'])) {
@@ -861,6 +873,12 @@ function _cap_api_format_cap_profile_url($profile) {
   return $href;
 }
 
+/**
+ * Synchronize CAP network profile with Drupal node.
+ *
+ * @param array $profile
+ *   CAP network profile.
+ */
 function stanford_cap_api_profile_sync($profile) {
   $query = new EntityFieldQuery();
   $result = $query->entityCondition('entity_type', 'node')
@@ -910,20 +928,20 @@ function stanford_cap_api_node_fields_update($node, $profile) {
     // @todo We must have some kind a field handlers to fetch data from profile fields.
     if (!empty($profile[$profile_field])) {
       switch ($profile_field) {
-        case 'displayName'://1
-        case 'uid'://2
-        case 'bio'://3
-        case 'currentRoleAtStanford'://4
-        case 'profileId'://5
-        case 'professionalInterests'://6
+        case 'displayName':
+        case 'uid':
+        case 'bio':
+        case 'currentRoleAtStanford':
+        case 'profileId':
+        case 'professionalInterests':
           $nw->{$drupal_field}->set($profile[$profile_field]);
           break;
 
-        case 'lastModified'://7
+        case 'lastModified':
           $nw->{$drupal_field}->set(strtotime($profile[$profile_field]));
           break;
 
-        case 'honorsAndAwards'://8
+        case 'honorsAndAwards':
           $value = '';
           foreach ($profile[$profile_field] as $award) {
             $value .= $award['label']['html'];
@@ -932,11 +950,11 @@ function stanford_cap_api_node_fields_update($node, $profile) {
           $nw->{$drupal_field}->set($value);
           break;
 
-        case 'longTitle'://9
+        case 'longTitle':
           $nw->{$drupal_field}->set($profile[$profile_field]['title']);
           break;
 
-        case 'profile_link'://10
+        case 'profile_link':
           $nw->{$drupal_field}->set(array('url' => $profile[$profile_field]));
           break;
       }
@@ -944,4 +962,45 @@ function stanford_cap_api_node_fields_update($node, $profile) {
   }
   $nw->field_cap_sync_date->set(REQUEST_TIME);
   $nw->save();
+}
+
+/**
+ * Import multiply CAP profiles.
+ *
+ * @param array $profile_ids
+ *   Array of profile ID's.
+ */
+function stanford_cap_api_profile_import_multiply($profile_ids) {
+  $params = array(
+    'ids' => implode(',', $profile_ids),
+    'ps' => count($profile_ids),
+  );
+  $profiles = stanford_cap_api_request('/api/profiles/v1', $params);
+  foreach ($profiles['values'] as $profile) {
+    stanford_cap_api_synchronize_fields($profile);
+    stanford_cap_api_profile_sync($profile);
+  }
+  $message = 'Successfully imported %count profiles from Stanford CAP Network.';
+  watchdog('stanford_cap_api', $message, array('%count' => $profiles['count']));
+}
+
+/**
+ * Updates already imported profiles.
+ */
+function stanford_cap_api_update_profiles() {
+  $query = new EntityFieldQuery();
+  $result = $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'cap_faculty_profile')
+    ->fieldCondition('cap_profileid', 'value', '', '<>')
+    ->execute();
+  if (count($result['node'])) {
+    $nids = array_keys($result['node']);
+    $nodes = node_load_multiple($nids);
+    $profile_ids = array();
+    foreach ($nodes as $node) {
+      $nw = entity_metadata_wrapper('node', $node);
+      $profile_ids[] = $nw->cap_profileid->value();
+    }
+    stanford_cap_api_profile_import_multiply($profile_ids);
+  }
 }
