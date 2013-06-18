@@ -350,6 +350,7 @@ function _cap_api_prepare_list_str($str) {
  * Form builder for import result page.
  */
 function stanford_cap_api_import_result_form($form, &$form_state) {
+  dpm($_SESSION);
   if (!empty($_SESSION['search_response'])) {
 
     $form['description_wrapper'] = array(
@@ -480,7 +481,10 @@ function stanford_cap_api_import_result_form_submit($form, &$form_state) {
     $operations = array();
     foreach ($profiles as $profile) {
       if ($profile != 0) {
-        $operations[] = array('stanford_cap_api_profile_import', array($profile));
+        $operations[] = array(
+          'stanford_cap_api_profile_import',
+          array($profile)
+        );
       }
     }
 

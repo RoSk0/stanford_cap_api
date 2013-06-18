@@ -114,11 +114,26 @@ function stanford_cap_api_synchronize_fields(&$profile) {
         field_create_field($field_info);
         // Logging field creation.
         _cap_api_log_field($node_field_name);
+        // @todo Check if field is a collection. Create sub-fields.
+        if ($field_type == 'field_collection' && is_array($field_data) && !empty($field_data)) {
+          $subfields = array_shift($field_data);
+          foreach ($subfields as $subfield => $subfield_data) {
+            $fc_field_name = _stanford_cap_api_get_subfield_name($subfield);
+            $subfield_type = _tmp_cap_api_get_field_type($subfield);
+            $subfield_info = _cap_api_get_field_base_def($subfield_type, $fc_field_name);
+            if (!empty($subfield_info)) {
+              field_create_field($subfield_info);
+              $sub_instance = _cap_api_get_field_subinstance_def($subfield_type, $fc_field_name, $subfield, $node_field_name);
+              field_create_instance($sub_instance);
+            }
+          }
+        }
         $field_instance = field_info_instance('node', $node_field_name, 'cap_faculty_profile');
         if (empty($field_instance)) {
           // @todo Grab field label from JSON schema.
           $instance = _cap_api_get_field_instance_def($field_type, $node_field_name, $field_name);
           field_create_instance($instance);
+          // @todo Check if field is a collection. Create sub-fields.
         }
       }
     }
@@ -225,6 +240,36 @@ function _cap_api_get_field_base_def($type, $name) {
       );
       break;
 
+    case 'string_multiply':
+      $info = array(
+        'active' => 1,
+        'cardinality' => -1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(
+          'format' => array(
+            'columns' => array(
+              'format' => 'format',
+            ),
+            'table' => 'filter_format',
+          ),
+        ),
+        'indexes' => array(
+          'format' => array(
+            0 => 'format',
+          ),
+        ),
+        'locked' => 0,
+        'module' => 'text',
+        'settings' => array(
+          'max_length' => 255,
+        ),
+        'translatable' => 0,
+        'type' => 'text',
+      );
+      break;
+
     case 'text':
       $info = array(
         'active' => 1,
@@ -252,6 +297,7 @@ function _cap_api_get_field_base_def($type, $name) {
         'type' => 'text_long',
       );
       break;
+
     case 'integer':
       $info = array(
         'active' => 1,
@@ -268,11 +314,67 @@ function _cap_api_get_field_base_def($type, $name) {
         'type' => 'number_integer',
       );
       break;
+
+    case 'field_collection':
+      $info = array(
+        'active' => 1,
+        'cardinality' => -1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(),
+        'indexes' => array(),
+        'locked' => 0,
+        'module' => 'field_collection',
+        'settings' => array(
+          'hide_blank_items' => 1,
+          'path' => '',
+        ),
+        'translatable' => 0,
+        'type' => 'field_collection',
+      );
+      break;
+
+    case 'boolean':
+      $info = array(
+        'active' => 1,
+        'cardinality' => 1,
+        'deleted' => 0,
+        'entity_types' => array(),
+        'field_name' => $name,
+        'foreign keys' => array(),
+        'indexes' => array(
+          'value' => array(
+            0 => 'value',
+          ),
+        ),
+        'locked' => 0,
+        'module' => 'list',
+        'settings' => array(
+          'allowed_values' => array(
+            0 => '',
+            1 => '',
+          ),
+          'allowed_values_function' => '',
+        ),
+        'translatable' => 0,
+        'type' => 'list_boolean',
+      );
+      break;
   }
 
   return $info;
 }
 
+/**
+ * Generates instance info for profile fields.
+ *
+ * @param $type
+ * @param $name
+ * @param $label
+ *
+ * @return array|FALSE
+ */
 function _cap_api_get_field_instance_def($type, $name, $label) {
   $info = FALSE;
   $label = check_plain($label);
@@ -395,6 +497,7 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
       break;
 
     case 'string':
+    case 'string_multiply':
       $info = array(
         'bundle' => 'cap_faculty_profile',
         'default_value' => NULL,
@@ -475,6 +578,7 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
         ),
       );
       break;
+
     case 'integer':
       $info = array(
         'bundle' => 'cap_faculty_profile',
@@ -518,6 +622,321 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
           'settings' => array(),
           'type' => 'number',
           'weight' => 10,
+        ),
+      );
+      break;
+
+    case 'boolean':
+      $info = array(
+        'bundle' => 'cap_faculty_profile',
+        'default_value' => array(
+          0 => array(
+            'value' => 0,
+          ),
+        ),
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'list',
+            'settings' => array(),
+            'type' => 'list_default',
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'options',
+          'settings' => array(
+            'display_label' => 1,
+          ),
+          'type' => 'options_onoff',
+        ),
+      );
+      break;
+  }
+
+  return $info;
+}
+
+/**
+ * Generates instance info for field collection sub fields.
+ *
+ * @param $type
+ * @param $name
+ * @param $label
+ * @param $fc_field
+ *
+ * @return array|FALSE
+ */
+function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
+  $info = FALSE;
+  $label = check_plain($label);
+  switch ($type) {
+    case 'link':
+      $info = array(
+        'bundle' => $fc_field,
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'link',
+            'settings' => array(),
+            'type' => 'link_default',
+          ),
+        ),
+        'entity_type' => 'field_collection_item',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'attributes' => array(
+            'class' => '',
+            'configurable_title' => 0,
+            'rel' => '',
+            'target' => 'default',
+            'title' => '',
+          ),
+          'display' => array(
+            'url_cutoff' => 80,
+          ),
+          'enable_tokens' => 1,
+          'rel_remove' => 'default',
+          'title' => 'none',
+          'title_maxlength' => 128,
+          'title_value' => '',
+          'url' => 0,
+          'user_register_form' => FALSE,
+          'validate_url' => 1,
+        ),
+        'widget' => array(
+          'active' => 0,
+          'module' => 'link',
+          'settings' => array(),
+          'type' => 'link_field',
+        ),
+      );
+      break;
+
+    case 'date':
+      $info = array(
+        'bundle' => $fc_field,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'date',
+            'settings' => array(
+              'format_type' => 'long',
+              'fromto' => 'both',
+              'multiple_from' => '',
+              'multiple_number' => '',
+              'multiple_to' => '',
+            ),
+            'type' => 'date_default',
+          ),
+        ),
+        'entity_type' => 'field_collection_item',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'default_value' => 'now',
+          'default_value2' => 'same',
+          'default_value_code' => '',
+          'default_value_code2' => '',
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'date',
+          'settings' => array(
+            'increment' => 15,
+            'input_format' => 'm/d/Y - H:i:s',
+            'input_format_custom' => '',
+            'label_position' => 'above',
+            'text_parts' => array(),
+            'year_range' => '-3:+3',
+          ),
+          'type' => 'date_select',
+        ),
+      );
+      break;
+
+    case 'string':
+    case 'string_multiply':
+      $info = array(
+        'bundle' => $fc_field,
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'text',
+            'settings' => array(),
+            'type' => 'text_default',
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'text_processing' => 0,
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'text',
+          'settings' => array(
+            'size' => 60,
+          ),
+          'type' => 'text_textfield',
+        ),
+      );
+      break;
+
+    case 'text':
+      $info = array(
+        'bundle' => $fc_field,
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'text',
+            'settings' => array(),
+            'type' => 'text_default',
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'text_processing' => 0,
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'text',
+          'settings' => array(
+            'rows' => 5,
+          ),
+          'type' => 'text_textarea',
+        ),
+      );
+      break;
+
+    case 'integer':
+      $info = array(
+        'bundle' => $fc_field,
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'number',
+            'settings' => array(
+              'decimal_separator' => '.',
+              'prefix_suffix' => TRUE,
+              'scale' => 0,
+              'thousand_separator' => ' ',
+            ),
+            'type' => 'number_integer',
+
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'max' => '',
+          'min' => '',
+          'prefix' => '',
+          'suffix' => '',
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 0,
+          'module' => 'number',
+          'settings' => array(),
+          'type' => 'number',
+        ),
+      );
+      break;
+
+    case 'boolean':
+      $info = array(
+        'bundle' => $fc_field,
+        'default_value' => array(
+          0 => array(
+            'value' => 0,
+          ),
+        ),
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'list',
+            'settings' => array(),
+            'type' => 'list_default',
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+          ),
+        ),
+        'entity_type' => 'node',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 1,
+          'module' => 'options',
+          'settings' => array(
+            'display_label' => 1,
+          ),
+          'type' => 'options_onoff',
         ),
       );
       break;
@@ -807,14 +1226,41 @@ function _tmp_cap_api_get_field_type($field_name) {
     case 'displayName':
     case 'longTitle':
     case 'uid':
+    case 'californiaPhysicianLicense':
+    case 'name':
+    case 'appointment':
+    case 'organization':
+    case 'fullName':
+    case 'alias':
       $type = 'string';
       break;
 
+    case 'clinicalFocus':
+      $type = 'string_multiply';
+      break;
+
+    case 'profileUrl':
+      $type = 'link';
+      break;
+
+    case 'capFaculty':
+    case 'capStaff':
+    case 'capPostdoc':
+    case 'capMdStudent':
+    case 'capMsStudent':
+    case 'capPhdStudent':
+    case 'physician':
+      $type = 'boolean';
+      break;
+
     case 'lastModified':
+    case 'startYear':
+    case 'endYear':
       $type = 'date';
       break;
 
     case 'profileId':
+    case 'ordinal':
       $type = 'integer';
       break;
 
@@ -823,6 +1269,13 @@ function _tmp_cap_api_get_field_type($field_name) {
     case 'currentRoleAtStanford':
     case 'bio':
       $type = 'text';
+      break;
+
+    case 'activeAffiliations':
+    case 'administrativeAppointments':
+    case 'advisees':
+    case 'affiliations':
+      $type = 'field_collection';
       break;
   }
 
@@ -917,6 +1370,7 @@ function stanford_cap_api_node_fields_update($node, $profile) {
         case 'currentRoleAtStanford':
         case 'profileId':
         case 'professionalInterests':
+        case 'californiaPhysicianLicense':
           $nw->{$drupal_field}->set($profile[$profile_field]);
           break;
 
@@ -936,12 +1390,47 @@ function stanford_cap_api_node_fields_update($node, $profile) {
         case 'longTitle':
           $nw->{$drupal_field}->set($profile[$profile_field]['title']);
           break;
+
+        // Type - string_multiply.
+        case 'clinicalFocus':
+          $values = array();
+          foreach ($profile[$profile_field] as $field) {
+            $values[] = $field;
+          }
+          $nw->{$drupal_field}->set($values);
+          break;
+
+        case 'administrativeAppointments':
+          $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field));
+          $fc_item->setHostEntity('node', $node);
+          $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+          foreach ($profile[$profile_field] as $subfield => $data) {
+            $fc_field_name = _stanford_cap_api_get_subfield_name($subfield);
+            $fc_wrapper->field_source_txt_content->set($data);
+            _stanford_cap_api_node_fields_update_subfields($fc_wrapper, $subfield, $data);
+          }
+
+          // Saving field collection but not host entity.
+          $fc_wrapper->save(TRUE);
+
+          break;
       }
     }
   }
   $nw->cap_profile_link->set(array('url' => _cap_api_format_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
+}
+
+/**
+ * Convert profile subfield name to drupal subfield name.
+ *
+ * @param $subfield
+ *
+ * @return string
+ */
+function _stanford_cap_api_get_subfield_name($subfield) {
+  return 'cap_fc_' . strtolower($subfield);
 }
 
 /**
@@ -982,5 +1471,42 @@ function stanford_cap_api_update_profiles() {
       $profile_ids[] = $nw->cap_profileid->value();
     }
     stanford_cap_api_profile_import_multiply($profile_ids);
+  }
+}
+
+function cap_api_schema_test() {
+  $product = file_get_contents(drupal_get_path('module', 'stanford_cap_api') . '/profile.json');
+  $product = json_decode($product);
+
+  $product_schema = file_get_contents(drupal_get_path('module', 'stanford_cap_api') . '/profile_schema.json');
+  $product_schema = json_decode($product_schema);
+  dpm($product, 'Profile');
+  dpm($product_schema, 'Profile schema');
+}
+
+/**
+ * Updates fields of collections.
+ *
+ * @param $wrapper
+ * @param $subfield
+ * @param $data
+ */
+function _stanford_cap_api_node_fields_update_subfields(&$wrapper, $subfield, $data) {
+  $fc_field_name = _stanford_cap_api_get_subfield_name($subfield);
+  switch ($subfield) {
+    // Default.
+    case 'appointment':
+    case 'organization':
+      $wrapper->{$fc_field_name}->set($data);
+      break;
+
+    case 'startYear':
+    case 'endYear':
+      $wrapper->{$fc_field_name}->set(strtotime($data->value));
+      break;
+
+    case 'label':
+      $wrapper->{$fc_field_name}->set($data->html);
+      break;
   }
 }

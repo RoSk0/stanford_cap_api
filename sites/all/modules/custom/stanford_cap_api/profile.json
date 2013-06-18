@@ -1,0 +1,631 @@
+{
+  "affiliations": {
+    "capFaculty": true,
+    "capStaff": false,
+    "capPostdoc": false,
+    "capMdStudent": false,
+    "capMsStudent": false,
+    "capPhdStudent": false,
+    "physician": true
+  },
+  "alias": "sumaira-aasi",
+  "alternateContact": {
+    "email": "sarah.jacobs@stanford.edu",
+    "label": "Alternate Contact",
+    "name": "Sarah Jacobs",
+    "phoneNumbers": [
+      "650-721-7187"
+    ],
+    "title": "Administrative Associate"
+  },
+  "californiaPhysicianLicense": "C54709",
+  "clinicalContacts": [
+    {
+      "address": "450 Broadway",
+      "address2": "Pav B 4th FL MC 5338",
+      "city": "Redwood City",
+      "name": "Sumaira Aasi",
+      "officeName": "Dermatology - North Campus",
+      "phoneNumbers": [
+        "(650) 725-5272"
+      ],
+      "state": "CA",
+      "title": "Clinical Associate Professor",
+      "zip": "94063"
+    }
+  ],
+  "clinicalFocus": [
+    "Cancer > Cutaneous (Dermatologic) Oncology",
+    "Dermatology",
+    "Mohs Surgery",
+    "Dermatological Surgery",
+    "Laser Surgery",
+    "Skin oncology in transplant patients",
+    "Melanoma and Skin Cancer"
+  ],
+  "clinicalInterests": {},
+  "currentResearchInterests": {
+    "shortText": "High risk squamous cell carcinoma; frozen histopathology; reconstructive surgery."
+  },
+  "displayName": "Sumaira Aasi",
+  "documents": {
+    "cv": {
+      "contentType": "application/pdf",
+      "label": {
+        "html": "<a href='http://irt-dev.stanford.edu/profiles/viewCV?facultyId=24596'>Curriculum Vitae PDF</a>",
+        "text": "Curriculum Vitae PDF"
+      },
+      "type": "cv",
+      "url": "http://irt-dev.stanford.edu/profiles/viewCV?facultyId=24596"
+    },
+    "nihBiosketch": {
+      "contentType": "application/pdf",
+      "label": {
+        "html": "<a href='http://irt-dev.stanford.edu/profiles/viewBiosketch?facultyId=24596'>NIH Biosketch PDF</a>",
+        "text": "NIH Biosketch PDF"
+      },
+      "type": "nihBiosketch",
+      "url": "http://irt-dev.stanford.edu/profiles/viewBiosketch?facultyId=24596"
+    },
+    "resume": {
+      "contentType": "application/pdf",
+      "label": {
+        "html": "<a href='http://irt-dev.stanford.edu/profiles/viewResume?facultyId=24596'>Resume</a>",
+        "text": "Resume"
+      },
+      "type": "resume",
+      "url": "http://irt-dev.stanford.edu/profiles/viewResume?facultyId=24596"
+    }
+  },
+  "education": [
+    {
+      "label": {
+        "html": "Yale University (2002) CT ",
+        "text": "Yale University (2002) CT "
+      },
+      "organization": "Yale University",
+      "yearIssued": "2002"
+    },
+    {
+      "label": {
+        "html": "Board Certification: Dermatology, American Board of Dermatology (2001)American Board of Dermatology ",
+        "text": "Board Certification: Dermatology, American Board of Dermatology (2001)American Board of Dermatology "
+      },
+      "organization": "American Board of Dermatology"
+    },
+    {
+      "label": {
+        "html": "Northwestern Univ - McGaw Medical Center (2001) IL ",
+        "text": "Northwestern Univ - McGaw Medical Center (2001) IL "
+      },
+      "organization": "Northwestern Univ - McGaw Medical Center",
+      "yearIssued": "2001"
+    },
+    {
+      "label": {
+        "html": "University of Chicago Hospitals (1998) IL ",
+        "text": "University of Chicago Hospitals (1998) IL "
+      },
+      "organization": "University of Chicago Hospitals",
+      "yearIssued": "1998"
+    },
+    {
+      "label": {
+        "html": "Northwestern University Feinberg SOM (1997) IL ",
+        "text": "Northwestern University Feinberg SOM (1997) IL "
+      },
+      "organization": "Northwestern University Feinberg SOM",
+      "yearIssued": "1997"
+    }
+  ],
+  "industryRelationships": {
+    "disclosureStatement": {
+      "brief": "Stanford is committed to ethical and transparent interactions with our industrial and other commercial partners. It is our policy to disclose payments (exclusive of travel support) from, and/or equity in, companies or other commercial entities to Stanford faculty of $5,000 or more in total value, as well as any equity in a privately held company, when the faculty member also has institutional responsibilities related to his or her interactions with the company.",
+      "full": "<p>Stanford faculty may interact with industry partners or other commercial entities to help develop new products, devices or services or to provide education content about topics of mutual interest. They may receive payment from the company for various services, including consulting, service on boards, educational activities including giving talks, legal and business consultations, and licensing agreements. It is our policy to disclose (on an annual basis for the preceding year) payments (exclusive of travel support) from, and/or equity in, companies or other commercial entities to Stanford faculty of $5,000 or more in total value, as well an any equity in a privately held company, when the faculty member also has  institutional responsibilities related to his or her interactions with the company.</p><p>Stanford tries to be as informative as possible concerning the interactions of its faculty with the commercial sector. To learn more about Stanford's policies on collaborations with the commercial sector go to <a href='http://www.stanford.edu/group/coi/'>http://www.stanford.edu/group/coi/</a>.</p><p>Dr. Sumaira Aasi has reported earning more than $5,000/year in consulting fees and/or having equity valued at more than $5,000 in a publicly traded company, or any equity in a privately held company, for the following companies or organizations:</p>"
+    },
+    "year": {
+      "html": "2011",
+      "text": "2011",
+      "value": "2011-01-01T00:00:00.000-08:00"
+    }
+  },
+  "keywords": [
+    null
+  ],
+  "lastModified": "2013-06-13T14:28:44.411-07:00",
+  "longTitle": {
+    "academicInstituteDisplay": false,
+    "bannerDisplay": false,
+    "label": {
+      "html": "Clinical Associate Professor, Dermatology<br/>",
+      "text": "Clinical Associate Professor, Dermatology\n"
+    },
+    "title": "Clinical Associate Professor, Dermatology\n"
+  },
+  "meta": {
+    "etag": "283334634",
+    "links": [
+      {
+        "href": "http://localhost:14072/cap-api/api/profiles/v1/24596",
+        "rel": "https://cap.stanford.edu/rel/self"
+      },
+      {
+        "href": "http://irt-dev.stanford.edu/cap-su/profiles/sumaira-aasi",
+        "rel": "https://cap.stanford.edu/rel/public"
+      },
+      {
+        "href": "https://irt-dev.stanford.edu/profiles/auth/frdActionServlet?choiceId=facProfile&fid=24596",
+        "rel": "https://cap.stanford.edu/rel/intranet"
+      },
+      {
+        "href": "http://irt-dev.stanford.edu/profiles/frdActionServlet?choiceId=printerprofile&profileversion=full&fid=24596",
+        "rel": "https://cap.stanford.edu/rel/pdf"
+      }
+    ]
+  },
+  "names": {
+    "legal": {
+      "firstName": "Sumaira",
+      "lastName": "Aasi"
+    },
+    "preferred": {
+      "firstName": "Sumaira",
+      "lastName": "Aasi"
+    }
+  },
+  "primaryContact": {
+    "email": "aasi@stanford.edu",
+    "name": "Sumaira Aasi",
+    "title": "Clinical Associate Professor",
+    "type": "primary"
+  },
+  "profileId": 24596,
+  "profilePhotos": {
+    "big": {
+      "contentType": "image/jpeg",
+      "placeholder": true,
+      "type": "big",
+      "url": "http://irt-dev.stanford.edu/profiles/viewImage?facultyId=24596&type=big"
+    },
+    "bigger": {
+      "contentType": "image/jpeg",
+      "placeholder": true,
+      "type": "bigger",
+      "url": "http://irt-dev.stanford.edu/profiles/viewImage?facultyId=24596&type=bigger"
+    },
+    "small": {
+      "contentType": "image/jpeg",
+      "placeholder": true,
+      "type": "small",
+      "url": "http://irt-dev.stanford.edu/profiles/viewImage?facultyId=24596&type=small"
+    },
+    "square": {
+      "contentType": "image/jpeg",
+      "placeholder": true,
+      "type": "square",
+      "url": "http://irt-dev.stanford.edu/profiles/viewImage?facultyId=24596&type=square"
+    }
+  },
+  "publicationTags": [
+    {
+      "apiLabel": {
+        "html": "Adult",
+        "text": "Adult"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Aged",
+        "text": "Aged"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Ambulatory Surgical Procedures",
+        "text": "Ambulatory Surgical Procedures"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Angiofibroma",
+        "text": "Angiofibroma"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Carcinoma, Basal Cell",
+        "text": "Carcinoma, Basal Cell"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Dermatology",
+        "text": "Dermatology"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Diagnosis, Differential",
+        "text": "Diagnosis, Differential"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Diseases in Twins",
+        "text": "Diseases in Twins"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Ear, External",
+        "text": "Ear, External"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Facial Neoplasms",
+        "text": "Facial Neoplasms"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Follow-Up Studies",
+        "text": "Follow-Up Studies"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Frozen Sections",
+        "text": "Frozen Sections"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Incidence",
+        "text": "Incidence"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Middle Aged",
+        "text": "Middle Aged"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Mohs Surgery",
+        "text": "Mohs Surgery"
+      },
+      "weight": 14
+    },
+    {
+      "apiLabel": {
+        "html": "Neoplastic Syndromes, Hereditary",
+        "text": "Neoplastic Syndromes, Hereditary"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Nose",
+        "text": "Nose"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Observer Variation",
+        "text": "Observer Variation"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Pathology",
+        "text": "Pathology"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Postoperative Complications",
+        "text": "Postoperative Complications"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Proteins",
+        "text": "Proteins"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Reconstructive Surgical Procedures",
+        "text": "Reconstructive Surgical Procedures"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Records as Topic",
+        "text": "Records as Topic"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Retrospective Studies",
+        "text": "Retrospective Studies"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Risk Factors",
+        "text": "Risk Factors"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Sensitivity and Specificity",
+        "text": "Sensitivity and Specificity"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Skin Diseases",
+        "text": "Skin Diseases"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Skin Neoplasms",
+        "text": "Skin Neoplasms"
+      },
+      "weight": 18
+    },
+    {
+      "apiLabel": {
+        "html": "Surgical Flaps",
+        "text": "Surgical Flaps"
+      },
+      "weight": 9
+    },
+    {
+      "apiLabel": {
+        "html": "Twins, Monozygotic",
+        "text": "Twins, Monozygotic"
+      },
+      "weight": 9
+    }
+  ],
+  "publications": [
+    {
+      "abstract": "The low recurrence rate and tissue-sparing benefit associated with Mohs micrographic surgery (MMS) requires accurate interpretation of frozen sections by the MMS surgeon.We sought to assess concordance between dermatopathologists and MMS surgeons when reporting cutaneous malignancy in the MMS setting.This study is a retrospective analysis of 1156 slides submitted during 10 years as part of a pre-existing randomized, blinded, quality assurance protocol. Slides were read by one of 5 dermatopathologists and represent cases from 3 MMS surgeons and 5 MMS fellows. Agreement or disagreement was recorded.Of the 1156 slides, 32 slides (2.8%) were disparate. Aside from differences regarding intraepidermal neoplasia, the concordance rate was 99.7%.This study represents data collected at a single institution in the United States alone.There was statistically significant concordance between MMS surgeons and dermatopathologists in frozen section interpretation in the MMS setting. Discordance was primarily related to the interpretation of in situ malignancy.",
+      "apaCitation": "Mariwalla, K., Aasi, S. Z., Glusac, E. J., &#38; Leffell, D. J. (2009). Mohs micrographic surgery histopathology concordance. <i>JOURNAL OF THE AMERICAN ACADEMY OF DERMATOLOGY</i>.",
+      "chicagoCitation": "Mariwalla, Kavita, Sumaira Z. Aasi, Earl J. Glusac, and David J. Leffell. 2009. “Mohs Micrographic Surgery Histopathology Concordance”. <i>JOURNAL OF THE AMERICAN ACADEMY OF DERMATOLOGY</i>.",
+      "doiUrl": "http://dx.doi.org/10.1016/j.jaad.2008.09.061",
+      "featured": false,
+      "firstPublished": {
+        "html": "Jan 1, 2009 00:00:00 AM",
+        "text": "Jan 1, 2009 00:00:00 AM",
+        "value": "2009-01-01T00:00:00.000-08:00"
+      },
+      "mlaCitation": "Mariwalla, Kavita, Sumaira Z. Aasi, Earl J. Glusac, and David J. Leffell. “Mohs Micrographic Surgery Histopathology Concordance”. <i>JOURNAL OF THE AMERICAN ACADEMY OF DERMATOLOGY</i> 2009: n. pag. Print.",
+      "publicationId": 74233,
+      "title": "Mohs micrographic surgery histopathology concordance",
+      "type": "article"
+    },
+    {
+      "abstract": "Birt-Hogg-Dubé syndrome (BHDS) is an uncommon autosomal dominant genodermatosis characterized by a triad of skin tumors--fibrofolliculomas, trichodiscomas, and acrochordons--together with an increased risk of renal tumors and spontaneous pneumothoraces. This report describes multiple facial angiofibromas as the predominant initial manifestation of BHDS. The patient had a total of 41 facial papules removed via shave excision, initially for diagnostic and then for therapeutic purposes; histologic evaluation revealed diagnostic features of angiofibroma in 39 lesions and fibrofolliculoma in only 2. BHDS should be considered, along with tuberous sclerosis and multiple endocrine neoplasia type 1, in the differential diagnosis of multiple facial angiofibromas, particularly when onset is in adulthood.",
+      "apaCitation": "Schaffer, J. V., Gohara, M. A., McNiff, J. M., Aasi, S. Z., &#38; Dvoretzky, I. (2005). Multiple facial angiofibromas: a cutaneous manifestation of Birt-Hogg-Dubé syndrome. <i>Journal of the American Academy of Dermatology</i>.",
+      "chicagoCitation": "Schaffer, J. V., M. A. Gohara, J. M. McNiff, S. Z. Aasi, and I. Dvoretzky. 2005. “Multiple Facial Angiofibromas: a Cutaneous Manifestation of Birt-Hogg-Dubé Syndrome.”. <i>Journal of the American Academy of Dermatology</i>.",
+      "doiUrl": "http://www.ncbi.nlm.nih.gov/pubmed/16021156",
+      "featured": false,
+      "firstPublished": {
+        "html": "Jan 1, 2005 00:00:00 AM",
+        "text": "Jan 1, 2005 00:00:00 AM",
+        "value": "2005-01-01T00:00:00.000-08:00"
+      },
+      "mlaCitation": "Schaffer, J. V., M. A. Gohara, J. M. McNiff, S. Z. Aasi, and I. Dvoretzky. “Multiple Facial Angiofibromas: a Cutaneous Manifestation of Birt-Hogg-Dubé Syndrome.”. <i>Journal of the American Academy of Dermatology</i> 2005: n. pag. Print.",
+      "publicationId": 41801,
+      "title": "Multiple facial angiofibromas: a cutaneous manifestation of Birt-Hogg-Dubé syndrome.",
+      "type": "article"
+    },
+    {
+      "abstract": "This article reviews the indications and techniques for performing a bilobed flap for reconstruction of surgical wounds. Various examples of surgical defects where a bilobed flap can be used are shown. Possible complications and pitfalls are also reviewed.",
+      "apaCitation": "Aasi, S. Z., &#38; Leffell, D. J. (2005). Bilobed transposition flap. <i>Dermatologic clinics</i>.",
+      "chicagoCitation": "Aasi, S. Z., and D. J. Leffell. 2005. “Bilobed Transposition Flap.”. <i>Dermatologic Clinics</i>.",
+      "doiUrl": "http://www.ncbi.nlm.nih.gov/pubmed/15620619",
+      "featured": false,
+      "firstPublished": {
+        "html": "Jan 1, 2005 00:00:00 AM",
+        "text": "Jan 1, 2005 00:00:00 AM",
+        "value": "2005-01-01T00:00:00.000-08:00"
+      },
+      "mlaCitation": "Aasi, S. Z., and D. J. Leffell. “Bilobed Transposition Flap.”. <i>Dermatologic clinics</i> 2005: n. pag. Print.",
+      "publicationId": 37624,
+      "title": "Bilobed transposition flap.",
+      "type": "article"
+    },
+    {
+      "apaCitation": "Aasi, S. Z., &#38; Leffell, D. J. (2003). Complications in dermatologic surgery - How safe is safe?. <i>ARCHIVES OF DERMATOLOGY</i>.",
+      "chicagoCitation": "Aasi, S. Z., and D. J. Leffell. 2003. “Complications In Dermatologic Surgery - How Safe Is Safe?”. <i>ARCHIVES OF DERMATOLOGY</i>.",
+      "doiUrl": "http://dx.doi.org/",
+      "featured": false,
+      "firstPublished": {
+        "html": "Feb 1, 2003 00:00:00 AM",
+        "text": "Feb 1, 2003 00:00:00 AM",
+        "value": "2003-02-01T00:00:00.000-08:00"
+      },
+      "mlaCitation": "Aasi, S. Z., and D. J. Leffell. “Complications In Dermatologic Surgery - How Safe Is Safe?”. <i>ARCHIVES OF DERMATOLOGY</i> 2003: n. pag. Print.",
+      "publicationId": 21045,
+      "title": "Complications in dermatologic surgery - How safe is safe?",
+      "type": "article"
+    }
+  ],
+  "shortTitle": {
+    "academicInstituteDisplay": true,
+    "bannerDisplay": true,
+    "label": {
+      "html": "Clinical Associate Professor, <a href='http://dermatology.stanford.edu/'>Dermatology</a>",
+      "text": "Clinical Associate Professor, Dermatology"
+    },
+    "organization": {
+      "label": {
+        "html": "<a href='http://dermatology.stanford.edu/'>Dermatology</a>",
+        "text": "Dermatology"
+      },
+      "org": "Dermatology",
+      "orgCode": "VYJG",
+      "orgUrl": "http://dermatology.stanford.edu/"
+    },
+    "title": "Clinical Associate Professor",
+    "type": "faculty"
+  },
+  "showFeaturedPublicationsFirst": false,
+  "similarProfiles": [
+    {
+      "profileId": 4215,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4058,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 10735,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4686,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 7663,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 27113,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 8622,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 7636,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4331,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 7990,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4108,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 7839,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 6143,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 14355,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 13486,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4496,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 6890,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4027,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 7884,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4003,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 24602,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 7405,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 3950,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 4491,
+      "type": "similarPublications"
+    },
+    {
+      "profileId": 6383,
+      "type": "similarPublications"
+    }
+  ],
+  "titles": [
+    {
+      "academicInstituteDisplay": true,
+      "bannerDisplay": true,
+      "label": {
+        "html": "Clinical Associate Professor, <a href='http://dermatology.stanford.edu/'>Dermatology</a>",
+        "text": "Clinical Associate Professor, Dermatology"
+      },
+      "organization": {
+        "label": {
+          "html": "<a href='http://dermatology.stanford.edu/'>Dermatology</a>",
+          "text": "Dermatology"
+        },
+        "org": "Dermatology",
+        "orgCode": "VYJG",
+        "orgUrl": "http://dermatology.stanford.edu/"
+      },
+      "title": "Clinical Associate Professor",
+      "type": "faculty"
+    }
+  ],
+  "uid": "aasi",
+  "universityId": "09672003"
+}
