@@ -1,5 +1,5 @@
 {
-  "activeAffiliations": [// Done
+  "activeAffiliations": [
     {
       "name": "string",
       "ordinal": "int"

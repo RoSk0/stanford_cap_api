@@ -1,0 +1,132 @@
+{
+  "activeAffiliations": "done",
+  "activeInd": "skipped",
+  "administrativeAppointments": "done",
+  "advisees": "done",
+  "affiliations": "done",
+  "alias": "done",
+  "aliases": "done",
+  "alternateContact": "done",
+  "bio": "done",
+  "californiaPhysicianLicense": "done",
+  "clerkships": "done",
+  "clinicalContacts": "done",
+  "clinicalFocus": "done",
+  "clinicalInterests": "done",
+  "communityAndInternationalWork": "done",
+  "coursesTaught": "done",
+  "currentResearchInterests": "done",
+  "currentRoleAtStanford": "done",
+  "displayName": "done",
+  "documents": "done",
+  "education": "done",
+  "exactNameMatch": "done",
+  "graduateAndFellowshipPrograms": "done",
+  "honorsAndAwards": "done",
+  "id": "skipped",
+  "industryRelationships": "done",
+  "internetLinks": "done",
+  "keywords": "done",
+  "labAffiliations": "done",
+  "lastModified": "done",
+  "lastModifiedDate": "done",
+  "longTitle": "done",
+  "maintainers": "done",
+  "membershipOrganizations": "done",
+  "mentor": "done",
+  "meta": "done",
+  "nameTokens": "done",
+  "names": "done",
+  "partialNameMatch": "done",
+  "personalInterests": "done",
+  "personalUrl": "done",
+  "personalUrlText": "done",
+  "postdoctoralAdvisees": "done",
+  "presentations": "done",
+  "primaryContact": "done",
+  "professionalInterests": "done",
+  "professionalOrganizations": "done",
+  "profileId": "done",
+  "profilePatents": "done",
+  "profilePhotos": "done",
+  "profileShortDesc": "done",
+  "projects": "done",
+  "publicationTags": "done",
+  "publications": "done",
+  "researchDesc": "done",
+  "researchProjects": "done",
+  "researchUrl": "done",
+  "researchUrlText": "done",
+  "serviceWork": "done",
+  "shortTitle": "done",
+  "showFeaturedPublicationsFirst": "done",
+  "similarProfiles": "done",
+  "stanfordAdvisors": "done",
+  "supervisors": [
+    {
+      "alias": "string",
+      "email": "string",
+      "firstName": "string",
+      "flags": [
+        {
+          "key": "string",
+          "label": {
+            "html": "string",
+            "text": "string"
+          },
+          "value": "Boolean"
+        }
+      ],
+      "label": {
+        "html": "string",
+        "text": "string"
+      },
+      "lastName": "string",
+      "links": [
+        {
+          "href": "string",
+          "rel": "string"
+        }
+      ],
+      "organization": "string",
+      "phone": "string",
+      "principalInvestigator": "Boolean",
+      "profileId": "Long",
+      "title": "string"
+    }
+  ],
+  "titles": "done",
+  "uid": "done",
+  "universityId": "done",
+  "workExperience": [
+    {
+      "description": "string",
+      "endDate": {
+        "html": "string",
+        "text": "string",
+        "value": "Date"
+      },
+      "institution": "string",
+      "label": {
+        "html": "string",
+        "text": "string"
+      },
+      "location": {
+        "label": {
+          "html": "string",
+          "text": "string"
+        },
+        "latitude": "string",
+        "longitude": "string",
+        "name": "string"
+      },
+      "startDate": {
+        "html": "string",
+        "text": "string",
+        "value": "Date"
+      },
+      "title": "string"
+    }
+  ]
+}
+
