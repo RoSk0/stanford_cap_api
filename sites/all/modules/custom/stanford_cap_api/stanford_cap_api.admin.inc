@@ -482,7 +482,7 @@ function stanford_cap_api_import_result_form_submit($form, &$form_state) {
       if ($profile != 0) {
         $operations[] = array(
           'stanford_cap_api_profile_import',
-          array($profile)
+          array($profile),
         );
       }
     }
@@ -517,6 +517,7 @@ function stanford_cap_api_profile_test($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Synchronize fields in the faculty profile'),
     '#submit' => array('stanford_cap_api_test_synchronize'),
+    '#disabled' => TRUE,
   );
   $form['actions']['reset'] = array(
     '#type' => 'submit',
@@ -529,30 +530,10 @@ function stanford_cap_api_profile_test($form, &$form_state) {
 
 function stanford_cap_api_test_synchronize() {
 
-  $fields_from_service = array(
-    'homepage' => array(
-      'type' => 'link',
-      'label' => 'Homepage',
-    ),
-    'birthdate' => array(
-      'type' => 'date',
-      'label' => 'Date of birth',
-    ),
-    'fullname' => array(
-      'type' => 'string',
-      'label' => 'Full name',
-    ),
-    'honors' => array(
-      'type' => 'text',
-      'label' => 'Honors and awards',
-    ),
-    'background' => array(
-      'type' => 'text',
-      'label' => 'Professional background',
-    ),
-  );
+  // @todo Enable button for this submit handler when we will have good fields schema.
   timer_start('fields_sync');
-  stanford_cap_api_synchronize_fields($fields_from_service);
+  $profile = array();
+  stanford_cap_api_synchronize_fields($profile);
   $timer = timer_stop('fields_sync');
   drupal_set_message(t('Fields successfully synchronized.'));
   drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000))));
