@@ -440,59 +440,11 @@ function stanford_cap_api_profile_sync($profile) {
  */
 function stanford_cap_api_node_fields_update($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
-  $drupal_fields = db_select('cap_api_fields', 'f')
-    ->fields('f', array('field_name'))
-    ->execute()->fetchCol();
-  foreach ($drupal_fields as $drupal_field) {
-    $profile_field = $profile['drupal_fields'][$drupal_field];
-    // @todo We must have some kind a field handlers to fetch data from profile fields.
-    if (!empty($profile[$profile_field])) {
-      switch ($profile_field) {
-        case 'displayName':
-        case 'uid':
-        case 'bio':
-        case 'currentRoleAtStanford':
-        case 'profileId':
-        case 'professionalInterests':
-        case 'californiaPhysicianLicense':
-          $nw->{$drupal_field}->set($profile[$profile_field]);
-          break;
 
-        case 'lastModified':
-          $nw->{$drupal_field}->set(strtotime($profile[$profile_field]));
-          break;
-
-        case 'longTitle':
-          $nw->{$drupal_field}->set($profile[$profile_field]['title']);
-          break;
-
-        // Type - string_multiply.
-        case 'clinicalFocus':
-          $values = array();
-          foreach ($profile[$profile_field] as $field) {
-            $values[] = $field;
-          }
-          $nw->{$drupal_field}->set($values);
-          break;
-
-        case 'honorsAndAwards':
-        case 'administrativeAppointments':
-          $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field));
-          $fc_item->setHostEntity('node', $node);
-          $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
-          foreach ($profile[$profile_field] as $subfield => $data) {
-            $fc_field_name = _cap_api_get_subfield_name($subfield);
-            $fc_wrapper->{$fc_field_name}->set($data);
-            _cap_api_node_fields_update_subfields($fc_wrapper, $subfield, $data);
-          }
-
-          // Saving field collection but not host entity.
-          $fc_wrapper->save(TRUE);
-
-          break;
-      }
-    }
+  foreach ($profile as $field_name => $field_data) {
+    _cap_api_save_field($node, $nw, $field_name, $field_data);
   }
+
   $nw->cap_profile_link->set(array('url' => _cap_api_format_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
@@ -1048,13 +1000,13 @@ function _cap_api_get_field_base_def($type, $name) {
  *
  * @return array|FALSE
  */
-function _cap_api_get_field_instance_def($type, $name, $label) {
+function _cap_api_get_field_instance_def($type, $name, $label, $fc_field = FALSE) {
   $info = FALSE;
   $label = check_plain($label);
   switch ($type) {
     case 'link':
       $info = array(
-        'bundle' => 'cap_faculty_profile',
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => NULL,
         'deleted' => 0,
         'description' => '',
@@ -1064,16 +1016,9 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
             'module' => 'link',
             'settings' => array(),
             'type' => 'link_default',
-            'weight' => 4,
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
           ),
         ),
-        'entity_type' => 'node',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1102,14 +1047,13 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
           'module' => 'link',
           'settings' => array(),
           'type' => 'link_field',
-          'weight' => 44,
         ),
       );
       break;
 
     case 'date':
       $info = array(
-        'bundle' => 'cap_faculty_profile',
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => NULL,
         'deleted' => 0,
         'description' => '',
@@ -1125,22 +1069,9 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
               'multiple_to' => '',
             ),
             'type' => 'date_default',
-            'weight' => 1,
-          ),
-          'stanford_cap_instructor' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
           ),
         ),
-        'entity_type' => 'node',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1164,7 +1095,6 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
             'year_range' => '-3:+3',
           ),
           'type' => 'date_select',
-          'weight' => 41,
         ),
       );
       break;
@@ -1172,331 +1102,7 @@ function _cap_api_get_field_instance_def($type, $name, $label) {
     case 'string':
     case 'string_multiply':
       $info = array(
-        'bundle' => 'cap_faculty_profile',
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'text',
-            'settings' => array(),
-            'type' => 'text_default',
-            'weight' => 2,
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
-          ),
-        ),
-        'entity_type' => 'node',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'text_processing' => 0,
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'text',
-          'settings' => array(
-            'size' => 60,
-          ),
-          'type' => 'text_textfield',
-          'weight' => 42,
-        ),
-      );
-      break;
-
-    case 'text':
-      $info = array(
-        'bundle' => 'cap_faculty_profile',
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'text',
-            'settings' => array(),
-            'type' => 'text_default',
-            'weight' => 5,
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
-          ),
-        ),
-        'entity_type' => 'node',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'text_processing' => 0,
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'text',
-          'settings' => array(
-            'rows' => 5,
-          ),
-          'type' => 'text_textarea',
-          'weight' => 45,
-        ),
-      );
-      break;
-
-    case 'integer':
-      $info = array(
-        'bundle' => 'cap_faculty_profile',
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'number',
-            'settings' => array(
-              'decimal_separator' => '.',
-              'prefix_suffix' => TRUE,
-              'scale' => 0,
-              'thousand_separator' => ' ',
-            ),
-            'type' => 'number_integer',
-            'weight' => 1,
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
-          ),
-        ),
-        'entity_type' => 'node',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'max' => '',
-          'min' => '',
-          'prefix' => '',
-          'suffix' => '',
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 0,
-          'module' => 'number',
-          'settings' => array(),
-          'type' => 'number',
-          'weight' => 10,
-        ),
-      );
-      break;
-
-    case 'boolean':
-      $info = array(
-        'bundle' => 'cap_faculty_profile',
-        'default_value' => array(
-          0 => array(
-            'value' => 0,
-          ),
-        ),
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'list',
-            'settings' => array(),
-            'type' => 'list_default',
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-          ),
-        ),
-        'entity_type' => 'node',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'options',
-          'settings' => array(
-            'display_label' => 1,
-          ),
-          'type' => 'options_onoff',
-        ),
-      );
-      break;
-
-    case 'field_collection':
-      $info = array(
-        'bundle' => 'cap_faculty_profile',
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'field_collection',
-            'settings' => array(
-              'add' => 'Add',
-              'delete' => 'Delete',
-              'description' => TRUE,
-              'edit' => 'Edit',
-              'view_mode' => 'full',
-            ),
-            'type' => 'field_collection_view',
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
-          ),
-        ),
-        'entity_type' => 'node',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 0,
-          'module' => 'field_collection',
-          'settings' => array(),
-          'type' => 'field_collection_embed',
-        ),
-      );
-      break;
-  }
-
-  return $info;
-}
-
-/**
- * Generates instance info for field collection sub fields.
- *
- * @param $type
- * @param $name
- * @param $label
- * @param $fc_field
- *
- * @return array|FALSE
- */
-function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
-  $info = FALSE;
-  $label = check_plain($label);
-  switch ($type) {
-    case 'link':
-      $info = array(
-        'bundle' => $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'link',
-            'settings' => array(),
-            'type' => 'link_default',
-          ),
-        ),
-        'entity_type' => 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'attributes' => array(
-            'class' => '',
-            'configurable_title' => 0,
-            'rel' => '',
-            'target' => 'default',
-            'title' => '',
-          ),
-          'display' => array(
-            'url_cutoff' => 80,
-          ),
-          'enable_tokens' => 1,
-          'rel_remove' => 'default',
-          'title' => 'none',
-          'title_maxlength' => 128,
-          'title_value' => '',
-          'url' => 0,
-          'user_register_form' => FALSE,
-          'validate_url' => 1,
-        ),
-        'widget' => array(
-          'active' => 0,
-          'module' => 'link',
-          'settings' => array(),
-          'type' => 'link_field',
-        ),
-      );
-      break;
-
-    case 'date':
-      $info = array(
-        'bundle' => $fc_field,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'date',
-            'settings' => array(
-              'format_type' => 'long',
-              'fromto' => 'both',
-              'multiple_from' => '',
-              'multiple_number' => '',
-              'multiple_to' => '',
-            ),
-            'type' => 'date_default',
-          ),
-        ),
-        'entity_type' => 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'default_value' => 'now',
-          'default_value2' => 'same',
-          'default_value_code' => '',
-          'default_value_code2' => '',
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'date',
-          'settings' => array(
-            'increment' => 15,
-            'input_format' => 'm/d/Y - H:i:s',
-            'input_format_custom' => '',
-            'label_position' => 'above',
-            'text_parts' => array(),
-            'year_range' => '-3:+3',
-          ),
-          'type' => 'date_select',
-        ),
-      );
-      break;
-
-    case 'string':
-    case 'string_multiply':
-      $info = array(
-        'bundle' => $fc_field,
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => NULL,
         'deleted' => 0,
         'description' => '',
@@ -1507,13 +1113,8 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'settings' => array(),
             'type' => 'text_default',
           ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-          ),
         ),
-        'entity_type' => 'field_collection_item',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1534,7 +1135,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
 
     case 'text':
       $info = array(
-        'bundle' => $fc_field,
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => NULL,
         'deleted' => 0,
         'description' => '',
@@ -1545,13 +1146,8 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'settings' => array(),
             'type' => 'text_default',
           ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-          ),
         ),
-        'entity_type' => 'field_collection_item',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1572,7 +1168,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
 
     case 'integer':
       $info = array(
-        'bundle' => $fc_field,
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => NULL,
         'deleted' => 0,
         'description' => '',
@@ -1587,15 +1183,9 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
               'thousand_separator' => ' ',
             ),
             'type' => 'number_integer',
-
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
           ),
         ),
-        'entity_type' => 'field_collection_item',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1617,7 +1207,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
 
     case 'boolean':
       $info = array(
-        'bundle' => $fc_field,
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => array(
           0 => array(
             'value' => 0,
@@ -1632,13 +1222,8 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'settings' => array(),
             'type' => 'list_default',
           ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-          ),
         ),
-        'entity_type' => 'field_collection_item',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1658,7 +1243,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
 
     case 'field_collection':
       $info = array(
-        'bundle' => $fc_field,
+        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
         'default_value' => NULL,
         'deleted' => 0,
         'description' => '',
@@ -1675,14 +1260,8 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             ),
             'type' => 'field_collection_view',
           ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-            'weight' => 0,
-          ),
         ),
-        'entity_type' => 'field_collection_item',
+        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1773,7 +1352,7 @@ function _cap_api_sync_subfields($subfields, $node_field_name) {
     }
     $subfield_instance = field_info_instance('field_collection_item', $fc_field_name, $node_field_name);
     if (empty($subfield_instance)) {
-      $subfield_instance = _cap_api_get_field_subinstance_def($subfield_type, $fc_field_name, $subfield, $node_field_name);
+      $subfield_instance = _cap_api_get_field_instance_def($subfield_type, $fc_field_name, $subfield, $node_field_name);
       field_create_instance($subfield_instance);
     }
     if ($subfield_type == 'field_collection') {
@@ -1794,4 +1373,75 @@ function _cap_api_sync_subfields($subfields, $node_field_name) {
   }
 
   return $node_field_name;
+}
+
+function _cap_api_save_field(&$entity, &$wrapper, $field_name, $field_data, $subfield = FALSE){
+  $field_type = _cap_api_get_field_type($field_name);
+  $drupal_field_name = $subfield ? _cap_api_get_subfield_name($field_name) : _cap_api_generate_field_name($field_name);
+  switch ($field_type) {
+    case 'link':
+      $wrapper->{$drupal_field_name}->set(array('url' => $field_data));
+      break;
+
+    case 'date':
+      $wrapper->{$drupal_field_name}->set(strtotime($field_data));
+      break;
+
+    case 'string':
+      if(is_string($field_data)) {
+        $wrapper->{$drupal_field_name}->set($field_data);
+      }
+      elseif(is_array($field_data) && !empty($field_data['html'])){
+        $wrapper->{$drupal_field_name}->set($field_data['html']);
+      }
+      break;
+
+    case 'string_multiply':
+      $values = array();
+      foreach ($field_data as $field) {
+        $values[] = $field;
+      }
+      $wrapper->{$drupal_field_name}->set($values);
+      break;
+
+    case 'text':
+      $wrapper->{$drupal_field_name}->set($field_data);
+      break;
+
+    case 'integer':
+      $wrapper->{$drupal_field_name}->set($field_data);
+      break;
+
+    case 'boolean':
+      $wrapper->{$drupal_field_name}->set($field_data);
+      break;
+
+    case 'field_collection':
+      // This is multivalue field collection.
+      if (is_array($field_data) && !empty($field_data) && array_key_exists(0, $field_data)) {
+        foreach ($field_data as $fc_subfield_data) {
+          $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
+          $entity_type = method_exists($entity, 'type') ? 'field_collection_item' : 'node';
+          $fc_item->setHostEntity($entity_type, $entity);
+          $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+          _cap_api_save_field($fc_item, $fc_wrapper, $field_name, $fc_subfield_data, $subfield);
+          // Saving field collection but not host entity.
+          $fc_wrapper->save(TRUE);
+        }
+      }
+      else {
+        $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
+        $entity_type = method_exists($entity, 'type') ? 'field_collection_item' : 'node';
+        $fc_item->setHostEntity($entity_type, $entity);
+        $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+        foreach ($field_data as $fc_subfield => $fc_subfield_data) {
+          _cap_api_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, TRUE);
+        }
+        // Saving field collection but not host entity.
+        $fc_wrapper->save(TRUE);
+      }
+
+
+      break;
+  }
 }
