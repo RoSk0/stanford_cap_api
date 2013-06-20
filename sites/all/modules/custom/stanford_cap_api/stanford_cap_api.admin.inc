@@ -316,7 +316,7 @@ function stanford_cap_api_import_form_submit($form, &$form_state) {
     $params['universityId'] = check_plain($values['university_id']);
   }
   if (!empty($values['sunet_id'])) {
-    $params['uid'] = check_plain($values['sunet_id']);
+    $params['ids'] = check_plain($values['sunet_id']);
   }
 
   $_SESSION['search_params'] = $params;
@@ -350,9 +350,8 @@ function _cap_api_prepare_list_str($str) {
  * Form builder for import result page.
  */
 function stanford_cap_api_import_result_form($form, &$form_state) {
-  dpm($_SESSION);
-  if (!empty($_SESSION['search_response'])) {
 
+  if (!empty($_SESSION['search_response']) && !empty($_SESSION['search_response']['values'])) {
     $form['description_wrapper'] = array(
       '#type' => 'container',
     );
@@ -565,7 +564,7 @@ function stanford_cap_api_reset() {
   foreach ($fields as $field) {
     field_delete_field($field);
   }
-  field_purge_batch(10);
+  field_purge_batch(100);
   db_delete('cap_api_fields')->execute();
   drupal_set_message(t('Faculty profile content type has being resetted to default.'));
 }

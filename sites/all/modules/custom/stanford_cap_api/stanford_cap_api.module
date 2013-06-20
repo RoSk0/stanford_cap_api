@@ -99,7 +99,7 @@ function stanford_cap_api_synchronize_fields(&$profile) {
 
   $drupal_fields = array();
   foreach ($profile as $field_name => &$field_data) {
-    $node_field_name = 'cap_' . drupal_strtolower($field_name);
+    $node_field_name = _cap_api_generate_field_name($field_name);
     // Saving field name for further usage.
     $drupal_fields[$node_field_name] = $field_name;
     $field_info = field_info_field($node_field_name);
@@ -113,16 +113,14 @@ function stanford_cap_api_synchronize_fields(&$profile) {
         field_create_field($field_info);
         // Logging field creation.
         _cap_api_log_field($node_field_name);
-        // @todo Check if field is a collection. Create sub-fields.
-        if ($field_type == 'field_collection') {
-          _cap_api_sync_subfields($field_data, $node_field_name);
-        }
         $field_instance = field_info_instance('node', $node_field_name, 'cap_faculty_profile');
         if (empty($field_instance)) {
           // @todo Grab field label from JSON schema.
-          $instance = _cap_api_get_field_instance_def($field_type, $node_field_name, $field_name);
-          field_create_instance($instance);
-          // @todo Check if field is a collection. Create sub-fields.
+          $field_instance = _cap_api_get_field_instance_def($field_type, $node_field_name, $field_name);
+          field_create_instance($field_instance);
+        }
+        if ($field_type == 'field_collection') {
+          _cap_api_sync_subfields($field_data, $node_field_name);
         }
       }
     }
@@ -395,7 +393,6 @@ function stanford_cap_api_import_result_finished() {
   drupal_goto('admin/config/cap/import');
 }
 
-
 /**
  * Synchronize CAP network profile with Drupal node.
  *
@@ -501,8 +498,6 @@ function stanford_cap_api_node_fields_update($node, $profile) {
   $nw->save();
 }
 
-
-
 /**
  * Import multiply CAP profiles.
  *
@@ -576,10 +571,10 @@ function _cap_api_node_fields_update_subfields(&$wrapper, $subfield, $data) {
       break;
 
     case 'label':
-      if(is_string($data)){
+      if (is_string($data)) {
         $wrapper->{$fc_field_name}->set($data->html);
       }
-      elseif(is_object($data)){
+      elseif (is_object($data)) {
         $wrapper->{$fc_field_name}->set($data->html);
       }
       break;
@@ -594,81 +589,81 @@ function _cap_api_node_fields_update_subfields(&$wrapper, $subfield, $data) {
 function _cap_api_get_field_type($field_name) {
   $type = FALSE;
   switch ($field_name) {
-    case 'displayName':
-    case 'uid':
-    case 'californiaPhysicianLicense':
-    case 'name':
-    case 'appointment':
-    case 'fullName':
-    case 'alias':
-    case 'address':
-    case 'address2':
-    case 'city':
-    case 'email':
-    case 'fax':
-    case 'label':
-    case 'officeName':
-    case 'state':
-    case 'title':
-    case 'zip':
-    case 'catalogNumber':
-    case 'department':
-    case 'location':
-    case 'quarter':
-    case 'subject':
-    case 'subjectCode':
-    case 'type':
-    case 'details':
-    case 'activity':
-    case 'description':
-    case 'organizations':
-    case 'populationServed':
-    case 'projectTitle':
-    case 'specificLocation':
-    case 'topic':
+    case 'abstract':
     case 'academicYear':
     case 'academicYear8':
-    case 'contentType':
-    case 'degree':
-    case 'fieldOfStudy':
-    case 'yearIssued':
-    case 'key':
-    case 'dates':
-    case 'lab':
-    case 'firstName':
-    case 'lastName':
-    case 'rel':
-    case 'phone':
-    case 'etag':
-    case 'middleName':
-    case 'role':
-    case 'org':
-    case 'orgCode':
-    case 'apiLabel':
-    case 'abstract':
+    case 'activity':
+    case 'address':
+    case 'address2':
+    case 'alias':
     case 'apaCitation':
+    case 'apiLabel':
+    case 'appointment':
+    case 'californiaPhysicianLicense':
+    case 'catalogNumber':
     case 'chicagoCitation':
-    case 'doiId':
-    case 'mlaCitation':
-    case 'pubMedId':
-    case 'webOfScienceId':
+    case 'city':
+    case 'contentType':
+    case 'dates':
+    case 'degree':
+    case 'department':
+    case 'description':
+    case 'details':
     case 'display':
-    case 'personalInterests':
-    case 'personalUrlText':
+    case 'displayName':
+    case 'doiId':
+    case 'email':
+    case 'etag':
+    case 'fax':
+    case 'fieldOfStudy':
+    case 'firstName':
+    case 'fullName':
+    case 'institution':
+    case 'key':
+    case 'lab':
+    case 'label':
+    case 'lastName':
     case 'latitude':
+    case 'location':
     case 'longitude':
-    case 'presentedTo':
+    case 'middleName':
+    case 'mlaCitation':
+    case 'name':
+    case 'officeName':
+    case 'org':
+    case 'organizations':
+    case 'orgCode':
     case 'patentAssignee':
     case 'patentInventor':
     case 'patentNumber':
     case 'patentTitle':
+    case 'personalInterests':
+    case 'personalUrlText':
+    case 'phone':
+    case 'populationServed':
+    case 'position':
+    case 'presentedTo':
+    case 'profileShortDesc':
+    case 'projectTitle':
+    case 'pubMedId':
+    case 'quarter':
     case 'refPatentCountryCode':
     case 'refPatentCountryText':
-    case 'profileShortDesc':
-    case 'institution':
+    case 'rel':
     case 'researchDesc':
     case 'researchUrlText':
-    case 'position':
+    case 'role':
+    case 'specificLocation':
+    case 'state':
+    case 'subject':
+    case 'subjectCode':
+    case 'title':
+    case 'topic':
+    case 'type':
+    case 'uid':
+    case 'webOfScienceId':
+    case 'yearIssued':
+    case 'zip':
       $type = 'string';
       break;
 
@@ -689,6 +684,7 @@ function _cap_api_get_field_type($field_name) {
     case 'webOfScienceUrl':
     case 'personalUrl':
     case 'researchUrl':
+    case 'clinicalTrialsUrl':
       $type = 'link';
       break;
 
@@ -799,8 +795,8 @@ function _cap_api_get_field_type($field_name) {
     case 'projectType':
     case 'publications':
     case 'publicationTags':
-    case 'resume':
     case 'researchProjects':
+    case 'resume':
     case 'serviceWork':
     case 'shortTitle':
     case 'similarProfiles':
@@ -812,7 +808,7 @@ function _cap_api_get_field_type($field_name) {
     case 'titles':
     case 'visibility':
     case 'workExperience':
-    $type = 'field_collection';
+      $type = 'field_collection';
       break;
   }
 
@@ -1517,7 +1513,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'type' => 'hidden',
           ),
         ),
-        'entity_type' => 'node',
+        'entity_type' => 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1555,7 +1551,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'type' => 'hidden',
           ),
         ),
-        'entity_type' => 'node',
+        'entity_type' => 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1599,7 +1595,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'type' => 'hidden',
           ),
         ),
-        'entity_type' => 'node',
+        'entity_type' => 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1642,7 +1638,7 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'type' => 'hidden',
           ),
         ),
-        'entity_type' => 'node',
+        'entity_type' => 'field_collection_item',
         'field_name' => $name,
         'label' => $label,
         'required' => 0,
@@ -1656,6 +1652,48 @@ function _cap_api_get_field_subinstance_def($type, $name, $label, $fc_field) {
             'display_label' => 1,
           ),
           'type' => 'options_onoff',
+        ),
+      );
+      break;
+
+    case 'field_collection':
+      $info = array(
+        'bundle' => $fc_field,
+        'default_value' => NULL,
+        'deleted' => 0,
+        'description' => '',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'module' => 'field_collection',
+            'settings' => array(
+              'add' => 'Add',
+              'delete' => 'Delete',
+              'description' => TRUE,
+              'edit' => 'Edit',
+              'view_mode' => 'full',
+            ),
+            'type' => 'field_collection_view',
+          ),
+          'teaser' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 0,
+          ),
+        ),
+        'entity_type' => 'field_collection_item',
+        'field_name' => $name,
+        'label' => $label,
+        'required' => 0,
+        'settings' => array(
+          'user_register_form' => FALSE,
+        ),
+        'widget' => array(
+          'active' => 0,
+          'module' => 'field_collection',
+          'settings' => array(),
+          'type' => 'field_collection_embed',
         ),
       );
       break;
@@ -1705,7 +1743,7 @@ function _cap_api_format_cap_profile_url($profile) {
  * @return string
  */
 function _cap_api_get_subfield_name($subfield) {
-  return 'cap_fc_' . drupal_strtolower($subfield);
+  return _cap_api_generate_field_name($subfield, 'cap_fc_');
 }
 
 /**
@@ -1713,8 +1751,13 @@ function _cap_api_get_subfield_name($subfield) {
  * @param $node_field_name
  */
 function _cap_api_sync_subfields($subfields, $node_field_name) {
-  if(is_array($subfields) && !empty($subfields)) {
-      $subfields = array_shift($subfields);
+  // Subfields could come in 2 types: 1) array of different fields(e.g. just a
+  //fields set), in this case indexes are field names; 2) array of single field
+  // values - in this case this array is keyed with indexes.
+  // With "array_key_exists(0, $subfields)" we checking for second case and
+  // selecting first field just to get structure.
+  if (is_array($subfields) && !empty($subfields) && array_key_exists(0, $subfields)) {
+    $subfields = array_shift($subfields);
   }
   foreach ($subfields as $subfield => $subfield_data) {
     $fc_field_name = _cap_api_get_subfield_name($subfield);
@@ -1724,15 +1767,31 @@ function _cap_api_sync_subfields($subfields, $node_field_name) {
       $subfield_info = _cap_api_get_field_base_def($subfield_type, $fc_field_name);
       if (!empty($subfield_info)) {
         field_create_field($subfield_info);
+        // Logging field creation.
+        _cap_api_log_field($node_field_name);
       }
     }
-    $subfield_instance = field_info_instance('field_collection', $fc_field_name, $node_field_name);
+    $subfield_instance = field_info_instance('field_collection_item', $fc_field_name, $node_field_name);
     if (empty($subfield_instance)) {
-      $sub_instance = _cap_api_get_field_subinstance_def($subfield_type, $fc_field_name, $subfield, $node_field_name);
-      field_create_instance($sub_instance);
+      $subfield_instance = _cap_api_get_field_subinstance_def($subfield_type, $fc_field_name, $subfield, $node_field_name);
+      field_create_instance($subfield_instance);
     }
-    if($subfield_type == 'field_collection') {
+    if ($subfield_type == 'field_collection') {
       _cap_api_sync_subfields($subfield_data, $fc_field_name);
     }
   }
+}
+
+/**
+ * @param $field_name
+ * @param string $prefix
+ *
+ * @return string
+ */function _cap_api_generate_field_name($field_name, $prefix = 'cap_') {
+  $node_field_name = $prefix . drupal_strtolower($field_name);
+  if (drupal_strlen($node_field_name) > 32) {
+    $node_field_name = substr($node_field_name, 0, 32);
+  }
+
+  return $node_field_name;
 }
