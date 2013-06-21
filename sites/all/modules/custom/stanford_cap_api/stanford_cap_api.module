@@ -1384,7 +1384,12 @@ function _cap_api_save_field(&$entity, &$wrapper, $field_name, $field_data, $sub
       break;
 
     case 'date':
-      $wrapper->{$drupal_field_name}->set(strtotime($field_data['value']));
+      if(is_string($field_data)) {
+        $wrapper->{$drupal_field_name}->set(strtotime($field_data));
+      }
+      elseif(!empty($field_data['value'])){
+        $wrapper->{$drupal_field_name}->set(strtotime($field_data['value']));
+      }
       break;
 
     case 'string':
