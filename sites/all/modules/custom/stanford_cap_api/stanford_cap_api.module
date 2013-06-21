@@ -405,12 +405,12 @@ function stanford_cap_api_profile_sync($profile) {
     ->entityCondition('bundle', 'cap_faculty_profile')
     ->fieldCondition('cap_profileid', 'value', $profile['profileId'])
     ->execute();
-  if (count($result['node']) == 1) {
+  if (isset($result['node']) && count($result['node']) == 1) {
     $node = array_shift($result['node']);
     $node = node_load($node->nid);
     stanford_cap_api_node_fields_update($node, $profile);
   }
-  elseif (count($result['node']) > 1) {
+  elseif (isset($result['node']) && count($result['node']) > 1) {
     // More then 1 node contains this profile's ID, error?
     // @todo Add more description.
     watchdog('stanford_cap_api', 'Error! More than one node per profile.');
@@ -1384,15 +1384,17 @@ function _cap_api_save_field(&$entity, &$wrapper, $field_name, $field_data, $sub
       break;
 
     case 'date':
-      $wrapper->{$drupal_field_name}->set(strtotime($field_data));
+      $wrapper->{$drupal_field_name}->set(strtotime($field_data['value']));
       break;
 
     case 'string':
       if(is_string($field_data)) {
-        $wrapper->{$drupal_field_name}->set($field_data);
+        // @todo Sometimes 'label' field just a bit longer then we expect,
+        // e.g. 264-270 chars, so we truncating data to 255 until we get schema.
+        $wrapper->{$drupal_field_name}->set(substr($field_data, 0, 255));
       }
       elseif(is_array($field_data) && !empty($field_data['html'])){
-        $wrapper->{$drupal_field_name}->set($field_data['html']);
+        $wrapper->{$drupal_field_name}->set(substr($field_data['html'], 0, 255));
       }
       break;
 
@@ -1420,28 +1422,22 @@ function _cap_api_save_field(&$entity, &$wrapper, $field_name, $field_data, $sub
       // This is multivalue field collection.
       if (is_array($field_data) && !empty($field_data) && array_key_exists(0, $field_data)) {
         foreach ($field_data as $fc_subfield_data) {
-          $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
-          $entity_type = method_exists($entity, 'type') ? 'field_collection_item' : 'node';
-          $fc_item->setHostEntity($entity_type, $entity);
-          $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
-          _cap_api_save_field($fc_item, $fc_wrapper, $field_name, $fc_subfield_data, $subfield);
-          // Saving field collection but not host entity.
-          $fc_wrapper->save(TRUE);
+          _cap_api_save_field($entity, $wrapper, $field_name, $fc_subfield_data, $subfield);
         }
       }
       else {
-        $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
-        $entity_type = method_exists($entity, 'type') ? 'field_collection_item' : 'node';
-        $fc_item->setHostEntity($entity_type, $entity);
-        $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
-        foreach ($field_data as $fc_subfield => $fc_subfield_data) {
-          _cap_api_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, TRUE);
+        if(!empty($field_data)) {
+          $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
+          $entity_type = method_exists($entity, 'entityType') ? 'field_collection_item' : 'node';
+          $fc_item->setHostEntity($entity_type, $entity);
+          $fc_item->save(TRUE);
+          $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+          foreach ($field_data as $fc_subfield => $fc_subfield_data) {
+            _cap_api_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, TRUE);
+          }
+          $fc_item->save(TRUE);
         }
-        // Saving field collection but not host entity.
-        $fc_wrapper->save(TRUE);
       }
-
-
       break;
   }
 }
