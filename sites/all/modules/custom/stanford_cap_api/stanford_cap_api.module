@@ -493,6 +493,29 @@ function stanford_cap_api_update_profiles() {
 }
 
 /**
+ * Returns etag for specified profile.
+ *
+ * Etag is checksum used to determine if profile was changed in CAP.
+ *
+ * @param string $profile_id
+ *   CAP profile ID.
+ *
+ * @return string|FALSE
+ *   CAP profile etag or FALSE.
+ */
+function stanford_cap_api_get_profile_etag($profile_id) {
+  $etag = FALSE;
+  if(is_numeric($profile_id)) {
+    $profile = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
+    if($profile && isset($profile['meta']['etag'])) {
+      $etag = $profile['meta']['etag'];
+    }
+  }
+
+  return $etag;
+}
+
+/**
  * Introduce field type while we have no JSON schema.
  *
  * @todo Drop as we will get access to JSON schema.
