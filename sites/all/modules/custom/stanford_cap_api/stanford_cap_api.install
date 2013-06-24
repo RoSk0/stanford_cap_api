@@ -86,5 +86,33 @@ function stanford_cap_api_schema() {
     'primary key' => array('id'),
   );
 
+  $schema['cap_api_profiles'] = array(
+    'description' => 'Stores information about CAP profiles.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'profile_id' => array(
+        'description' => 'Profile ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'description' => 'Node ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'etag' => array(
+        'description' => 'Etag.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('id', 'profile_id', 'nid'),
+  );
+
   return $schema;
 }
