@@ -407,7 +407,7 @@ function stanford_cap_api_import_result_form($form, &$form_state) {
     );
     $options = array();
     foreach ($search_response['values'] as $profile) {
-      $href = _cap_api_format_cap_profile_url($profile);
+      $href = _stanford_cap_api_format_cap_profile_url($profile);
 
       $options[$profile['profileId']] = array(
         'name' => array(
