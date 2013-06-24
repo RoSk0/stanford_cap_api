@@ -400,21 +400,15 @@ function stanford_cap_api_import_result_finished() {
  *   CAP network profile.
  */
 function stanford_cap_api_profile_sync($profile) {
-  $query = new EntityFieldQuery();
-  $result = $query->entityCondition('entity_type', 'node')
-    ->entityCondition('bundle', 'cap_faculty_profile')
-    ->fieldCondition('cap_profileid', 'value', $profile['profileId'])
-    ->execute();
-  if (isset($result['node']) && count($result['node']) == 1) {
-    $node = array_shift($result['node']);
-    $node = node_load($node->nid);
+  $nid = db_select('cap_api_profiles', 'cap')
+    ->fields('cap', array('nid'))
+    ->condition('profile_id', $profile['profileId'])
+    ->execute()->fetchField();
+
+  if ($nid) {
+    $node = node_load($nid);
     field_attach_delete('node', $node);
     stanford_cap_api_node_fields_update($node, $profile);
-  }
-  elseif (isset($result['node']) && count($result['node']) > 1) {
-    // More then 1 node contains this profile's ID, error?
-    // @todo Add more description.
-    watchdog('stanford_cap_api', 'Error! More than one node per profile.');
   }
   else {
     // Importing.
@@ -429,6 +423,13 @@ function stanford_cap_api_profile_sync($profile) {
     $node->language = LANGUAGE_NONE;
     node_save($node);
     $node = node_load($node->nid, NULL, TRUE);
+    // Saving profile<->node association.
+    $record = array(
+      'profile_id' => $profile['profileId'],
+      'nid' => $node->nid,
+      'etag' => $profile['meta']['etag'],
+    );
+    drupal_write_record('cap_api_profiles', $record);
     stanford_cap_api_node_fields_update($node, $profile);
   }
 }
@@ -493,7 +494,7 @@ function stanford_cap_api_update_profiles() {
 }
 
 /**
- * Returns etag for specified profile.
+ * Returns etag for specified profile from CAP.
  *
  * Etag is checksum used to determine if profile was changed in CAP.
  *
@@ -510,6 +511,29 @@ function stanford_cap_api_get_profile_etag($profile_id) {
     if($profile && isset($profile['meta']['etag'])) {
       $etag = $profile['meta']['etag'];
     }
+  }
+
+  return $etag;
+}
+
+/**
+ * Returns etag for stored specified profile.
+ *
+ * Etag is checksum used to determine if profile was changed in CAP.
+ *
+ * @param string $profile_id
+ *   CAP profile ID.
+ *
+ * @return string|FALSE
+ *   CAP profile etag or FALSE.
+ */
+function stanford_cap_api_get_stored_profile_etag($profile_id) {
+  $etag = FALSE;
+  if(is_numeric($profile_id)) {
+    $etag = db_select('cap_api_profiles', 'cap')
+      ->fields('cap', array('etag'))
+      ->condition('profile_id', $profile_id)
+      ->execute()->fetchField();
   }
 
   return $etag;
