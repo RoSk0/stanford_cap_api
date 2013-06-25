@@ -546,6 +546,46 @@ function stanford_cap_api_get_stored_profile_etag($profile_id) {
 }
 
 /**
+ * Synchronize profiles of specified organization.
+ *
+ * @param string $org_code
+ *   CAP organization code.
+ *
+ * @see http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/
+ */
+function stanford_cap_api_sync_org_members($org_code){
+  $params = array('orgCodes' => $org_code);
+  // This request used to get count of profiles of this organization.
+  $data = stanford_cap_api_request('/api/profiles/v1', $params);
+  if($data && $data['totalCount'] > 0){
+    $params['ps'] = $data['totalCount'];
+    $data = stanford_cap_api_request('/api/profiles/v1', $params);
+    foreach ($data['values'] as $profile) {
+      stanford_cap_api_profile_import($profile['profileId']);
+    }
+  }
+}
+
+/**
+ * Synchronize profiles of specified workgroup.
+ *
+ * @param string $workgroup_id
+ *   CAP workgroup ID.
+ */
+function stanford_cap_api_sync_workgoup_members($workgroup_id){
+  $params = array('privGroups' => $workgroup_id);
+  // This request used to get count of profiles of this organization.
+  $data = stanford_cap_api_request('/api/profiles/v1', $params);
+  if($data && $data['totalCount'] > 0){
+    $params['ps'] = $data['totalCount'];
+    $data = stanford_cap_api_request('/api/profiles/v1', $params);
+    foreach ($data['values'] as $profile) {
+      stanford_cap_api_profile_import($profile['profileId']);
+    }
+  }
+}
+
+/**
  * Introduce field type while we have no JSON schema.
  *
  * @todo Drop as we will get access to JSON schema.
