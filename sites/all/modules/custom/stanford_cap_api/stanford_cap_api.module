@@ -52,7 +52,7 @@ function stanford_cap_api_menu() {
     'page arguments' => array('stanford_cap_api_import_form'),
     // @todo Proper access check.
     'access callback' => TRUE,
-    'weight' => 5,
+    'weight' => -4,
     'file' => 'stanford_cap_api.admin.inc',
   );
 
@@ -75,6 +75,7 @@ function stanford_cap_api_menu() {
     // @todo Proper access check.
     'access callback' => TRUE,
     'file' => 'stanford_cap_api.admin.inc',
+    'weight' => 11,
   );
 
   $items['admin/config/cap/manage'] = array(
@@ -83,9 +84,20 @@ function stanford_cap_api_menu() {
     'page callback' => 'stanford_cap_api_manage',
     // @todo Proper access check.
     'access callback' => TRUE,
-    'weight' => 6,
+    'weight' => 0,
     'file' => 'stanford_cap_api.admin.inc',
   );
+
+  $items['admin/config/cap/group'] = array(
+      'title' => 'Group sync',
+      'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('stanford_cap_api_group_sync_form'),
+      // @todo Proper access check.
+      'access callback' => TRUE,
+      'weight' => -2,
+      'file' => 'stanford_cap_api.admin.inc',
+    );
 
   return $items;
 }

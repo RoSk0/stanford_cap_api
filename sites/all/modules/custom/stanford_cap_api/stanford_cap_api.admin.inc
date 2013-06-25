@@ -556,3 +556,17 @@ function stanford_cap_api_reset() {
 function stanford_cap_api_manage() {
   return views_embed_view('cap_api_manage_profiles');
 }
+
+function stanford_cap_api_group_sync_form($form, &$form_state) {
+  $form['descrition_wrapper'] = array(
+    '#type' => 'container',
+  );
+  $description = 'CAP profiles associated with specific groups can be'
+    . ' automatically synced with this site on an ongoing basis. Use the tools'
+    . ' on this page to manage the groups that are synced with the site.';
+  $form['descrition_wrapper']['description'] = array(
+    '#markup' => t($description),
+  );
+
+  return $form;
+}
