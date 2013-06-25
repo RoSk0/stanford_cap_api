@@ -91,14 +91,14 @@ function stanford_cap_api_menu() {
 }
 
 /**
- * Synchronize fields from CAP profile to Drupal.
+ * Synchronize fields structure from CAP profile to Drupal.
  *
  * @param array $profile
  *   CAP profile.
  */
 function stanford_cap_api_synchronize_fields($profile) {
 
-  foreach ($profile as $field_name => &$field_data) {
+  foreach ($profile as $field_name => $field_data) {
     $node_field_name = _stanford_cap_api_generate_field_name($field_name);
     $field_info = field_info_field($node_field_name);
     // @todo Here we should grab field metadata from JSON schema.
@@ -365,25 +365,31 @@ function stanford_cap_api_cron() {
  *   Profile ID.
  */
 function stanford_cap_api_profile_import($profile_id) {
-  if (isset($_SESSION['search_response']['values'])) {
-    foreach ($_SESSION['search_response']['values'] as $profile) {
-      if ($profile['profileId'] == $profile_id) {
-        stanford_cap_api_synchronize_fields($profile);
-        stanford_cap_api_profile_sync($profile);
-      }
-    }
+  $etag = stanford_cap_api_get_profile_etag($profile_id);
+  $stored_etag = stanford_cap_api_get_stored_profile_etag($profile_id);
+  if (empty($stored_etag) || $etag != $stored_etag) {
+    $profile = stanford_cap_api_get_profile($profile_id);
+    stanford_cap_api_synchronize_fields($profile);
+    stanford_cap_api_profile_sync($profile);
   }
-  else {
-    $profile = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
-    if ($profile) {
-      stanford_cap_api_synchronize_fields($profile);
-      stanford_cap_api_profile_sync($profile);
-    }
-    else {
-      $message = 'There is no profile with ID %id in Stanford CAP Network.';
-      watchdog('stanford_cap_api', $message, array('%id' => $profile_id));
-    }
+}
+
+/**
+ * Loads profile from CAP network.
+ *
+ * @param string $profile_id
+ *   Profile ID.
+ *
+ * @return array|FALSE
+ *   Profile or FALSE.
+ */
+function stanford_cap_api_get_profile($profile_id) {
+  $cache =& drupal_static(__FUNCTION__, array());
+  if (!isset($cache[$profile_id])) {
+    $cache[$profile_id] = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
   }
+
+  return $cache[$profile_id];
 }
 
 function stanford_cap_api_import_result_finished() {
@@ -394,7 +400,7 @@ function stanford_cap_api_import_result_finished() {
 }
 
 /**
- * Synchronize CAP network profile with Drupal node.
+ * Synchronize CAP network profile data with Drupal node.
  *
  * @param array $profile
  *   CAP network profile.
@@ -406,7 +412,14 @@ function stanford_cap_api_profile_sync($profile) {
     ->execute()->fetchField();
   $node = node_load($nid);
   if ($nid && $node) {
-    field_attach_delete('node', $node);
+    $wrapper = entity_metadata_wrapper('node', $node);
+    $properties = $wrapper->getPropertyInfo();
+    foreach ($properties as $field_name => $field_info) {
+      if (strpos($field_name, 'cap_') !== FALSE) {
+        $wrapper->{$field_name}->set(NULL);
+      }
+    }
+    $wrapper->save();
     stanford_cap_api_node_fields_update($node, $profile);
   }
   else {
@@ -429,7 +442,7 @@ function stanford_cap_api_profile_sync($profile) {
       'nid' => $node->nid,
       'etag' => $profile['meta']['etag'],
     );
-    drupal_write_record('cap_api_profiles', $record);
+    drupal_write_record('cap_api_profiles', $record, array('profile_id'));
   }
 }
 
@@ -458,38 +471,20 @@ function stanford_cap_api_node_fields_update($node, $profile) {
  *   Array of profile ID's.
  */
 function stanford_cap_api_profile_import_multiply($profile_ids) {
-  $params = array(
-    'ids' => implode(',', $profile_ids),
-    'ps' => count($profile_ids),
-  );
-  $profiles = stanford_cap_api_request('/api/profiles/v1', $params);
-  foreach ($profiles['values'] as $profile) {
-    stanford_cap_api_synchronize_fields($profile);
-    stanford_cap_api_profile_sync($profile);
+  foreach ($profile_ids as $profile_id) {
+    stanford_cap_api_profile_import($profile_id);
   }
-  $message = 'Successfully imported %count profiles from Stanford CAP Network.';
-  watchdog('stanford_cap_api', $message, array('%count' => $profiles['count']));
 }
 
 /**
  * Updates already imported profiles.
  */
 function stanford_cap_api_update_profiles() {
-  $query = new EntityFieldQuery();
-  $result = $query->entityCondition('entity_type', 'node')
-    ->entityCondition('bundle', 'cap_faculty_profile')
-    ->fieldCondition('cap_profileid', 'value', '', '<>')
-    ->execute();
-  if (count($result['node'])) {
-    $nids = array_keys($result['node']);
-    $nodes = node_load_multiple($nids);
-    $profile_ids = array();
-    foreach ($nodes as $node) {
-      $nw = entity_metadata_wrapper('node', $node);
-      $profile_ids[] = $nw->cap_profileid->value();
-    }
-    stanford_cap_api_profile_import_multiply($profile_ids);
-  }
+  $profile_ids = db_select('cap_api_profiles', 'profiles')
+    ->fields('profiles', array('profile_id'))
+    ->execute()
+    ->fetchCol();
+  stanford_cap_api_profile_import_multiply($profile_ids);
 }
 
 /**
@@ -505,9 +500,9 @@ function stanford_cap_api_update_profiles() {
  */
 function stanford_cap_api_get_profile_etag($profile_id) {
   $etag = FALSE;
-  if(is_numeric($profile_id)) {
-    $profile = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
-    if($profile && isset($profile['meta']['etag'])) {
+  if (is_numeric($profile_id)) {
+    $profile = stanford_cap_api_get_profile($profile_id);
+    if ($profile && isset($profile['meta']['etag'])) {
       $etag = $profile['meta']['etag'];
     }
   }
@@ -528,7 +523,7 @@ function stanford_cap_api_get_profile_etag($profile_id) {
  */
 function stanford_cap_api_get_stored_profile_etag($profile_id) {
   $etag = FALSE;
-  if(is_numeric($profile_id)) {
+  if (is_numeric($profile_id)) {
     $etag = db_select('cap_api_profiles', 'cap')
       ->fields('cap', array('etag'))
       ->condition('profile_id', $profile_id)
@@ -744,7 +739,7 @@ function _stanford_cap_api_get_field_type($field_name) {
       // @todo Now there are two kinds of "organization" field. One is "string"
       // and second is field collection. The main problem of handling it is that
       // there could be multiply field sets in collections.
-  //case 'organization':
+      //case 'organization':
     case 'origCourses':
     case 'postdoctoralAdvisees':
     case 'preferred':
@@ -1457,13 +1452,13 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         break;
 
       case 'integer':
-        if(is_numeric($field_data)){
+        if (is_numeric($field_data)) {
           $wrapper->{$drupal_field_name}->set($field_data);
         }
         break;
 
       case 'boolean':
-        if(is_string($field_data)){
+        if (is_string($field_data)) {
           $wrapper->{$drupal_field_name}->set($field_data);
         }
         break;
