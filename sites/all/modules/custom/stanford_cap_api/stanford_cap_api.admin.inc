@@ -141,6 +141,23 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#default_value' => variable_get('cap_allow_edit', FALSE),
   );
 
+  $form['orphaned'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Orphaned profiles'),
+  );
+
+  $options = array(
+    'unpublish' => t('Put the profile in an unpublished state.'),
+    'nothing' => t('Do nothing. The profile will simply continue to exist on the website.'),
+    'remove' => t('Remove it from the site.'),
+  );
+  $form['orphaned']['orphaned_profile_action'] = array(
+    '#type' => 'radios',
+    '#title' => t('When a profile is removed from the CAP API:'),
+    '#default_value' => variable_get('cap_orphaned_profile_action', 'unpublish'),
+    '#options' => $options,
+  );
+
   $form['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced'),
@@ -205,6 +222,7 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
   }
   variable_set('cap_custom_fields', $values['cap_custom_fields']);
   variable_set('cap_allow_edit', $values['cap_allow_edit']);
+  variable_set('cap_orphaned_profile_action', $values['orphaned_profile_action']);
   drupal_set_message(t('Configuration saved.'));
 }
 
@@ -528,6 +546,9 @@ function stanford_cap_api_profile_test($form, &$form_state) {
   return $form;
 }
 
+/**
+ * Forces module to synchronize CAP profile fields structure.
+ */
 function stanford_cap_api_test_synchronize() {
 
   // @todo Enable button for this submit handler when we will have good fields schema.
@@ -539,6 +560,9 @@ function stanford_cap_api_test_synchronize() {
   drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000))));
 }
 
+/**
+ * Remove all CAP profile fields from system.
+ */
 function stanford_cap_api_reset() {
   $fields = db_select('cap_api_fields', 'f')->fields('f', array('field_name'))
     ->execute()->fetchCol();
@@ -712,6 +736,17 @@ function stanford_cap_api_group_sync_form_submit($form, &$form_state) {
   }
 }
 
+/**
+ * Helper to get group profiles count.
+ *
+ * @param string $type
+ *   Group type.
+ * @param string $name
+ *   Group name.
+ *
+ * @return int
+ *   Number of profiles in this group.
+ */
 function _stanford_cap_api_get_group_profiles_count($type, $name) {
   $count = 0;
   switch ($type) {
