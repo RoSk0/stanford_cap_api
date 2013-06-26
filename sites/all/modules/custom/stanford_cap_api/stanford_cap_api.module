@@ -89,15 +89,25 @@ function stanford_cap_api_menu() {
   );
 
   $items['admin/config/cap/group'] = array(
-      'title' => 'Group sync',
-      'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('stanford_cap_api_group_sync_form'),
-      // @todo Proper access check.
-      'access callback' => TRUE,
-      'weight' => -2,
-      'file' => 'stanford_cap_api.admin.inc',
-    );
+    'title' => 'Group sync',
+    'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_group_sync_form'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'weight' => -2,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
+  $items['admin/config/cap/group/%/delete'] = array(
+    'title' => 'Drop group from synchronization',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_group_sync_drop_form', 4),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
 
   return $items;
 }
@@ -365,6 +375,7 @@ function stanford_cap_api_cron() {
   if ($time_since_last_run > 86400) {
     stanford_cap_api_import_organizations();
     stanford_cap_api_update_profiles();
+    stanford_cap_api_sync_group_cron();
     // Update execution time.
     variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
   }
@@ -551,19 +562,25 @@ function stanford_cap_api_get_stored_profile_etag($profile_id) {
  * @param string $org_code
  *   CAP organization code.
  *
+ * @return int
+ *   Count of synced profiles.
+ *
  * @see http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/
  */
-function stanford_cap_api_sync_org_members($org_code){
+function stanford_cap_api_sync_org_members($org_code) {
+  $count = 0;
   $params = array('orgCodes' => $org_code);
   // This request used to get count of profiles of this organization.
   $data = stanford_cap_api_request('/api/profiles/v1', $params);
-  if($data && $data['totalCount'] > 0){
-    $params['ps'] = $data['totalCount'];
+  if ($data && $data['totalCount'] > 0) {
+    $count = $params['ps'] = $data['totalCount'];
     $data = stanford_cap_api_request('/api/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
       stanford_cap_api_profile_import($profile['profileId']);
     }
   }
+
+  return $count;
 }
 
 /**
@@ -571,17 +588,92 @@ function stanford_cap_api_sync_org_members($org_code){
  *
  * @param string $workgroup_id
  *   CAP workgroup ID.
+ *
+ * @return int
+ *   Count of synced profiles.
  */
-function stanford_cap_api_sync_workgoup_members($workgroup_id){
+function stanford_cap_api_sync_workgroup_members($workgroup_id) {
+  $count = 0;
   $params = array('privGroups' => $workgroup_id);
   // This request used to get count of profiles of this organization.
   $data = stanford_cap_api_request('/api/profiles/v1', $params);
-  if($data && $data['totalCount'] > 0){
-    $params['ps'] = $data['totalCount'];
+  if ($data && $data['totalCount'] > 0) {
+    $count = $params['ps'] = $data['totalCount'];
     $data = stanford_cap_api_request('/api/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
       stanford_cap_api_profile_import($profile['profileId']);
     }
+  }
+
+  return $count;
+}
+
+/**
+ * Save CAP group for synchronization.
+ *
+ * @param string $type
+ *   Type of group.
+ * @param string $name
+ *   Machine readable group name.
+ * @param int $count
+ *   Quantity of profiles associated with this group.
+ * @param int $lastsynced
+ *   Last synchronization timestamp.
+ */
+function stanford_cap_api_sync_group_save($type, $name, $count = 0, $lastsynced = NULL) {
+  $record = array('name' => $name, 'type' => $type);
+  if(isset($count)){
+    $record['count'] = $count;
+  }
+  if(isset($lastsynced)){
+    $record['lastsynced'] = $lastsynced;
+  }
+  if(empty($lastsynced)){
+    drupal_write_record('cap_api_sync_groups', $record);
+  }
+  else {
+    drupal_write_record('cap_api_sync_groups', $record, 'name');
+  }
+}
+
+/**
+ * Synchronize profiles of group.
+ *
+ * @param string $type
+ *   Type of group.
+ * @param string $name
+ *   Group name.
+ */
+function stanford_cap_api_sync_group_sync($type, $name) {
+  switch($type){
+    case 'organization':
+      $count = stanford_cap_api_sync_org_members($name);
+      stanford_cap_api_sync_group_save($type, $name, $count, REQUEST_TIME);
+      break;
+    case 'workgroup':
+      $count = stanford_cap_api_sync_workgroup_members($name);
+      stanford_cap_api_sync_group_save($type, $name, $count, REQUEST_TIME);
+      break;
+  }
+}
+
+/**
+ * Drop profiles group from synchronization.
+ *
+ * @param int $id
+ *   Internal group ID.
+ */
+function stanford_cap_api_sync_group_drop($id) {
+  db_delete('cap_api_sync_groups')->condition('id', $id)->execute();
+}
+
+function stanford_cap_api_sync_group_cron(){
+  $groups = db_select('cap_api_sync_groups', 'groups')
+    ->fields('groups')
+    ->execute()
+    ->fetchAll();
+  foreach ($groups as $group) {
+    stanford_cap_api_sync_group_sync($group->type, $group->name);
   }
 }
 
@@ -1538,4 +1630,9 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         break;
     }
   }
+}
+
+function _stanford_cap_api_sync_group_wrapper($group_type, $group_name){
+  stanford_cap_api_sync_group_save($group_type, $group_name);
+  stanford_cap_api_sync_group_sync($group_type, $group_name);
 }

@@ -114,5 +114,45 @@ function stanford_cap_api_schema() {
     'primary key' => array('id', 'profile_id', 'nid'),
   );
 
+  $schema['cap_api_sync_groups'] = array(
+    'description' => 'Stores information about CAP profiles groups that should be synced.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'Group name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'type' => array(
+        'description' => 'Group type.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'count' => array(
+        'description' => 'How many profiles in this group.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+        'size' => 'tiny',
+      ),
+      'lastsynced' => array(
+        'description' => 'Last synced timestamp.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+      ),
+    ),
+    'primary key' => array('id', 'name'),
+  );
+
   return $schema;
 }

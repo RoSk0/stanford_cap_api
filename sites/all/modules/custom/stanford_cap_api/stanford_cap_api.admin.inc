@@ -557,16 +557,202 @@ function stanford_cap_api_manage() {
   return views_embed_view('cap_api_manage_profiles');
 }
 
+/**
+ * Groups synchronization from builder.
+ */
 function stanford_cap_api_group_sync_form($form, &$form_state) {
-  $form['descrition_wrapper'] = array(
+
+  $form['description_wrapper'] = array(
     '#type' => 'container',
   );
   $description = 'CAP profiles associated with specific groups can be'
     . ' automatically synced with this site on an ongoing basis. Use the tools'
     . ' on this page to manage the groups that are synced with the site.';
-  $form['descrition_wrapper']['description'] = array(
+  $form['description_wrapper']['description'] = array(
     '#markup' => t($description),
   );
 
+  if (empty($form_state['values'])) {
+
+    $form['groups'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Groups being synced'),
+    );
+
+    $groups = db_select('cap_api_sync_groups', 'groups')
+      ->fields('groups')
+      ->execute()
+      ->fetchAll();
+    $header = array(
+      t('Name'),
+      t('Profiles synchronized'),
+      t('Last synced date'),
+      t('Operations'),
+    );
+    $rows = array();
+    foreach ($groups as $group) {
+      $rows[] = array(
+        check_plain($group->name),
+        t('%count profiles', array('%count' => $group->count)),
+        $group->lastsynced ? format_date($group->lastsynced, 'long') : t('Never'),
+        l(t('Remove'), 'admin/config/cap/group/' . $group->id . '/delete'),
+      );
+    }
+    $empty = 'No groups were saved for synchronization yet.';
+
+    $table = theme('table', array(
+      'header' => $header,
+      'rows' => $rows,
+      'empty' => t($empty),
+    ));
+
+    $form['groups']['groups_list'] = array(
+      '#markup' => $table,
+    );
+
+    $form['new_group'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Add new group'),
+    );
+
+    $form['new_group']['school'] = array(
+      '#type' => 'textfield',
+      '#title' => t('School/Department'),
+    );
+
+    $org_description = 'You can learn more about Stanford University Org Code'
+      . ' Hierarchy !here.';
+    $url = 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/';
+    $form['new_group']['organization'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Organization'),
+      '#description' => t($org_description, array('!here' => l(t('here'), $url))),
+    );
+
+    $form['new_group']['workgroup'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Workgroup'),
+    );
+
+    $form['new_group']['search'] = array(
+      '#type' => 'submit',
+      '#value' => t('Search'),
+    );
+  }
+  else {
+    $form['groups'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Search results'),
+    );
+
+    $header = array(
+      'name' => t('Group'),
+      'profiles' => t('Profiles in group'),
+    );
+    $options = array();
+    $group_types = array('organization', 'workgroup', 'school');
+    $form['groups_to_save'] = array(
+      '#type' => 'container',
+      '#tree' => TRUE,
+    );
+
+    foreach ($group_types as $group_type) {
+      if (!empty($form_state['values'][$group_type])) {
+        $name = check_plain($form_state['values'][$group_type]);
+        $count = _stanford_cap_api_get_group_profiles_count($group_type, $name);
+        $options[$group_type] = array('name' => $name, 'profiles' => $count);
+        $form['groups_to_save'][$group_type] = array(
+          '#type' => 'value',
+          '#value' => $name,
+        );
+      }
+    }
+
+    $form['groups']['groups_list'] = array(
+      '#type' => 'tableselect',
+      '#header' => $header,
+      '#options' => $options,
+    );
+
+    $form['groups']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save selected groups'),
+    );
+  }
+
   return $form;
+}
+
+/**
+ * Groups synchronization from submit handler.
+ */
+function stanford_cap_api_group_sync_form_submit($form, &$form_state) {
+  if (!empty($form_state['values']['organization']) || !empty($form_state['values']['workgroup']) || !empty($form_state['values']['school'])) {
+    $form_state['rebuild'] = TRUE;
+  }
+  if (isset($form_state['values']['groups_list'])) {
+    $operations = array();
+    foreach ($form_state['values']['groups_list'] as $group_type) {
+      if (isset($form_state['values']['groups_to_save'][$group_type])) {
+        $group_name = $form_state['values']['groups_to_save'][$group_type];
+        $operations[] = array(
+          '_stanford_cap_api_sync_group_wrapper',
+          array($group_type, $group_name),
+        );
+      }
+    }
+    $batch = array(
+      'title' => t('Synchronizing profile groups'),
+      'operations' => $operations,
+      'progress_message' => t('Current: @current | Remaining:
+    @remaining | Total: @total | Percentage: @percentage | Estimate:
+    @estimate | Elapsed: @elapsed'),
+    );
+    batch_set($batch);
+  }
+}
+
+function _stanford_cap_api_get_group_profiles_count($type, $name) {
+  $count = 0;
+  switch ($type) {
+    case 'organization':
+      $params = array('orgCodes' => $name);
+      $data = stanford_cap_api_request('/api/profiles/v1', $params);
+      if ($data) {
+        $count = $data['totalCount'];
+      }
+      break;
+
+    case 'workgroup':
+      $params = array('privGroups' => $name);
+      $data = stanford_cap_api_request('/api/profiles/v1', $params);
+      if ($data) {
+        $count = $data['totalCount'];
+      }
+      break;
+
+    case 'school':
+      break;
+  }
+
+  return $count;
+}
+
+/**
+ * Drop profiles group from synchronization form builder.
+ */
+function stanford_cap_api_group_sync_drop_form($form, &$form_state, $id) {
+  $form_addition = array('id' => array('#type' => 'value', '#value' => $id));
+  $question = t('Are you sure you want to spot syncing this group?');
+
+  return confirm_form($form_addition, $question, 'admin/config/cap/group', NULL, t('Delete'));
+}
+
+/**
+ * Drop profiles group from synchronization form submit handler..
+ */
+function stanford_cap_api_group_sync_drop_form_submit($form, &$form_state) {
+  stanford_cap_api_sync_group_drop($form_state['values']['id']);
+  $form_state['redirect'] = 'admin/config/cap/group';
+  drupal_set_message(t('Group was successfully deleted.'));
 }
