@@ -51,6 +51,12 @@ function stanford_cap_api_schema() {
         'default' => 0,
         'size' => 'tiny',
       ),
+      'parent' => array(
+        'description' => 'Parent organization ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'children' => array(
         'type' => 'blob',
         'serialize' => TRUE,

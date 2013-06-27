@@ -275,8 +275,45 @@ function stanford_cap_api_import_form($form, &$form_state) {
   );
 
   $form['organization'] = array(
-    '#type' => 'textfield',
+    '#type' => 'hierarchical_select',
     '#title' => t('Organization'),
+    '#size' => 1,
+    '#config' => array(
+      'module' => 'stanford_cap_api',
+      'params' => array(),
+      'save_lineage'    => 0,
+      'enforce_deepest' => 0,
+      'entity_count'    => 0,
+      'require_entity'  => 0,
+      'resizable'       => 1,
+      'level_labels' => array(
+        'status' => 0,
+        'labels' => array(
+          0 => t('University'),
+        ),
+      ),
+      'dropbox' => array(
+        'status'   => 0,
+        'title'    => t('All selections'),
+        'limit'    => 0,
+        'reset_hs' => 1,
+      ),
+      'editability' => array(
+        'status'           => 0,
+        'item_types'       => array(),
+        'allowed_levels'   => array(
+          0 => 0,
+          1 => 0,
+          2 => 0,
+        ),
+        'allow_new_levels' => 0,
+        'max_levels'       => 3,
+      ),
+      'animation_delay'    => 400,
+      'special_items'      => array(),
+      'render_flat_select' => 0,
+    ),
+    '#default_value' => '1',
   );
 
   $form['workgroup'] = array(
@@ -315,7 +352,10 @@ function stanford_cap_api_import_form_submit($form, &$form_state) {
     $params['name'] = check_plain($values['name']);
   }
   if (!empty($values['organization'])) {
-    $params['orgCodes'] = _stanford_cap_api_prepare_list_str($values['organization']);
+    $org_codes = db_select('cap_api_orgs', 'orgs')
+      ->condition('orgid', $values['organization'][0])
+      ->fields('orgs', array('orgCodes'))->execute()->fetchField();
+    $params['orgCodes'] = implode(',', unserialize($org_codes));
   }
   if (!empty($values['workgroup'])) {
     $params['privGroups'] = _stanford_cap_api_prepare_list_str($values['workgroup']);
