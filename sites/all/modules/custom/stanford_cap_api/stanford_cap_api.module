@@ -328,14 +328,16 @@ function stanford_cap_api_request($endpoint, $params = array()) {
  *   Organization ID inside Stanford University. Could be 0 for root entry,
  * Stanford University itself.
  */
-function stanford_cap_api_save_organization($organization, $orgid = 0) {
+function stanford_cap_api_save_organization($organization) {
+  $orgid =& drupal_static(__FUNCTION__, 1);
   $organization['orgid'] = $orgid;
   if (isset($organization['children'])) {
     $childrens = $organization['children'];
     $childrens_id = array();
-    foreach ($childrens as $orgid => $org) {
+    foreach ($childrens as $children) {
+      $orgid++;
       $childrens_id[] = $orgid;
-      stanford_cap_api_save_organization($org, $orgid);
+      stanford_cap_api_save_organization($children);
     }
     $organization['children'] = $childrens_id;
   }
@@ -359,8 +361,8 @@ function stanford_cap_api_import_organizations($top = 'AA00') {
   $params = array('orgCodes' => $top);
   $data = stanford_cap_api_request($endpoint, $params);
   if ($data) {
-    foreach ($data as $orgid => $organization) {
-      stanford_cap_api_save_organization($organization, $orgid);
+    foreach ($data as $organization) {
+      stanford_cap_api_save_organization($organization);
     }
   }
 }
