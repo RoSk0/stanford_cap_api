@@ -141,6 +141,21 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#default_value' => variable_get('cap_allow_edit', FALSE),
   );
 
+  $form['refresh'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Refresh Options'),
+  );
+
+  $form['refresh']['cap_profile_update'] = array(
+    '#type' => 'radios',
+    '#title' => t('CAP Profiles can be updated regularly to ensure you have the latest content available for the site:'),
+    '#default_value' => variable_get('cap_profile_update', 'nightly'),
+    '#options' => array(
+      'viewing' => t('When viewing the profile.'),
+      'nightly' => t('Nightly.'),
+    ),
+  );
+
   $form['orphaned'] = array(
     '#type' => 'fieldset',
     '#title' => t('Orphaned profiles'),
@@ -223,6 +238,7 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
   variable_set('cap_custom_fields', $values['cap_custom_fields']);
   variable_set('cap_allow_edit', $values['cap_allow_edit']);
   variable_set('cap_orphaned_profile_action', $values['orphaned_profile_action']);
+  variable_set('cap_profile_update', $values['cap_profile_update']);
   drupal_set_message(t('Configuration saved.'));
 }
 

@@ -369,15 +369,14 @@ function stanford_cap_api_import_organizations($top = 'AA00') {
  * Implements hook_cron().
  */
 function stanford_cap_api_cron() {
-  $last_run_time = variable_get('stanford_cap_api_cron_last_run', 0);
-  $time_since_last_run = REQUEST_TIME - $last_run_time;
-  // Check if last run was more then one day ago.
-  if ($time_since_last_run > 86400) {
+  // Run cron tasks between 1 and 5 hours.
+  $tz = variable_get('date_default_timezone');
+  $date = new DateObject('now', $tz);
+  $hour_of_day = (int) $date->format('G');
+  if ($hour_of_day >= 1 && $hour_of_day <= 5) {
     stanford_cap_api_import_organizations();
     stanford_cap_api_update_profiles();
     stanford_cap_api_sync_group_cron();
-    // Update execution time.
-    variable_set('stanford_cap_api_cron_last_run', REQUEST_TIME);
   }
 }
 
@@ -390,9 +389,9 @@ function stanford_cap_api_cron() {
 function stanford_cap_api_profile_import($profile_id) {
   $etag = stanford_cap_api_get_profile_etag($profile_id);
   $stored_etag = stanford_cap_api_get_stored_profile_etag($profile_id);
-  if(empty($etag) && !empty($stored_etag)){
+  if (empty($etag) && !empty($stored_etag)) {
     $action = variable_get('cap_orphaned_profile_action', 'unpublish');
-    switch($action){
+    switch ($action) {
       case 'unpublish':
         $nid = db_select('cap_api_profiles', 'p')
           ->condition('profile_id', $profile_id)
@@ -419,7 +418,7 @@ function stanford_cap_api_profile_import($profile_id) {
   }
   elseif (empty($stored_etag) || $etag != $stored_etag) {
     $profile = stanford_cap_api_get_profile($profile_id);
-    if($profile) {
+    if ($profile) {
       stanford_cap_api_synchronize_fields($profile);
       stanford_cap_api_profile_sync($profile);
     }
@@ -657,10 +656,10 @@ function stanford_cap_api_sync_workgroup_members($workgroup_id) {
  */
 function stanford_cap_api_sync_group_save($type, $name, $count = 0, $lastsynced = NULL) {
   $record = array('name' => $name, 'type' => $type);
-  if(isset($count)){
+  if (isset($count)) {
     $record['count'] = $count;
   }
-  if(isset($lastsynced)){
+  if (isset($lastsynced)) {
     $record['lastsynced'] = $lastsynced;
   }
   db_merge('cap_api_sync_groups')
@@ -678,7 +677,7 @@ function stanford_cap_api_sync_group_save($type, $name, $count = 0, $lastsynced 
  *   Group name.
  */
 function stanford_cap_api_sync_group_sync($type, $name) {
-  switch($type){
+  switch ($type) {
     case 'organization':
       $count = stanford_cap_api_sync_org_members($name);
       stanford_cap_api_sync_group_save($type, $name, $count, REQUEST_TIME);
@@ -703,7 +702,7 @@ function stanford_cap_api_sync_group_drop($id) {
 /**
  * Callback for cron groups synchronization.
  */
-function stanford_cap_api_sync_group_cron(){
+function stanford_cap_api_sync_group_cron() {
   $groups = db_select('cap_api_sync_groups', 'groups')
     ->fields('groups')
     ->execute()
@@ -716,10 +715,27 @@ function stanford_cap_api_sync_group_cron(){
 /**
  * Implements hook_node_delete().
  */
-function stanford_cap_api_node_delete($node){
+function stanford_cap_api_node_delete($node) {
   db_delete('cap_api_profiles')
     ->condition('nid', $node->nid)
     ->execute();
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function stanford_cap_api_node_view($node, $view_mode) {
+  $update_strategy = variable_get('cap_profile_update', 'nightly');
+  if ($node->type = 'cap_faculty_profile' && $view_mode == 'full' && $update_strategy == 'viewing') {
+    $profile_id = db_select('cap_api_profiles', 'p')
+      ->condition('nid', $node->nid)
+      ->fields('p', array('profile_id'))
+      ->execute()
+      ->fetchField();
+    if ($profile_id) {
+      stanford_cap_api_profile_import($profile_id);
+    }
+  }
 }
 
 /**
@@ -1680,7 +1696,7 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
 /**
  * Wrapper for batch groups synchronization.
  */
-function _stanford_cap_api_sync_group_wrapper($group_type, $group_name){
+function _stanford_cap_api_sync_group_wrapper($group_type, $group_name) {
   stanford_cap_api_sync_group_save($group_type, $group_name);
   stanford_cap_api_sync_group_sync($group_type, $group_name);
 }
