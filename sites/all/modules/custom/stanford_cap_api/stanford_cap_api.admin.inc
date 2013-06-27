@@ -246,7 +246,6 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
  * Form builder for import page.
  */
 function stanford_cap_api_import_form($form, &$form_state) {
-  $values = isset($form_state['values']) ? $form_state['values'] : array();
 
   $form['description_wrapper'] = array(
     '#type' => 'container',
@@ -265,51 +264,34 @@ function stanford_cap_api_import_form($form, &$form_state) {
     '#suffix' => '</h3>',
   );
 
-  $form['first_name'] = array(
+  $form['name'] = array(
     '#type' => 'textfield',
-    '#title' => t('First name'),
-    '#default_value' => isset($values['first_name']) ? $values['first_name'] : '',
+    '#title' => t('First name / Last name'),
   );
 
-  $form['last_name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Last name'),
-    '#default_value' => isset($values['last_name']) ? $values['last_name'] : '',
-  );
-
-  $options = array();
   $form['school'] = array(
-    '#type' => 'select',
+    '#type' => 'textfield',
     '#title' => t('School / Department'),
-    '#options' => $options,
-    '#empty_option' => t('--Please select--'),
-    '#empty_value' => '',
-    '#default_value' => isset($values['school']) ? $values['school'] : '',
-    '#disabled' => TRUE,
   );
 
   $form['organization'] = array(
     '#type' => 'textfield',
     '#title' => t('Organization'),
-    '#default_value' => isset($values['organization']) ? $values['organization'] : '',
   );
 
   $form['workgroup'] = array(
     '#type' => 'textfield',
     '#title' => t('Workgroup'),
-    '#default_value' => isset($values['workgroup']) ? $values['workgroup'] : '',
   );
 
   $form['university_id'] = array(
     '#type' => 'textfield',
     '#title' => t('University ID'),
-    '#default_value' => isset($values['university_id']) ? $values['university_id'] : '',
   );
 
   $form['sunet_id'] = array(
-    '#type' => 'textfield',
+    '#type' => 'textarea',
     '#title' => t('SUNet ID'),
-    '#default_value' => isset($values['sunet_id']) ? $values['sunet_id'] : '',
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -329,28 +311,23 @@ function stanford_cap_api_import_form_submit($form, &$form_state) {
 
   $params = array('ps' => ENTRY_PER_PAGE);
 
-  if (!empty($values['first_name'])) {
-    $params['name'] = check_plain($values['first_name']);
-  }
-  if (!empty($values['last_name'])) {
-    if (isset($params['name'])) {
-      $params['name'] .= ' ' . check_plain($values['last_name']);
-    }
-    else {
-      $params['name'] = check_plain($values['last_name']);
-    }
+  if (!empty($values['name'])) {
+    $params['name'] = check_plain($values['name']);
   }
   if (!empty($values['organization'])) {
-    $params['orgCodes'] = _cap_api_prepare_list_str($values['organization']);
+    $params['orgCodes'] = _stanford_cap_api_prepare_list_str($values['organization']);
   }
   if (!empty($values['workgroup'])) {
-    $params['privGroups'] = _cap_api_prepare_list_str($values['workgroup']);
+    $params['privGroups'] = _stanford_cap_api_prepare_list_str($values['workgroup']);
   }
   if (!empty($values['university_id'])) {
     $params['universityId'] = check_plain($values['university_id']);
   }
+  if (!empty($values['school'])) {
+    $params['orgAlias'] = check_plain($values['school']);
+  }
   if (!empty($values['sunet_id'])) {
-    $params['ids'] = check_plain($values['sunet_id']);
+    $params['ids'] = _stanford_cap_api_prepare_list_str($values['sunet_id']);
   }
 
   $_SESSION['search_params'] = $params;
@@ -371,11 +348,12 @@ function stanford_cap_api_import_form_submit($form, &$form_state) {
  * @return string
  *   Prepared string.
  */
-function _cap_api_prepare_list_str($str) {
-
+function _stanford_cap_api_prepare_list_str($str) {
+  // Replace all Windows, Unix and Mac newlines by commas.
+  $str = str_replace(array("\r\n", "\r", "\n"), ',', $str);
   $list = explode(',', $str);
   array_walk($list, 'check_plain');
-  array_walk($list, 'trim');
+  $list = array_map('trim', $list);
 
   return implode(',', $list);
 }
