@@ -470,16 +470,8 @@ function stanford_cap_api_profile_sync($profile) {
     ->fields('cap', array('nid'))
     ->condition('profile_id', $profile['profileId'])
     ->execute()->fetchField();
-  $node = node_load($nid);
-  if ($nid && $node) {
-    $wrapper = entity_metadata_wrapper('node', $node);
-    $properties = $wrapper->getPropertyInfo();
-    foreach ($properties as $field_name => $field_info) {
-      if (strpos($field_name, 'cap_') !== FALSE) {
-        $wrapper->{$field_name}->set(NULL);
-      }
-    }
-    $wrapper->save();
+  $node = $nid ? node_load($nid) : FALSE;
+  if ($node) {
     stanford_cap_api_node_fields_update($node, $profile);
   }
   else {
@@ -495,7 +487,7 @@ function stanford_cap_api_profile_sync($profile) {
     $node->language = LANGUAGE_NONE;
     node_save($node);
     $node = node_load($node->nid, NULL, TRUE);
-    stanford_cap_api_node_fields_update($node, $profile);
+    stanford_cap_api_node_fields_import($node, $profile);
     // Saving profile<->node association.
     $record = array(
       'profile_id' => $profile['profileId'],
@@ -510,12 +502,12 @@ function stanford_cap_api_profile_sync($profile) {
 }
 
 /**
- * Sync profile fields to node.
+ * Save profile fields to node.
  *
  * @param $node
  * @param $profile
  */
-function stanford_cap_api_node_fields_update($node, $profile) {
+function stanford_cap_api_node_fields_import($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
 
   foreach ($profile as $field_name => $field_data) {
@@ -525,7 +517,46 @@ function stanford_cap_api_node_fields_update($node, $profile) {
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_format_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
+  $profile_id = $profile['profileId'];
+  foreach ($node as $field_name => $field_data) {
+    if (strpos($field_name, 'cap_') !== FALSE && $field_name != 'cap_profile_link' && $field_name != 'cap_sync_date') {
+      $record = array(
+        'profile_id' => $profile_id,
+        'field_name' => $field_name,
+        'hash' => $field_data,
+      );
+      drupal_write_record('cap_api_field_hashes', $record);
+    }
+  }
 }
+
+/**
+ * Update profile fields in node.
+ *
+ * @param $node
+ * @param $profile
+ */
+function stanford_cap_api_node_fields_update($node, $profile) {
+  $nw = entity_metadata_wrapper('node', $node);
+  $profile_id = $profile['profileId'];
+  foreach ($profile as $field_name => $field_data) {
+    $drupal_field = _stanford_cap_api_generate_field_name($field_name);
+    $hash = db_select('cap_api_field_hashes', 'hashes')
+      ->condition('profile_id', $profile_id)
+      ->condition('field_name', $drupal_field)
+      ->fields('hashes', array('hash'))
+      ->execute()
+      ->fetchField();
+    if($hash == serialize($node->{$drupal_field})){
+      $nw->{$drupal_field}->set(NULL);
+      _stanford_cap_api_save_field($node, $nw, $field_name, $field_data);
+    }
+  }
+  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_format_cap_profile_url($profile)));
+  $nw->cap_sync_date->set(REQUEST_TIME);
+  $nw->save();
+}
+
 
 /**
  * Import multiply CAP profiles.
