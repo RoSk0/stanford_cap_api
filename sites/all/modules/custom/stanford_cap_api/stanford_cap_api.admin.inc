@@ -281,11 +281,11 @@ function stanford_cap_api_import_form($form, &$form_state) {
     '#config' => array(
       'module' => 'stanford_cap_api',
       'params' => array(),
-      'save_lineage'    => 0,
+      'save_lineage' => 0,
       'enforce_deepest' => 0,
-      'entity_count'    => 0,
-      'require_entity'  => 0,
-      'resizable'       => 1,
+      'entity_count' => 0,
+      'require_entity' => 0,
+      'resizable' => 1,
       'level_labels' => array(
         'status' => 0,
         'labels' => array(
@@ -293,27 +293,27 @@ function stanford_cap_api_import_form($form, &$form_state) {
         ),
       ),
       'dropbox' => array(
-        'status'   => 0,
-        'title'    => t('All selections'),
-        'limit'    => 0,
+        'status' => 0,
+        'title' => t('All selections'),
+        'limit' => 0,
         'reset_hs' => 1,
       ),
       'editability' => array(
-        'status'           => 0,
-        'item_types'       => array(),
-        'allowed_levels'   => array(
+        'status' => 0,
+        'item_types' => array(),
+        'allowed_levels' => array(
           0 => 0,
           1 => 0,
           2 => 0,
         ),
         'allow_new_levels' => 0,
-        'max_levels'       => 3,
+        'max_levels' => 3,
       ),
-      'animation_delay'    => 400,
-      'special_items'      => array(),
+      'animation_delay' => 400,
+      'special_items' => array(),
       'render_flat_select' => 0,
     ),
-    '#default_value' => '1',
+    '#default_value' => 'none',
   );
 
   $form['workgroup'] = array(
@@ -351,7 +351,7 @@ function stanford_cap_api_import_form_submit($form, &$form_state) {
   if (!empty($values['name'])) {
     $params['name'] = check_plain($values['name']);
   }
-  if (!empty($values['organization'])) {
+  if (!empty($values['organization'][0])) {
     $org_codes = db_select('cap_api_orgs', 'orgs')
       ->condition('orgid', $values['organization'][0])
       ->fields('orgs', array('orgCodes'))->execute()->fetchField();
@@ -682,9 +682,46 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
       . ' Hierarchy !here.';
     $url = 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/';
     $form['new_group']['organization'] = array(
-      '#type' => 'textfield',
+      '#type' => 'hierarchical_select',
       '#title' => t('Organization'),
       '#description' => t($org_description, array('!here' => l(t('here'), $url))),
+      '#size' => 1,
+      '#config' => array(
+        'module' => 'stanford_cap_api',
+        'params' => array(),
+        'save_lineage' => 0,
+        'enforce_deepest' => 0,
+        'entity_count' => 0,
+        'require_entity' => 0,
+        'resizable' => 1,
+        'level_labels' => array(
+          'status' => 0,
+          'labels' => array(
+            0 => t('University'),
+          ),
+        ),
+        'dropbox' => array(
+          'status' => 0,
+          'title' => t('All selections'),
+          'limit' => 0,
+          'reset_hs' => 1,
+        ),
+        'editability' => array(
+          'status' => 0,
+          'item_types' => array(),
+          'allowed_levels' => array(
+            0 => 0,
+            1 => 0,
+            2 => 0,
+          ),
+          'allow_new_levels' => 0,
+          'max_levels' => 3,
+        ),
+        'animation_delay' => 400,
+        'special_items' => array(),
+        'render_flat_select' => 0,
+      ),
+      '#default_value' => 'none',
     );
 
     $form['new_group']['workgroup'] = array(
@@ -715,10 +752,28 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
     );
 
     foreach ($group_types as $group_type) {
-      if (!empty($form_state['values'][$group_type])) {
-        $name = check_plain($form_state['values'][$group_type]);
+      switch ($group_type) {
+        case 'organization':
+          $org_codes = db_select('cap_api_orgs', 'orgs')
+            ->condition('orgid', $form_state['values'][$group_type][0])
+            ->fields('orgs', array('orgCodes'))->execute()->fetchField();
+          $name = '';
+          if (!empty($org_codes)) {
+            $name = implode(',', unserialize($org_codes));
+          }
+          break;
+
+        default:
+          $name = check_plain(trim($form_state['values'][$group_type]));
+          break;
+      }
+      if (!empty($name)) {
         $count = _stanford_cap_api_get_group_profiles_count($group_type, $name);
-        $options[$group_type] = array('name' => $name, 'profiles' => $count);
+        $label = check_plain($name);
+        if ($group_type == 'organization') {
+          $label = stanford_cap_api_hierarchical_select_item_get_label($form_state['values'][$group_type][0]);
+        }
+        $options[$group_type] = array('name' => $label, 'profiles' => $count);
         $form['groups_to_save'][$group_type] = array(
           '#type' => 'value',
           '#value' => $name,
@@ -745,7 +800,7 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
  * Groups synchronization from submit handler.
  */
 function stanford_cap_api_group_sync_form_submit($form, &$form_state) {
-  if (!empty($form_state['values']['organization']) || !empty($form_state['values']['workgroup']) || !empty($form_state['values']['school'])) {
+  if (!empty($form_state['values']['organization'][0]) || !empty($form_state['values']['workgroup']) || !empty($form_state['values']['school'])) {
     $form_state['rebuild'] = TRUE;
   }
   if (isset($form_state['values']['groups_list'])) {

@@ -825,6 +825,20 @@ function stanford_cap_api_hierarchical_select_valid_item($orgid){
 }
 
 /**
+ * Implements hook_hierarchical_select_item_get_label().
+ */
+function stanford_cap_api_hierarchical_select_item_get_label($orgid){
+
+  $label = db_select('cap_api_orgs', 'orgs')
+    ->condition('orgid', $orgid)
+    ->fields('orgs', array('name'))
+    ->execute()
+    ->fetchField();
+
+  return check_plain($label);
+}
+
+/**
  * Introduce field type while we have no JSON schema.
  *
  * @todo Drop as we will get access to JSON schema.
