@@ -14,5 +14,9 @@
 function stanford_cap_api_profile_install() {
   require_once drupal_get_path('profile', 'standard') . '/standard.install';
   standard_install();
+  $disable = array('overlay', 'shortcut', 'toolbar');
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+  module_enable(array('admin_menu', 'admin_menu_toolbar', 'ctools', 'views_ui'));
 }
 
