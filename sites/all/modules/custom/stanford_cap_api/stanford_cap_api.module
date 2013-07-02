@@ -384,6 +384,14 @@ function stanford_cap_api_cron() {
     stanford_cap_api_update_profiles();
     stanford_cap_api_sync_group_cron();
   }
+  // Check if we have organizations imported.
+  $ids = db_select('cap_api_orgs', 'orgs')
+    ->fields('orgs', array('id'))
+    ->execute()
+    ->fetchCol();
+  if (empty($ids)) {
+    stanford_cap_api_import_organizations();
+  }
 }
 
 /**
