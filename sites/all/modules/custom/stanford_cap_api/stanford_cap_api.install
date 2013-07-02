@@ -148,7 +148,6 @@ function stanford_cap_api_schema() {
         'type' => 'int',
         'not null' => FALSE,
         'default' => 0,
-        'size' => 'tiny',
       ),
       'lastsynced' => array(
         'description' => 'Last synced timestamp.',

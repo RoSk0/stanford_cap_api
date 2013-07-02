@@ -279,7 +279,7 @@ function stanford_cap_api_import_form($form, &$form_state) {
 
   $form['school'] = array(
     '#type' => 'textfield',
-    '#title' => t('School / Department'),
+    '#title' => t('Organization alias'),
   );
 
   $form['organization'] = array(
