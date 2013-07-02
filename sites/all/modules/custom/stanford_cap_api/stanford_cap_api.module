@@ -877,14 +877,12 @@ function stanford_cap_api_hierarchical_select_item_get_label($orgid){
 function _stanford_cap_api_get_field_type($field_name) {
   $type = FALSE;
   switch ($field_name) {
-    case 'abstract':
     case 'academicYear':
     case 'academicYear8':
     case 'activity':
     case 'address':
     case 'address2':
     case 'alias':
-    case 'apaCitation':
     case 'apiLabel':
     case 'appointment':
     case 'californiaPhysicianLicense':
@@ -915,7 +913,6 @@ function _stanford_cap_api_get_field_type($field_name) {
     case 'location':
     case 'longitude':
     case 'middleName':
-    case 'mlaCitation':
     case 'name':
     case 'officeName':
     case 'org':
@@ -1019,6 +1016,9 @@ function _stanford_cap_api_get_field_type($field_name) {
       $type = 'integer';
       break;
 
+    case 'abstract':
+    case 'mlaCitation':
+    case 'apaCitation':
     case 'professionalInterests':
     case 'currentRoleAtStanford':
     case 'bio':
@@ -1761,10 +1761,10 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         if (is_string($field_data)) {
           // @todo Sometimes 'label' field just a bit longer then we expect,
           // e.g. 264-270 chars, so we truncating data to 255 until we get schema.
-          $wrapper->{$drupal_field_name}->set(substr($field_data, 0, 255));
+          $wrapper->{$drupal_field_name}->set(drupal_substr($field_data, 0, 255));
         }
         elseif (is_array($field_data) && !empty($field_data['html'])) {
-          $wrapper->{$drupal_field_name}->set(substr($field_data['html'], 0, 255));
+          $wrapper->{$drupal_field_name}->set(drupal_substr($field_data['html'], 0, 255));
         }
         break;
 
@@ -1772,7 +1772,7 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         $values = array();
         foreach ($field_data as $field) {
           if (is_string($field)) {
-            $values[] = substr($field, 0, 255);
+            $values[] = drupal_substr($field, 0, 255);
           }
         }
         $wrapper->{$drupal_field_name}->set($values);
