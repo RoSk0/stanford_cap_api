@@ -116,6 +116,13 @@ function stanford_cap_api_schema() {
         'type' => 'int',
         'not null' => TRUE,
       ),
+      'sync' => array(
+        'description' => 'Does this profile needs to be synced?',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 1,
+        'size' => 'tiny',
+      ),
     ),
     'primary key' => array('id', 'profile_id', 'nid'),
   );

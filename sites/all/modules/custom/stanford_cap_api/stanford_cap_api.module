@@ -402,8 +402,8 @@ function stanford_cap_api_cron() {
  */
 function stanford_cap_api_profile_import($profile_id) {
   $etag = stanford_cap_api_get_profile_etag($profile_id);
-  $stored_etag = stanford_cap_api_get_stored_profile_etag($profile_id);
-  if (empty($etag) && !empty($stored_etag)) {
+  $stored_metadata = stanford_cap_api_get_stored_profile_data($profile_id);
+  if (empty($etag) && !empty($stored_metadata['etag'])) {
     $action = variable_get('cap_orphaned_profile_action', 'unpublish');
     switch ($action) {
       case 'unpublish':
@@ -430,7 +430,10 @@ function stanford_cap_api_profile_import($profile_id) {
         break;
     }
   }
-  elseif (empty($stored_etag) || $etag != $stored_etag) {
+  elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
+    // Do nothing, we have synced flag off.
+  }
+  elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
     $profile = stanford_cap_api_get_profile($profile_id);
     if ($profile) {
       stanford_cap_api_synchronize_fields($profile);
@@ -613,26 +616,24 @@ function stanford_cap_api_get_profile_etag($profile_id) {
 }
 
 /**
- * Returns etag for stored specified profile.
- *
- * Etag is checksum used to determine if profile was changed in CAP.
+ * Returns metadata for stored specified profile.
  *
  * @param string $profile_id
  *   CAP profile ID.
  *
- * @return string|FALSE
- *   CAP profile etag or FALSE.
+ * @return array|FALSE
+ *   CAP profile metadata or FALSE.
  */
-function stanford_cap_api_get_stored_profile_etag($profile_id) {
-  $etag = FALSE;
+function stanford_cap_api_get_stored_profile_data($profile_id) {
+  $data = FALSE;
   if (is_numeric($profile_id)) {
-    $etag = db_select('cap_api_profiles', 'cap')
-      ->fields('cap', array('etag'))
+    $data = db_select('cap_api_profiles', 'cap')
+      ->fields('cap')
       ->condition('profile_id', $profile_id)
-      ->execute()->fetchField();
+      ->execute()->fetchAssoc();
   }
 
-  return $etag;
+  return $data;
 }
 
 /**
@@ -875,6 +876,39 @@ function stanford_cap_api_hierarchical_select_item_get_label($orgid){
     ->fetchField();
 
   return check_plain($label);
+}
+
+/**
+ * Implements hook_action_info().
+ */
+function stanford_cap_api_action_info() {
+  return array(
+    'stanford_cap_api_profile_stop_sync_action' => array(
+      'type' => 'node',
+      'label' => t('Stop profile synchronization'),
+      'configurable' => FALSE,
+      'triggers' => array(),
+    ),
+  );
+}
+
+/**
+ * Stop profile syncing action.
+ */
+function stanford_cap_api_profile_stop_sync_action($entity) {
+  if ($entity->type == 'cap_faculty_profile') {
+    $count = db_update('cap_api_profiles')
+      ->condition('nid', $entity->nid)
+      ->fields(array('sync' => 0))
+      ->execute();
+    if ($count == 1) {
+      watchdog(
+        'stanford_cap_api',
+        'Profile with ID %ID will not be synced anymore.',
+        array('%ID' => $entity->cap_profileid[LANGUAGE_NONE][0]['value'])
+      );
+    }
+  }
 }
 
 /**
