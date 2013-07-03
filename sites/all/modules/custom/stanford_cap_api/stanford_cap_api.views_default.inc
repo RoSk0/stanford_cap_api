@@ -49,6 +49,129 @@ function stanford_cap_api_views_default_views() {
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'Currently no CAP profiles being imported in the site.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+  /* Field: Bulk operations: Content */
+  $handler->display->display_options['fields']['views_bulk_operations']['id'] = 'views_bulk_operations';
+  $handler->display->display_options['fields']['views_bulk_operations']['table'] = 'node';
+  $handler->display->display_options['fields']['views_bulk_operations']['field'] = 'views_bulk_operations';
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['display_type'] = '0';
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['enable_select_all_pages'] = 1;
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['force_single'] = 0;
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['entity_load_capacity'] = '10';
+  $handler->display->display_options['fields']['views_bulk_operations']['vbo_operations'] = array(
+    'action::node_assign_owner_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::views_bulk_operations_delete_item' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 1,
+      'override_label' => 1,
+      'label' => 'Remove profile',
+    ),
+    'action::views_bulk_operations_script_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 1,
+      'override_label' => 1,
+      'label' => 'Stop syncing',
+    ),
+    'action::node_make_sticky_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_make_unsticky_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::views_bulk_operations_modify_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+      'settings' => array(
+        'show_all_tokens' => 1,
+        'display_values' => array(
+          '_all_' => '_all_',
+        ),
+      ),
+    ),
+    'action::views_bulk_operations_argument_selector_action' => array(
+      'selected' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+      'settings' => array(
+        'url' => '',
+      ),
+    ),
+    'action::node_promote_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_publish_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_unpromote_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_save_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::system_send_email_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::stanford_cap_api_profile_stop_sync_action' => array(
+      'selected' => 1,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 1,
+      'override_label' => 1,
+      'label' => 'Stop syncing',
+    ),
+    'action::node_unpublish_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+    'action::node_unpublish_by_keyword_action' => array(
+      'selected' => 0,
+      'postpone_processing' => 0,
+      'skip_confirmation' => 0,
+      'override_label' => 0,
+      'label' => '',
+    ),
+  );
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -75,21 +198,15 @@ function stanford_cap_api_views_default_views() {
   $handler->display->display_options['fields']['cap_profile_link']['alter']['text'] = 'View in CAP';
   $handler->display->display_options['fields']['cap_profile_link']['alter']['make_link'] = TRUE;
   $handler->display->display_options['fields']['cap_profile_link']['alter']['path'] = '[cap_profile_link-url]';
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['target'] = '_blank';
   $handler->display->display_options['fields']['cap_profile_link']['click_sort_column'] = 'url';
   $handler->display->display_options['fields']['cap_profile_link']['type'] = 'link_plain';
-  /* Field: Content: Delete link */
-  $handler->display->display_options['fields']['delete_node']['id'] = 'delete_node';
-  $handler->display->display_options['fields']['delete_node']['table'] = 'views_entity_node';
-  $handler->display->display_options['fields']['delete_node']['field'] = 'delete_node';
-  $handler->display->display_options['fields']['delete_node']['label'] = 'Stop syncing';
-  $handler->display->display_options['fields']['delete_node']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['delete_node']['text'] = 'Stop syncing';
   /* Field: Global: Custom text */
   $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['table'] = 'views';
   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['label'] = 'Operations';
-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[cap_profile_link] | [delete_node]';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[cap_profile_link]';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
