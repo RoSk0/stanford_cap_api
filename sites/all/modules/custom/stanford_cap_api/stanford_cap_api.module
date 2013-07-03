@@ -111,6 +111,16 @@ function stanford_cap_api_menu() {
     'file' => 'stanford_cap_api.admin.inc',
   );
 
+  $items['admin/config/cap/group/%/sync'] = array(
+    'title' => 'Synchronize group',
+    'page callback' => 'stanford_cap_api_group_sync_now',
+    'page arguments' => array(4),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
   return $items;
 }
 

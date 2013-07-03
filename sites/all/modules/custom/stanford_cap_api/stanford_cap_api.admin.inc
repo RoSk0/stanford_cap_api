@@ -657,11 +657,13 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
     );
     $rows = array();
     foreach ($groups as $group) {
+      $delete_link = l(t('Remove'), 'admin/config/cap/group/' . $group->id . '/delete');
+      $sync_link = l(t('Sync now'), 'admin/config/cap/group/' . $group->id . '/sync');
       $rows[] = array(
         check_plain($group->name),
         t('%count profiles', array('%count' => $group->count)),
         $group->lastsynced ? format_date($group->lastsynced, 'long') : t('Never'),
-        l(t('Remove'), 'admin/config/cap/group/' . $group->id . '/delete'),
+        $delete_link . ' | ' . $sync_link,
       );
     }
     $empty = 'No groups were saved for synchronization yet.';
@@ -875,7 +877,7 @@ function _stanford_cap_api_get_group_profiles_count($type, $name) {
  */
 function stanford_cap_api_group_sync_drop_form($form, &$form_state, $id) {
   $form_addition = array('id' => array('#type' => 'value', '#value' => $id));
-  $question = t('Are you sure you want to spot syncing this group?');
+  $question = t('Are you sure you want to stop syncing this group?');
 
   return confirm_form($form_addition, $question, 'admin/config/cap/group', NULL, t('Delete'));
 }
@@ -887,4 +889,30 @@ function stanford_cap_api_group_sync_drop_form_submit($form, &$form_state) {
   stanford_cap_api_sync_group_drop($form_state['values']['id']);
   $form_state['redirect'] = 'admin/config/cap/group';
   drupal_set_message(t('Group was successfully deleted.'));
+}
+
+/**
+ * Starts profiles group synchronization.
+ */
+function stanford_cap_api_group_sync_now($id) {
+  $group = db_select('cap_api_sync_groups', 'groups')
+    ->condition('id', $id)
+    ->fields('groups')
+    ->execute()
+    ->fetchAssoc();
+  $operations = array();
+  $operations[] = array(
+    '_stanford_cap_api_sync_group_wrapper',
+    array($group['type'], $group['name']),
+  );
+
+  $batch = array(
+    'title' => t('Synchronizing profile groups'),
+    'operations' => $operations,
+    'progress_message' => t('Current: @current | Remaining:
+    @remaining | Total: @total | Percentage: @percentage | Estimate:
+    @estimate | Elapsed: @elapsed'),
+  );
+  batch_set($batch);
+  batch_process('admin/config/cap/group');
 }
