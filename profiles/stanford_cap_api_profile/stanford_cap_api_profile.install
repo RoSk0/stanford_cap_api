@@ -1,7 +1,8 @@
 <?php
 /**
  * @file
- * Install, update and uninstall functions for the stanford_cap_api_profile installation profile.
+ * Install, update and uninstall functions for the stanford_cap_api_profile
+ * installation profile.
  */
 
 /**
