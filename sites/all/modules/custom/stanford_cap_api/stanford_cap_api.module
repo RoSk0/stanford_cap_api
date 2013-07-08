@@ -121,6 +121,15 @@ function stanford_cap_api_menu() {
     'file' => 'stanford_cap_api.admin.inc',
   );
 
+  $items['stanford-cap-api-user-autocomplete'] = array(
+    'title' => 'Autocomplete for CAP profile names',
+    'page callback' => 'stanford_cap_api_user_autocomplete',
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'stanford_cap_api.admin.inc',
+  );
+
   return $items;
 }
 

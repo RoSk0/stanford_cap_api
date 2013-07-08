@@ -275,6 +275,7 @@ function stanford_cap_api_import_form($form, &$form_state) {
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('First name / Last name'),
+    '#autocomplete_path' => 'stanford-cap-api-user-autocomplete',
   );
 
   $form['school'] = array(
@@ -915,4 +916,24 @@ function stanford_cap_api_group_sync_now($id) {
   );
   batch_set($batch);
   batch_process('admin/config/cap/group');
+}
+
+/**
+ * Menu callback for CAP profiles name autocomplete.
+ *
+ * @param string $str
+ *   String to search for.
+ */
+function stanford_cap_api_user_autocomplete($str = '') {
+  $matches = array();
+  if ($str) {
+    $response = stanford_cap_api_request('/api/cap/v1/search/autocomplete', array('q' => $str));
+    if (!empty($response['count'])) {
+      foreach ($response['values'] as $match) {
+        $matches[$match['name']] = $match['name'];
+      }
+    }
+  }
+
+  drupal_json_output($matches);
 }
