@@ -19,21 +19,18 @@ function stanford_cap_api_menu() {
     'description' => 'Community Academic Profiles API screens.',
     'position' => 'right',
     'weight' => -5,
-    'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access administration pages'),
-    'file' => 'system.admin.inc',
-    'file path' => drupal_get_path('module', 'system'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stanford_cap_api_details_form'),
+    // @todo Proper access check.
+    'access callback' => TRUE,
+    'file' => 'stanford_cap_api.admin.inc',
   );
 
   $items['admin/config/cap/details'] = array(
     'title' => 'Details',
     'description' => "Displays information about the site's connection to the CAP API.",
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('stanford_cap_api_details_form'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
     'weight' => -10,
-    'file' => 'stanford_cap_api.admin.inc',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
   );
 
   $items['admin/config/cap/settings'] = array(
@@ -45,6 +42,7 @@ function stanford_cap_api_menu() {
     'access callback' => TRUE,
     'weight' => 10,
     'file' => 'stanford_cap_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
   );
 
   $items['admin/config/cap/import'] = array(
@@ -56,6 +54,7 @@ function stanford_cap_api_menu() {
     'access callback' => TRUE,
     'weight' => -4,
     'file' => 'stanford_cap_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
   );
 
   $items['admin/config/cap/import/result'] = array(
@@ -78,6 +77,7 @@ function stanford_cap_api_menu() {
     'access callback' => TRUE,
     'file' => 'stanford_cap_api.admin.inc',
     'weight' => 11,
+    'type' => MENU_LOCAL_TASK,
   );
 
   $items['admin/config/cap/manage'] = array(
@@ -88,6 +88,7 @@ function stanford_cap_api_menu() {
     'access callback' => TRUE,
     'weight' => 0,
     'file' => 'stanford_cap_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
   );
 
   $items['admin/config/cap/group'] = array(
@@ -99,6 +100,7 @@ function stanford_cap_api_menu() {
     'access callback' => TRUE,
     'weight' => -2,
     'file' => 'stanford_cap_api.admin.inc',
+    'type' => MENU_LOCAL_TASK,
   );
 
   $items['admin/config/cap/group/%/delete'] = array(
