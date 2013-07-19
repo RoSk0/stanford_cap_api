@@ -46,7 +46,7 @@ function stanford_cap_api_details_form($form, &$form_state) {
   // text for the count of profiles
   $countbox = t($countbox, array('%count' => $count));
   $count_text = $countbox . t('CAP profile(s) are being stored in your website.');
-  $import_groups = l(t('importing groups'), 'admin/config/cap/import');
+  $import_groups = l(t('importing groups'), 'admin/config/cap/group');
   $import_people = l(t('importing individual profiles'), 'admin/config/cap/import');
     
   $count_text .= t('<br><em class="cap_additional">You can add more by ') . $import_groups . ' or ' . $import_people . '.</em>';
