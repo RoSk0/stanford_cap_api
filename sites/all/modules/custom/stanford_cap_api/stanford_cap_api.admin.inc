@@ -6,22 +6,31 @@
 
 define('ENTRY_PER_PAGE', 25);
 
+
+
 /**
  * Form builder for details page.
  */
 function stanford_cap_api_details_form($form, &$form_state) {
 
+  $checkbox = '<div class="cap_checkbox cap_cannot_connect"><span></span></div>';
+  $countbox = '<div class="cap_checkbox cap_total"><span>%count</span></div>';
+  $datebox = '<div class="cap_checkbox cap_date"><span>%count</span></div>';
+  
   $status = stanford_cap_api_auth();
-  $status_message = t("Currently, your site can't connect to CAP API.");
+  $status_message = t("Currently, your site can't connect to CAP.");
   if ($status) {
-    $status_message = t('Currently, your site can connect to CAP API.');
+    $checkbox = '<div class="cap_checkbox cap_can_connect"><span></span></div>';
+    $status_message = t('Currently, your site can connect to CAP.');
   }
 
   $form['status_wrapper'] = array(
     '#type' => 'container',
+    '#prefix' => '<div class="cap_info_wrapper">',
+    '#suffix' => '<div class="clearfix"></div></div>',
   );
   $form['status_wrapper']['status'] = array(
-    '#markup' => $status_message,
+    '#markup' => $checkbox . $status_message,
   );
 
   $query = new EntityFieldQuery();
@@ -30,25 +39,39 @@ function stanford_cap_api_details_form($form, &$form_state) {
     ->entityCondition('bundle', 'cap_faculty_profile')
     ->count()
     ->execute();
+    
+  $countbox = t($countbox, array('%count' => $count));
+    
   $form['count_wrapper'] = array(
     '#type' => 'container',
-  );
+    '#prefix' => '<div class="cap_info_wrapper">',
+    '#suffix' => '<div class="clearfix"></div></div>',
+    );
   $form['count_wrapper']['count'] = array(
-    '#markup' => t('There are %count CAP profiles being synchronized with your website.', array('%count' => $count)),
+    '#markup' => $countbox . t('CAP profile(s) are being synchronized with your website.'),
   );
 
   $sync_date_stamp = variable_get('stanford_cap_api_cron_last_run', 0);
+  
+  $diff = round((time() - $sync_date_stamp)/60/60);
+  $datebox = t($datebox, array('%count' => $diff));
+  
   if (empty($sync_date_stamp)) {
-    $sync_text = t('CAP profiles were not synchronized yet.');
+    $sync_text = t('CAP profiles were not sync yet.');
   }
   else {
-    $sync_text = t('The last time CAP profiles were synchronized was %sync_date.', array('%sync_date' => format_date($sync_date_stamp, 'long')));
+    $sync_text = t('Hour(s) since last sync.');
   }
+  
+  
+  
   $form['sync_date_wrapper'] = array(
     '#type' => 'container',
-  );
+    '#prefix' => '<div class="cap_info_wrapper">',
+    '#suffix' => '<div class="clearfix"></div></div>',
+    );
   $form['sync_date_wrapper']['sync_date'] = array(
-    '#markup' => $sync_text,
+    '#markup' => $datebox . $sync_text,
   );
 
   $form['actions'] = array('#type' => 'actions');

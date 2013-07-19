@@ -134,6 +134,17 @@ function stanford_cap_api_menu() {
 }
 
 /**
+ * 
+ */
+function stanford_cap_api_preprocess_page(&$variables){
+  // include css files only on admin pages
+  if(arg(0) == 'admin' && arg(1) == 'config' && arg(2) == 'cap'){
+    drupal_add_css(drupal_get_path('module', 'stanford_cap_api') . '/css/stanford_cap_api.css');
+  }
+}
+
+
+/**
  * Synchronize fields structure from CAP profile to Drupal.
  *
  * @param array $profile
