@@ -13,12 +13,15 @@ define('ENTRY_PER_PAGE', 25);
  */
 function stanford_cap_api_details_form($form, &$form_state) {
 
+  // checkboxes, used to display status and icons
   $checkbox = '<div class="cap_checkbox cap_cannot_connect"><span></span></div>';
   $countbox = '<div class="cap_checkbox cap_total"><span>%count</span></div>';
   $datebox = '<div class="cap_checkbox cap_date"><span>%count</span></div>';
   
+  // add the status message
   $status = stanford_cap_api_auth();
   $status_message = t("Currently, your site can't connect to CAP.");
+  $status_message .= t('<br><em class="cap_additional">Please check your settings on the ') . l('settings page', 'admin/config/cap/settings') . '.</em>';
   if ($status) {
     $checkbox = '<div class="cap_checkbox cap_can_connect"><span></span></div>';
     $status_message = t('Currently, your site can connect to CAP.');
@@ -40,15 +43,21 @@ function stanford_cap_api_details_form($form, &$form_state) {
     ->count()
     ->execute();
     
+  // text for the count of profiles
   $countbox = t($countbox, array('%count' => $count));
+  $count_text = $countbox . t('CAP profile(s) are being stored in your website.');
+  $import_groups = l(t('importing groups'), 'admin/config/cap/import');
+  $import_people = l(t('importing individual profiles'), 'admin/config/cap/import');
     
+  $count_text .= t('<br><em class="cap_additional">You can add more by ') . $import_groups . ' or ' . $import_people . '.</em>';
+  
   $form['count_wrapper'] = array(
     '#type' => 'container',
     '#prefix' => '<div class="cap_info_wrapper">',
     '#suffix' => '<div class="clearfix"></div></div>',
     );
   $form['count_wrapper']['count'] = array(
-    '#markup' => $countbox . t('CAP profile(s) are being synchronized with your website.'),
+    '#markup' => $count_text,
   );
 
   $sync_date_stamp = variable_get('stanford_cap_api_cron_last_run', 0);
@@ -62,6 +71,7 @@ function stanford_cap_api_details_form($form, &$form_state) {
   else {
     $sync_text = t('Hour(s) since last sync.');
   }
+  $sync_text .= t('<br><em class="cap_additional">You can adjust the frequency of updates on the ') . l('settings page', 'admin/config/cap/settings') . '.</em>';
   
   
   

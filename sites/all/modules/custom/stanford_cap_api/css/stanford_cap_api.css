@@ -2,7 +2,7 @@
 
 .cap_info_wrapper {
 	margin-bottom: 10px;
-	height: 55px;
+	height: 80px;
   font-size: 1.1em;
 }
 .cap_checkbox {
@@ -35,4 +35,8 @@
 }
 .cap_checkbox.cap_date {
   background-color: #53284F;
+}
+.cap_additional {
+	font-size: 0.9em;
+	margin-left: 60px;
 }
