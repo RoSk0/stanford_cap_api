@@ -140,14 +140,16 @@ function stanford_cap_api_settings_form($form, &$form_state) {
 
   $form['synchronization'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Synchronization information'),
+    '#title' => t('Profile Editing'),
   );
 
   $form['synchronization']['description_wrapper'] = array(
     '#type' => 'container',
   );
-  $description = 'There are several options for how synchronization with the'
-    . ' CAP API can be handled.';
+  $description = 'These options allow authorized users to change the structure and content of CAP profiles. Please note, any changes to profiles will be ';
+  $description .= 'specific to this site, and will not make their way back up to CAP.';
+    
+    
   $form['synchronization']['description_wrapper']['description'] = array(
     '#markup' => t($description),
   );
@@ -291,10 +293,11 @@ function stanford_cap_api_import_form($form, &$form_state) {
   $form['description_wrapper'] = array(
     '#type' => 'container',
   );
-  $description = 'CAP Profiles can be imported into the system by identifying'
-    . ' the correct faculty members to add to your website. Select faculty'
-    . ' profiles using the tools below, and you can select specific profiles'
-    . ' from the next screen.';
+  $description = 'Individual CAP Profiles can be imported into the system by identifying'
+    . ' the correct faculty members to add to your website. Use the tools below to search for '
+    . ' individual profiles, and you can select specific profiles for import '
+    . '  on the next screen.';
+    
   $form['description_wrapper']['description'] = array(
     '#markup' => t($description),
   );
@@ -305,17 +308,29 @@ function stanford_cap_api_import_form($form, &$form_state) {
     '#suffix' => '</h3>',
   );
 
+  $name_desc = 'Please enter a name to search for. You can search using a partial match, or by selecting from the list of suggested names.';
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('First name / Last name'),
     '#autocomplete_path' => 'stanford-cap-api-user-autocomplete',
+    '#description' => t($name_desc),
   );
 
+  /**
+   * Disabling this field until we get a better explanation of how it works from MEDIRT
+   * @TODO: get better documentation on this field
+   */
+  /*
   $form['school'] = array(
     '#type' => 'textfield',
     '#title' => t('Organization alias'),
   );
+  */
 
+  $org_description = 'Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code'
+    . ' Hierarchy !here.';
+  $url = 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/';
+    
   $form['organization'] = array(
     '#type' => 'hierarchical_select',
     '#title' => t('Organization'),
@@ -356,21 +371,32 @@ function stanford_cap_api_import_form($form, &$form_state) {
       'render_flat_select' => 0,
     ),
     '#default_value' => 'none',
+    '#description' => t($org_description, array('!here' => l(t('by clicking here'), $url))),
   );
 
+  
+  $workgroup_desc = t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here');
+  $url = 'https://workgroup.stanford.edu';
+  
   $form['workgroup'] = array(
     '#type' => 'textfield',
     '#title' => t('Workgroup'),
+    '#description'    => t($workgroup_desc, array('!here' => l(t('at the workgroup manager website.'), $url))),
   );
 
+  $uiddesc = t('Please enter the university id for the profile you wish to import.');
+  
   $form['university_id'] = array(
     '#type' => 'textfield',
     '#title' => t('University ID'),
+    '#description'    => t($uiddesc),
   );
 
+  $sunetdesc = t('Please enter SUNET ids for the profiles you wish to import. You can enter multiple SUNET IDs by separating them with a comma.');
   $form['sunet_id'] = array(
     '#type' => 'textarea',
     '#title' => t('SUNet ID'),
+    '#description' => t($sunetdesc),
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -717,18 +743,24 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
       '#title' => t('Add new group'),
     );
 
+    /**
+     * Removing this for now, does not appear in the API
+     * @TODO: confirm with Darryl how the name search works for orgs
+     */
+    /*
     $form['new_group']['school'] = array(
       '#type' => 'textfield',
       '#title' => t('School/Department'),
     );
+    */
 
-    $org_description = 'You can learn more about Stanford University Org Code'
+    $org_description = 'Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code'
       . ' Hierarchy !here.';
     $url = 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/';
     $form['new_group']['organization'] = array(
       '#type' => 'hierarchical_select',
       '#title' => t('Organization'),
-      '#description' => t($org_description, array('!here' => l(t('here'), $url))),
+      '#description' => t($org_description, array('!here' => l(t('by clicking here'), $url))),
       '#size' => 1,
       '#config' => array(
         'module' => 'stanford_cap_api',
@@ -768,9 +800,15 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
       '#default_value' => 'none',
     );
 
+    
+    $workgroup_desc = t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here');
+    $url = 'https://workgroup.stanford.edu';
+    
+    
     $form['new_group']['workgroup'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Workgroup'),
+      '#type'           => 'textfield',
+      '#title'          => t('Workgroup'),
+      '#description'    => t($workgroup_desc, array('!here' => l(t('at the workgroup manager website.'), $url))),
     );
 
     $form['new_group']['search'] = array(

@@ -46,7 +46,7 @@ function stanford_cap_api_menu() {
   );
 
   $items['admin/config/cap/import'] = array(
-    'title' => 'Import profiles',
+    'title' => 'Profile import',
     'description' => 'Provides administrators ability to import CAP profiles.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_import_form'),
@@ -58,7 +58,7 @@ function stanford_cap_api_menu() {
   );
 
   $items['admin/config/cap/import/result'] = array(
-    'title' => 'Import profiles',
+    'title' => 'Profile import',
     'description' => 'Provides administrators ability to import CAP profiles.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_import_result_form'),
@@ -92,13 +92,13 @@ function stanford_cap_api_menu() {
   );
 
   $items['admin/config/cap/group'] = array(
-    'title' => 'Group sync',
+    'title' => 'Group import',
     'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_group_sync_form'),
     // @todo Proper access check.
     'access callback' => TRUE,
-    'weight' => -2,
+    'weight' => -5,
     'file' => 'stanford_cap_api.admin.inc',
     'type' => MENU_LOCAL_TASK,
   );
