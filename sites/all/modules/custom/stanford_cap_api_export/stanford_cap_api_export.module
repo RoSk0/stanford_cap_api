@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Stanford CAP API export feature.
+ */
+
+include_once 'stanford_cap_api_export.features.inc';

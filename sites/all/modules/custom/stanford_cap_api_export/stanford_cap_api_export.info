@@ -1,0 +1,11 @@
+name = Stanford CAP API export
+core = 7.x
+package = Stanford
+dependencies[] = field_collection_views
+dependencies[] = views
+dependencies[] = views_data_export
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = stanford_cap_api_export_profiles
+features[views_view][] = stanford_cap_api_field_collection_view
+features_exclude[dependencies][ctools] = ctools
