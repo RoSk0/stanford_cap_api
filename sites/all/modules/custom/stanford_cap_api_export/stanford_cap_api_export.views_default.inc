@@ -90,11 +90,9 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_affiliations']['field'] = 'cap_affiliations';
   $handler->display->display_options['fields']['cap_affiliations']['alter']['trim_whitespace'] = TRUE;
   $handler->display->display_options['fields']['cap_affiliations']['alter']['strip_tags'] = TRUE;
-  $handler->display->display_options['fields']['cap_affiliations']['type'] = 'field_collection_views_view';
+  $handler->display->display_options['fields']['cap_affiliations']['type'] = 'field_collection_fields';
   $handler->display->display_options['fields']['cap_affiliations']['settings'] = array(
-    'name' => 'stanford_cap_api_field_collection_view',
-    'display_id' => 'default',
-    'add' => 'Add',
+    'view_mode' => 'full',
   );
   $handler->display->display_options['fields']['cap_affiliations']['delta_offset'] = '0';
   /* Field: Content: alternateContact */
@@ -172,11 +170,8 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_documents']['id'] = 'cap_documents';
   $handler->display->display_options['fields']['cap_documents']['table'] = 'field_data_cap_documents';
   $handler->display->display_options['fields']['cap_documents']['field'] = 'cap_documents';
+  $handler->display->display_options['fields']['cap_documents']['type'] = 'field_collection_fields';
   $handler->display->display_options['fields']['cap_documents']['settings'] = array(
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'add' => 'Add',
-    'description' => 1,
     'view_mode' => 'full',
   );
   $handler->display->display_options['fields']['cap_documents']['delta_offset'] = '0';
@@ -392,11 +387,8 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_workexperience']['id'] = 'cap_workexperience';
   $handler->display->display_options['fields']['cap_workexperience']['table'] = 'field_data_cap_workexperience';
   $handler->display->display_options['fields']['cap_workexperience']['field'] = 'cap_workexperience';
+  $handler->display->display_options['fields']['cap_workexperience']['type'] = 'field_collection_fields';
   $handler->display->display_options['fields']['cap_workexperience']['settings'] = array(
-    'edit' => 'Edit',
-    'delete' => 'Delete',
-    'add' => 'Add',
-    'description' => 1,
     'view_mode' => 'full',
   );
   $handler->display->display_options['fields']['cap_workexperience']['delta_offset'] = '0';
