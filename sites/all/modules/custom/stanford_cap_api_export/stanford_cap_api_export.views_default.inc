@@ -49,6 +49,10 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'No CAP profiles are being stored in the site. You can <a href="/admin/config/cap/import">add profiles</a> or <a href="/admin/config/cap/group">add groups</a>.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+  /* Field: Content: Nid */
+  $handler->display->display_options['fields']['nid']['id'] = 'nid';
+  $handler->display->display_options['fields']['nid']['table'] = 'node';
+  $handler->display->display_options['fields']['nid']['field'] = 'nid';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -94,7 +98,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_affiliations']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_affiliations']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_affiliations']['delta_offset'] = '0';
+  /* Field: Content: affiliations (cap_affiliations:delta) */
+  $handler->display->display_options['fields']['delta']['id'] = 'delta';
+  $handler->display->display_options['fields']['delta']['table'] = 'field_data_cap_affiliations';
+  $handler->display->display_options['fields']['delta']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta']['separator'] = '';
   /* Field: Content: alternateContact */
   $handler->display->display_options['fields']['cap_alternatecontact']['id'] = 'cap_alternatecontact';
   $handler->display->display_options['fields']['cap_alternatecontact']['table'] = 'field_data_cap_alternatecontact';
@@ -103,7 +113,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_alternatecontact']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_alternatecontact']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_alternatecontact']['delta_offset'] = '0';
+  /* Field: Content: alternateContact (cap_alternatecontact:delta) */
+  $handler->display->display_options['fields']['delta_1']['id'] = 'delta_1';
+  $handler->display->display_options['fields']['delta_1']['table'] = 'field_data_cap_alternatecontact';
+  $handler->display->display_options['fields']['delta_1']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_1']['separator'] = '';
   /* Field: Content: bio */
   $handler->display->display_options['fields']['cap_bio']['id'] = 'cap_bio';
   $handler->display->display_options['fields']['cap_bio']['table'] = 'field_data_cap_bio';
@@ -120,7 +136,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_clerkships']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_clerkships']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_clerkships']['delta_offset'] = '0';
+  /* Field: Content: clerkships (cap_clerkships:delta) */
+  $handler->display->display_options['fields']['delta_2']['id'] = 'delta_2';
+  $handler->display->display_options['fields']['delta_2']['table'] = 'field_data_cap_clerkships';
+  $handler->display->display_options['fields']['delta_2']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_2']['separator'] = '';
   /* Field: Content: clinicalContacts */
   $handler->display->display_options['fields']['cap_clinicalcontacts']['id'] = 'cap_clinicalcontacts';
   $handler->display->display_options['fields']['cap_clinicalcontacts']['table'] = 'field_data_cap_clinicalcontacts';
@@ -129,12 +151,24 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_clinicalcontacts']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_clinicalcontacts']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_clinicalcontacts']['delta_offset'] = '0';
+  /* Field: Content: clinicalContacts (cap_clinicalcontacts:delta) */
+  $handler->display->display_options['fields']['delta_3']['id'] = 'delta_3';
+  $handler->display->display_options['fields']['delta_3']['table'] = 'field_data_cap_clinicalcontacts';
+  $handler->display->display_options['fields']['delta_3']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_3']['separator'] = '';
   /* Field: Content: clinicalFocus */
   $handler->display->display_options['fields']['cap_clinicalfocus']['id'] = 'cap_clinicalfocus';
   $handler->display->display_options['fields']['cap_clinicalfocus']['table'] = 'field_data_cap_clinicalfocus';
   $handler->display->display_options['fields']['cap_clinicalfocus']['field'] = 'cap_clinicalfocus';
+  $handler->display->display_options['fields']['cap_clinicalfocus']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_clinicalfocus']['delta_offset'] = '0';
+  /* Field: Content: clinicalFocus (cap_clinicalfocus:delta) */
+  $handler->display->display_options['fields']['delta_4']['id'] = 'delta_4';
+  $handler->display->display_options['fields']['delta_4']['table'] = 'field_data_cap_clinicalfocus';
+  $handler->display->display_options['fields']['delta_4']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_4']['separator'] = '';
   /* Field: Content: clinicalInterests */
   $handler->display->display_options['fields']['cap_clinicalinterests']['id'] = 'cap_clinicalinterests';
   $handler->display->display_options['fields']['cap_clinicalinterests']['table'] = 'field_data_cap_clinicalinterests';
@@ -143,7 +177,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_clinicalinterests']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_clinicalinterests']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_clinicalinterests']['delta_offset'] = '0';
+  /* Field: Content: clinicalInterests (cap_clinicalinterests:delta) */
+  $handler->display->display_options['fields']['delta_5']['id'] = 'delta_5';
+  $handler->display->display_options['fields']['delta_5']['table'] = 'field_data_cap_clinicalinterests';
+  $handler->display->display_options['fields']['delta_5']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_5']['separator'] = '';
   /* Field: Content: coursesTaught */
   $handler->display->display_options['fields']['cap_coursestaught']['id'] = 'cap_coursestaught';
   $handler->display->display_options['fields']['cap_coursestaught']['table'] = 'field_data_cap_coursestaught';
@@ -152,7 +192,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_coursestaught']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_coursestaught']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_coursestaught']['delta_offset'] = '0';
+  /* Field: Content: coursesTaught (cap_coursestaught:delta) */
+  $handler->display->display_options['fields']['delta_6']['id'] = 'delta_6';
+  $handler->display->display_options['fields']['delta_6']['table'] = 'field_data_cap_coursestaught';
+  $handler->display->display_options['fields']['delta_6']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_6']['separator'] = '';
   /* Field: Content: currentResearchInterests */
   $handler->display->display_options['fields']['cap_currentresearchinterests']['id'] = 'cap_currentresearchinterests';
   $handler->display->display_options['fields']['cap_currentresearchinterests']['table'] = 'field_data_cap_currentresearchinterests';
@@ -161,7 +207,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_currentresearchinterests']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_currentresearchinterests']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_currentresearchinterests']['delta_offset'] = '0';
+  /* Field: Content: currentResearchInterests (cap_currentresearchinterests:delta) */
+  $handler->display->display_options['fields']['delta_7']['id'] = 'delta_7';
+  $handler->display->display_options['fields']['delta_7']['table'] = 'field_data_cap_currentresearchinterests';
+  $handler->display->display_options['fields']['delta_7']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_7']['separator'] = '';
   /* Field: Content: displayName */
   $handler->display->display_options['fields']['cap_displayname']['id'] = 'cap_displayname';
   $handler->display->display_options['fields']['cap_displayname']['table'] = 'field_data_cap_displayname';
@@ -174,7 +226,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_documents']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_documents']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_documents']['delta_offset'] = '0';
+  /* Field: Content: documents (cap_documents:delta) */
+  $handler->display->display_options['fields']['delta_8']['id'] = 'delta_8';
+  $handler->display->display_options['fields']['delta_8']['table'] = 'field_data_cap_documents';
+  $handler->display->display_options['fields']['delta_8']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_8']['separator'] = '';
   /* Field: Content: education */
   $handler->display->display_options['fields']['cap_education']['id'] = 'cap_education';
   $handler->display->display_options['fields']['cap_education']['table'] = 'field_data_cap_education';
@@ -183,7 +241,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_education']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_education']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_education']['delta_offset'] = '0';
+  /* Field: Content: education (cap_education:delta) */
+  $handler->display->display_options['fields']['delta_9']['id'] = 'delta_9';
+  $handler->display->display_options['fields']['delta_9']['table'] = 'field_data_cap_education';
+  $handler->display->display_options['fields']['delta_9']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_9']['separator'] = '';
   /* Field: Content: graduateAndFellowshipPrograms */
   $handler->display->display_options['fields']['cap_graduateandfellowshipprogram']['id'] = 'cap_graduateandfellowshipprogram';
   $handler->display->display_options['fields']['cap_graduateandfellowshipprogram']['table'] = 'field_data_cap_graduateandfellowshipprogram';
@@ -192,7 +256,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_graduateandfellowshipprogram']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_graduateandfellowshipprogram']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_graduateandfellowshipprogram']['delta_offset'] = '0';
+  /* Field: Content: graduateAndFellowshipPrograms (cap_graduateandfellowshipprogram:delta) */
+  $handler->display->display_options['fields']['delta_10']['id'] = 'delta_10';
+  $handler->display->display_options['fields']['delta_10']['table'] = 'field_data_cap_graduateandfellowshipprogram';
+  $handler->display->display_options['fields']['delta_10']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_10']['separator'] = '';
   /* Field: Content: honorsAndAwards */
   $handler->display->display_options['fields']['cap_honorsandawards']['id'] = 'cap_honorsandawards';
   $handler->display->display_options['fields']['cap_honorsandawards']['table'] = 'field_data_cap_honorsandawards';
@@ -201,7 +271,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_honorsandawards']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_honorsandawards']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_honorsandawards']['delta_offset'] = '0';
+  /* Field: Content: honorsAndAwards (cap_honorsandawards:delta) */
+  $handler->display->display_options['fields']['delta_11']['id'] = 'delta_11';
+  $handler->display->display_options['fields']['delta_11']['table'] = 'field_data_cap_honorsandawards';
+  $handler->display->display_options['fields']['delta_11']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_11']['separator'] = '';
   /* Field: Content: internetLinks */
   $handler->display->display_options['fields']['cap_internetlinks']['id'] = 'cap_internetlinks';
   $handler->display->display_options['fields']['cap_internetlinks']['table'] = 'field_data_cap_internetlinks';
@@ -210,12 +286,24 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_internetlinks']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_internetlinks']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_internetlinks']['delta_offset'] = '0';
+  /* Field: Content: internetLinks (cap_internetlinks:delta) */
+  $handler->display->display_options['fields']['delta_12']['id'] = 'delta_12';
+  $handler->display->display_options['fields']['delta_12']['table'] = 'field_data_cap_internetlinks';
+  $handler->display->display_options['fields']['delta_12']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_12']['separator'] = '';
   /* Field: Content: keywords */
   $handler->display->display_options['fields']['cap_keywords']['id'] = 'cap_keywords';
   $handler->display->display_options['fields']['cap_keywords']['table'] = 'field_data_cap_keywords';
   $handler->display->display_options['fields']['cap_keywords']['field'] = 'cap_keywords';
+  $handler->display->display_options['fields']['cap_keywords']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_keywords']['delta_offset'] = '0';
+  /* Field: Content: keywords (cap_keywords:delta) */
+  $handler->display->display_options['fields']['delta_13']['id'] = 'delta_13';
+  $handler->display->display_options['fields']['delta_13']['table'] = 'field_data_cap_keywords';
+  $handler->display->display_options['fields']['delta_13']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_13']['separator'] = '';
   /* Field: Content: labAffiliations */
   $handler->display->display_options['fields']['cap_labaffiliations']['id'] = 'cap_labaffiliations';
   $handler->display->display_options['fields']['cap_labaffiliations']['table'] = 'field_data_cap_labaffiliations';
@@ -224,7 +312,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_labaffiliations']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_labaffiliations']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_labaffiliations']['delta_offset'] = '0';
+  /* Field: Content: labAffiliations (cap_labaffiliations:delta) */
+  $handler->display->display_options['fields']['delta_14']['id'] = 'delta_14';
+  $handler->display->display_options['fields']['delta_14']['table'] = 'field_data_cap_labaffiliations';
+  $handler->display->display_options['fields']['delta_14']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_14']['separator'] = '';
   /* Field: Content: lastModified */
   $handler->display->display_options['fields']['cap_lastmodified']['id'] = 'cap_lastmodified';
   $handler->display->display_options['fields']['cap_lastmodified']['table'] = 'field_data_cap_lastmodified';
@@ -244,7 +338,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_longtitle']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_longtitle']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_longtitle']['delta_offset'] = '0';
+  /* Field: Content: longTitle (cap_longtitle:delta) */
+  $handler->display->display_options['fields']['delta_15']['id'] = 'delta_15';
+  $handler->display->display_options['fields']['delta_15']['table'] = 'field_data_cap_longtitle';
+  $handler->display->display_options['fields']['delta_15']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_15']['separator'] = '';
   /* Field: Content: membershipOrganizations */
   $handler->display->display_options['fields']['cap_membershiporganizations']['id'] = 'cap_membershiporganizations';
   $handler->display->display_options['fields']['cap_membershiporganizations']['table'] = 'field_data_cap_membershiporganizations';
@@ -253,7 +353,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_membershiporganizations']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_membershiporganizations']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_membershiporganizations']['delta_offset'] = '0';
+  /* Field: Content: membershipOrganizations (cap_membershiporganizations:delta) */
+  $handler->display->display_options['fields']['delta_16']['id'] = 'delta_16';
+  $handler->display->display_options['fields']['delta_16']['table'] = 'field_data_cap_membershiporganizations';
+  $handler->display->display_options['fields']['delta_16']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_16']['separator'] = '';
   /* Field: Content: meta */
   $handler->display->display_options['fields']['cap_meta']['id'] = 'cap_meta';
   $handler->display->display_options['fields']['cap_meta']['table'] = 'field_data_cap_meta';
@@ -262,7 +368,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_meta']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_meta']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_meta']['delta_offset'] = '0';
+  /* Field: Content: meta (cap_meta:delta) */
+  $handler->display->display_options['fields']['delta_17']['id'] = 'delta_17';
+  $handler->display->display_options['fields']['delta_17']['table'] = 'field_data_cap_meta';
+  $handler->display->display_options['fields']['delta_17']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_17']['separator'] = '';
   /* Field: Content: names */
   $handler->display->display_options['fields']['cap_names']['id'] = 'cap_names';
   $handler->display->display_options['fields']['cap_names']['table'] = 'field_data_cap_names';
@@ -271,7 +383,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_names']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_names']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_names']['delta_offset'] = '0';
+  /* Field: Content: names (cap_names:delta) */
+  $handler->display->display_options['fields']['delta_18']['id'] = 'delta_18';
+  $handler->display->display_options['fields']['delta_18']['table'] = 'field_data_cap_names';
+  $handler->display->display_options['fields']['delta_18']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_18']['separator'] = '';
   /* Field: Content: personalInterests */
   $handler->display->display_options['fields']['cap_personalinterests']['id'] = 'cap_personalinterests';
   $handler->display->display_options['fields']['cap_personalinterests']['table'] = 'field_data_cap_personalinterests';
@@ -284,7 +402,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_presentations']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_presentations']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_presentations']['delta_offset'] = '0';
+  /* Field: Content: presentations (cap_presentations:delta) */
+  $handler->display->display_options['fields']['delta_19']['id'] = 'delta_19';
+  $handler->display->display_options['fields']['delta_19']['table'] = 'field_data_cap_presentations';
+  $handler->display->display_options['fields']['delta_19']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_19']['separator'] = '';
   /* Field: Content: primaryContact */
   $handler->display->display_options['fields']['cap_primarycontact']['id'] = 'cap_primarycontact';
   $handler->display->display_options['fields']['cap_primarycontact']['table'] = 'field_data_cap_primarycontact';
@@ -293,7 +417,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_primarycontact']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_primarycontact']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_primarycontact']['delta_offset'] = '0';
+  /* Field: Content: primaryContact (cap_primarycontact:delta) */
+  $handler->display->display_options['fields']['delta_20']['id'] = 'delta_20';
+  $handler->display->display_options['fields']['delta_20']['table'] = 'field_data_cap_primarycontact';
+  $handler->display->display_options['fields']['delta_20']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_20']['separator'] = '';
   /* Field: Content: profilePhotos */
   $handler->display->display_options['fields']['cap_profilephotos']['id'] = 'cap_profilephotos';
   $handler->display->display_options['fields']['cap_profilephotos']['table'] = 'field_data_cap_profilephotos';
@@ -302,7 +432,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_profilephotos']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_profilephotos']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_profilephotos']['delta_offset'] = '0';
+  /* Field: Content: profilePhotos (cap_profilephotos:delta) */
+  $handler->display->display_options['fields']['delta_21']['id'] = 'delta_21';
+  $handler->display->display_options['fields']['delta_21']['table'] = 'field_data_cap_profilephotos';
+  $handler->display->display_options['fields']['delta_21']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_21']['separator'] = '';
   /* Field: Content: publications */
   $handler->display->display_options['fields']['cap_publications']['id'] = 'cap_publications';
   $handler->display->display_options['fields']['cap_publications']['table'] = 'field_data_cap_publications';
@@ -311,7 +447,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_publications']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_publications']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_publications']['delta_offset'] = '0';
+  /* Field: Content: publications (cap_publications:delta) */
+  $handler->display->display_options['fields']['delta_22']['id'] = 'delta_22';
+  $handler->display->display_options['fields']['delta_22']['table'] = 'field_data_cap_publications';
+  $handler->display->display_options['fields']['delta_22']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_22']['separator'] = '';
   /* Field: Content: publicationTags */
   $handler->display->display_options['fields']['cap_publicationtags']['id'] = 'cap_publicationtags';
   $handler->display->display_options['fields']['cap_publicationtags']['table'] = 'field_data_cap_publicationtags';
@@ -320,7 +462,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_publicationtags']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_publicationtags']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_publicationtags']['delta_offset'] = '0';
+  /* Field: Content: publicationTags (cap_publicationtags:delta) */
+  $handler->display->display_options['fields']['delta_23']['id'] = 'delta_23';
+  $handler->display->display_options['fields']['delta_23']['table'] = 'field_data_cap_publicationtags';
+  $handler->display->display_options['fields']['delta_23']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_23']['separator'] = '';
   /* Field: Content: researchProjects */
   $handler->display->display_options['fields']['cap_researchprojects']['id'] = 'cap_researchprojects';
   $handler->display->display_options['fields']['cap_researchprojects']['table'] = 'field_data_cap_researchprojects';
@@ -329,7 +477,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_researchprojects']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_researchprojects']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_researchprojects']['delta_offset'] = '0';
+  /* Field: Content: researchProjects (cap_researchprojects:delta) */
+  $handler->display->display_options['fields']['delta_24']['id'] = 'delta_24';
+  $handler->display->display_options['fields']['delta_24']['table'] = 'field_data_cap_researchprojects';
+  $handler->display->display_options['fields']['delta_24']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_24']['separator'] = '';
   /* Field: Content: serviceWork */
   $handler->display->display_options['fields']['cap_servicework']['id'] = 'cap_servicework';
   $handler->display->display_options['fields']['cap_servicework']['table'] = 'field_data_cap_servicework';
@@ -338,7 +492,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_servicework']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_servicework']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_servicework']['delta_offset'] = '0';
+  /* Field: Content: serviceWork (cap_servicework:delta) */
+  $handler->display->display_options['fields']['delta_25']['id'] = 'delta_25';
+  $handler->display->display_options['fields']['delta_25']['table'] = 'field_data_cap_servicework';
+  $handler->display->display_options['fields']['delta_25']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_25']['separator'] = '';
   /* Field: Content: shortTitle */
   $handler->display->display_options['fields']['cap_shorttitle']['id'] = 'cap_shorttitle';
   $handler->display->display_options['fields']['cap_shorttitle']['table'] = 'field_data_cap_shorttitle';
@@ -347,7 +507,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_shorttitle']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_shorttitle']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_shorttitle']['delta_offset'] = '0';
+  /* Field: Content: shortTitle (cap_shorttitle:delta) */
+  $handler->display->display_options['fields']['delta_26']['id'] = 'delta_26';
+  $handler->display->display_options['fields']['delta_26']['table'] = 'field_data_cap_shorttitle';
+  $handler->display->display_options['fields']['delta_26']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_26']['separator'] = '';
   /* Field: Content: showFeaturedPublicationsFirst */
   $handler->display->display_options['fields']['cap_showfeaturedpublicationsfirs']['id'] = 'cap_showfeaturedpublicationsfirs';
   $handler->display->display_options['fields']['cap_showfeaturedpublicationsfirs']['table'] = 'field_data_cap_showfeaturedpublicationsfirs';
@@ -360,7 +526,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_similarprofiles']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_similarprofiles']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_similarprofiles']['delta_offset'] = '0';
+  /* Field: Content: similarProfiles (cap_similarprofiles:delta) */
+  $handler->display->display_options['fields']['delta_27']['id'] = 'delta_27';
+  $handler->display->display_options['fields']['delta_27']['table'] = 'field_data_cap_similarprofiles';
+  $handler->display->display_options['fields']['delta_27']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_27']['separator'] = '';
   /* Field: Content: stanfordAdvisors */
   $handler->display->display_options['fields']['cap_stanfordadvisors']['id'] = 'cap_stanfordadvisors';
   $handler->display->display_options['fields']['cap_stanfordadvisors']['table'] = 'field_data_cap_stanfordadvisors';
@@ -369,7 +541,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_stanfordadvisors']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_stanfordadvisors']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_stanfordadvisors']['delta_offset'] = '0';
+  /* Field: Content: stanfordAdvisors (cap_stanfordadvisors:delta) */
+  $handler->display->display_options['fields']['delta_28']['id'] = 'delta_28';
+  $handler->display->display_options['fields']['delta_28']['table'] = 'field_data_cap_stanfordadvisors';
+  $handler->display->display_options['fields']['delta_28']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_28']['separator'] = '';
   /* Field: Content: test */
   $handler->display->display_options['fields']['field_test']['id'] = 'field_test';
   $handler->display->display_options['fields']['field_test']['table'] = 'field_data_field_test';
@@ -382,6 +560,7 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_titles']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_titles']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_titles']['delta_offset'] = '0';
   /* Field: Content: workExperience */
   $handler->display->display_options['fields']['cap_workexperience']['id'] = 'cap_workexperience';
@@ -391,11 +570,27 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['cap_workexperience']['settings'] = array(
     'view_mode' => 'full',
   );
+  $handler->display->display_options['fields']['cap_workexperience']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['cap_workexperience']['delta_offset'] = '0';
+  /* Field: Content: workExperience (cap_workexperience:delta) */
+  $handler->display->display_options['fields']['delta_31']['id'] = 'delta_31';
+  $handler->display->display_options['fields']['delta_31']['table'] = 'field_data_cap_workexperience';
+  $handler->display->display_options['fields']['delta_31']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_31']['separator'] = '';
   /* Field: Field: alias */
   $handler->display->display_options['fields']['cap_alias']['id'] = 'cap_alias';
   $handler->display->display_options['fields']['cap_alias']['table'] = 'field_data_cap_alias';
   $handler->display->display_options['fields']['cap_alias']['field'] = 'cap_alias';
+  /* Field: Content: Tags (field_tags:delta) */
+  $handler->display->display_options['fields']['delta_29']['id'] = 'delta_29';
+  $handler->display->display_options['fields']['delta_29']['table'] = 'field_data_field_tags';
+  $handler->display->display_options['fields']['delta_29']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_29']['separator'] = '';
+  /* Field: Content: titles (cap_titles:delta) */
+  $handler->display->display_options['fields']['delta_30']['id'] = 'delta_30';
+  $handler->display->display_options['fields']['delta_30']['table'] = 'field_data_cap_titles';
+  $handler->display->display_options['fields']['delta_30']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_30']['separator'] = '';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
