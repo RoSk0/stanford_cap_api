@@ -625,5 +625,320 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['path'] = 'profiles_export.csv';
   $export['stanford_cap_api_export_profiles'] = $view;
 
+  $view = new view();
+  $view->name = 'stanford_cap_api_export_projects';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'node';
+  $view->human_name = 'Stanford CAP API: Export projects';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Manage profiles';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '50';
+  $handler->display->display_options['style_plugin'] = 'table';
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['content'] = 'A list of all CAP profiles currently being stored in the site.';
+  $handler->display->display_options['header']['area']['format'] = 'filtered_html';
+  /* Header: Global: Result summary */
+  $handler->display->display_options['header']['result']['id'] = 'result';
+  $handler->display->display_options['header']['result']['table'] = 'views';
+  $handler->display->display_options['header']['result']['field'] = 'result';
+  $handler->display->display_options['header']['result']['content'] = 'Displaying @start - @end of @total.';
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area']['content'] = 'No CAP profiles are being stored in the site. You can <a href="/admin/config/cap/import">add profiles</a> or <a href="/admin/config/cap/group">add groups</a>.';
+  $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+  /* Relationship: Content: researchProjects (cap_researchprojects) */
+  $handler->display->display_options['relationships']['cap_researchprojects_value']['id'] = 'cap_researchprojects_value';
+  $handler->display->display_options['relationships']['cap_researchprojects_value']['table'] = 'field_data_cap_researchprojects';
+  $handler->display->display_options['relationships']['cap_researchprojects_value']['field'] = 'cap_researchprojects_value';
+  $handler->display->display_options['relationships']['cap_researchprojects_value']['delta'] = '-1';
+  /* Relationship: Field collection item: projectType (cap_projecttype) */
+  $handler->display->display_options['relationships']['cap_projecttype_value']['id'] = 'cap_projecttype_value';
+  $handler->display->display_options['relationships']['cap_projecttype_value']['table'] = 'field_data_cap_projecttype';
+  $handler->display->display_options['relationships']['cap_projecttype_value']['field'] = 'cap_projecttype_value';
+  $handler->display->display_options['relationships']['cap_projecttype_value']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['relationships']['cap_projecttype_value']['required'] = TRUE;
+  $handler->display->display_options['relationships']['cap_projecttype_value']['delta'] = '-1';
+  /* Relationship: Field collection item: collaborators (cap_collaborators) */
+  $handler->display->display_options['relationships']['cap_collaborators_value']['id'] = 'cap_collaborators_value';
+  $handler->display->display_options['relationships']['cap_collaborators_value']['table'] = 'field_data_cap_collaborators';
+  $handler->display->display_options['relationships']['cap_collaborators_value']['field'] = 'cap_collaborators_value';
+  $handler->display->display_options['relationships']['cap_collaborators_value']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['relationships']['cap_collaborators_value']['delta'] = '-1';
+  /* Relationship: Field collection item: media (cap_media) */
+  $handler->display->display_options['relationships']['cap_media_value']['id'] = 'cap_media_value';
+  $handler->display->display_options['relationships']['cap_media_value']['table'] = 'field_data_cap_media';
+  $handler->display->display_options['relationships']['cap_media_value']['field'] = 'cap_media_value';
+  $handler->display->display_options['relationships']['cap_media_value']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['relationships']['cap_media_value']['delta'] = '-1';
+  /* Field: Content: Nid */
+  $handler->display->display_options['fields']['nid']['id'] = 'nid';
+  $handler->display->display_options['fields']['nid']['table'] = 'node';
+  $handler->display->display_options['fields']['nid']['field'] = 'nid';
+  /* Field: Content: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'node';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+  /* Field: Field: profileId */
+  $handler->display->display_options['fields']['cap_profileid']['id'] = 'cap_profileid';
+  $handler->display->display_options['fields']['cap_profileid']['table'] = 'field_data_cap_profileid';
+  $handler->display->display_options['fields']['cap_profileid']['field'] = 'cap_profileid';
+  $handler->display->display_options['fields']['cap_profileid']['type'] = 'number_unformatted';
+  $handler->display->display_options['fields']['cap_profileid']['settings'] = array(
+    'thousand_separator' => '',
+    'prefix_suffix' => 1,
+  );
+  /* Field: Content: Date last synced */
+  $handler->display->display_options['fields']['cap_sync_date']['id'] = 'cap_sync_date';
+  $handler->display->display_options['fields']['cap_sync_date']['table'] = 'field_data_cap_sync_date';
+  $handler->display->display_options['fields']['cap_sync_date']['field'] = 'cap_sync_date';
+  $handler->display->display_options['fields']['cap_sync_date']['settings'] = array(
+    'format_type' => 'long',
+    'fromto' => 'both',
+    'multiple_number' => '',
+    'multiple_from' => '',
+    'multiple_to' => '',
+  );
+  /* Field: Content: CAP profile link */
+  $handler->display->display_options['fields']['cap_profile_link']['id'] = 'cap_profile_link';
+  $handler->display->display_options['fields']['cap_profile_link']['table'] = 'field_data_cap_profile_link';
+  $handler->display->display_options['fields']['cap_profile_link']['field'] = 'cap_profile_link';
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['text'] = 'View in CAP';
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['path'] = '[cap_profile_link-url]';
+  $handler->display->display_options['fields']['cap_profile_link']['alter']['target'] = '_blank';
+  $handler->display->display_options['fields']['cap_profile_link']['click_sort_column'] = 'url';
+  $handler->display->display_options['fields']['cap_profile_link']['type'] = 'link_plain';
+  /* Field: Field collection item: label */
+  $handler->display->display_options['fields']['cap_label']['id'] = 'cap_label';
+  $handler->display->display_options['fields']['cap_label']['table'] = 'field_data_cap_label';
+  $handler->display->display_options['fields']['cap_label']['field'] = 'cap_label';
+  $handler->display->display_options['fields']['cap_label']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_label']['label'] = 'Research project label';
+  $handler->display->display_options['fields']['cap_label']['type'] = 'text_plain';
+  /* Field: Field collection item: title */
+  $handler->display->display_options['fields']['cap_title']['id'] = 'cap_title';
+  $handler->display->display_options['fields']['cap_title']['table'] = 'field_data_cap_title';
+  $handler->display->display_options['fields']['cap_title']['field'] = 'cap_title';
+  $handler->display->display_options['fields']['cap_title']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_title']['label'] = 'Research project title';
+  $handler->display->display_options['fields']['cap_title']['type'] = 'text_plain';
+  /* Field: Field collection item: location */
+  $handler->display->display_options['fields']['cap_location']['id'] = 'cap_location';
+  $handler->display->display_options['fields']['cap_location']['table'] = 'field_data_cap_location';
+  $handler->display->display_options['fields']['cap_location']['field'] = 'cap_location';
+  $handler->display->display_options['fields']['cap_location']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_location']['label'] = 'Research project location';
+  $handler->display->display_options['fields']['cap_location']['type'] = 'text_plain';
+  /* Field: Field collection item: description */
+  $handler->display->display_options['fields']['cap_description']['id'] = 'cap_description';
+  $handler->display->display_options['fields']['cap_description']['table'] = 'field_data_cap_description';
+  $handler->display->display_options['fields']['cap_description']['field'] = 'cap_description';
+  $handler->display->display_options['fields']['cap_description']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_description']['label'] = 'Research project description';
+  $handler->display->display_options['fields']['cap_description']['type'] = 'text_plain';
+  /* Field: Field collection item: startDate */
+  $handler->display->display_options['fields']['cap_startdate']['id'] = 'cap_startdate';
+  $handler->display->display_options['fields']['cap_startdate']['table'] = 'field_data_cap_startdate';
+  $handler->display->display_options['fields']['cap_startdate']['field'] = 'cap_startdate';
+  $handler->display->display_options['fields']['cap_startdate']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_startdate']['label'] = 'Research project startDate';
+  $handler->display->display_options['fields']['cap_startdate']['settings'] = array(
+    'format_type' => 'long',
+    'fromto' => 'both',
+    'multiple_number' => '',
+    'multiple_from' => '',
+    'multiple_to' => '',
+  );
+  /* Field: Field collection item: endDate */
+  $handler->display->display_options['fields']['cap_enddate']['id'] = 'cap_enddate';
+  $handler->display->display_options['fields']['cap_enddate']['table'] = 'field_data_cap_enddate';
+  $handler->display->display_options['fields']['cap_enddate']['field'] = 'cap_enddate';
+  $handler->display->display_options['fields']['cap_enddate']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_enddate']['label'] = 'Research project endDate';
+  $handler->display->display_options['fields']['cap_enddate']['settings'] = array(
+    'format_type' => 'long',
+    'fromto' => 'both',
+    'multiple_number' => '',
+    'multiple_from' => '',
+    'multiple_to' => '',
+  );
+  /* Field: Field collection item: institution */
+  $handler->display->display_options['fields']['cap_institution']['id'] = 'cap_institution';
+  $handler->display->display_options['fields']['cap_institution']['table'] = 'field_data_cap_institution';
+  $handler->display->display_options['fields']['cap_institution']['field'] = 'cap_institution';
+  $handler->display->display_options['fields']['cap_institution']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_institution']['label'] = 'Research project institution';
+  $handler->display->display_options['fields']['cap_institution']['type'] = 'text_plain';
+  /* Field: Content: researchProjects (cap_researchprojects:delta) */
+  $handler->display->display_options['fields']['delta']['id'] = 'delta';
+  $handler->display->display_options['fields']['delta']['table'] = 'field_data_cap_researchprojects';
+  $handler->display->display_options['fields']['delta']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta']['label'] = 'Research project delta';
+  $handler->display->display_options['fields']['delta']['separator'] = '';
+  /* Field: Field collection item: key */
+  $handler->display->display_options['fields']['cap_key']['id'] = 'cap_key';
+  $handler->display->display_options['fields']['cap_key']['table'] = 'field_data_cap_key';
+  $handler->display->display_options['fields']['cap_key']['field'] = 'cap_key';
+  $handler->display->display_options['fields']['cap_key']['relationship'] = 'cap_projecttype_value';
+  $handler->display->display_options['fields']['cap_key']['label'] = 'Research project type key';
+  $handler->display->display_options['fields']['cap_key']['type'] = 'text_plain';
+  /* Field: Field collection item: value */
+  $handler->display->display_options['fields']['cap_value']['id'] = 'cap_value';
+  $handler->display->display_options['fields']['cap_value']['table'] = 'field_data_cap_value';
+  $handler->display->display_options['fields']['cap_value']['field'] = 'cap_value';
+  $handler->display->display_options['fields']['cap_value']['relationship'] = 'cap_projecttype_value';
+  $handler->display->display_options['fields']['cap_value']['label'] = 'Research project type value';
+  /* Field: Field collection item: projectType (cap_projecttype:delta) */
+  $handler->display->display_options['fields']['delta_1']['id'] = 'delta_1';
+  $handler->display->display_options['fields']['delta_1']['table'] = 'field_data_cap_projecttype';
+  $handler->display->display_options['fields']['delta_1']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_1']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['delta_1']['label'] = 'Research project type delta';
+  $handler->display->display_options['fields']['delta_1']['separator'] = '';
+  /* Field: Field: alias */
+  $handler->display->display_options['fields']['cap_alias']['id'] = 'cap_alias';
+  $handler->display->display_options['fields']['cap_alias']['table'] = 'field_data_cap_alias';
+  $handler->display->display_options['fields']['cap_alias']['field'] = 'cap_alias';
+  $handler->display->display_options['fields']['cap_alias']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_alias']['label'] = 'Research project collaborators alias';
+  $handler->display->display_options['fields']['cap_alias']['type'] = 'text_plain';
+  /* Field: Field collection item: firstName */
+  $handler->display->display_options['fields']['cap_firstname']['id'] = 'cap_firstname';
+  $handler->display->display_options['fields']['cap_firstname']['table'] = 'field_data_cap_firstname';
+  $handler->display->display_options['fields']['cap_firstname']['field'] = 'cap_firstname';
+  $handler->display->display_options['fields']['cap_firstname']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_firstname']['label'] = 'Research project collaborators firstName';
+  $handler->display->display_options['fields']['cap_firstname']['type'] = 'text_plain';
+  /* Field: Field collection item: lastName */
+  $handler->display->display_options['fields']['cap_lastname']['id'] = 'cap_lastname';
+  $handler->display->display_options['fields']['cap_lastname']['table'] = 'field_data_cap_lastname';
+  $handler->display->display_options['fields']['cap_lastname']['field'] = 'cap_lastname';
+  $handler->display->display_options['fields']['cap_lastname']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_lastname']['label'] = 'Research project collaborators lastName';
+  $handler->display->display_options['fields']['cap_lastname']['type'] = 'text_plain';
+  /* Field: Field collection item: label */
+  $handler->display->display_options['fields']['cap_label_1']['id'] = 'cap_label_1';
+  $handler->display->display_options['fields']['cap_label_1']['table'] = 'field_data_cap_label';
+  $handler->display->display_options['fields']['cap_label_1']['field'] = 'cap_label';
+  $handler->display->display_options['fields']['cap_label_1']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_label_1']['label'] = 'Research project collaborators label';
+  $handler->display->display_options['fields']['cap_label_1']['type'] = 'text_plain';
+  /* Field: Field collection item: principalInvestigator */
+  $handler->display->display_options['fields']['cap_principalinvestigator']['id'] = 'cap_principalinvestigator';
+  $handler->display->display_options['fields']['cap_principalinvestigator']['table'] = 'field_data_cap_principalinvestigator';
+  $handler->display->display_options['fields']['cap_principalinvestigator']['field'] = 'cap_principalinvestigator';
+  $handler->display->display_options['fields']['cap_principalinvestigator']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_principalinvestigator']['label'] = 'Research project collaborators principalInvestigator';
+  /* Field: Field: profileId */
+  $handler->display->display_options['fields']['cap_profileid_1']['id'] = 'cap_profileid_1';
+  $handler->display->display_options['fields']['cap_profileid_1']['table'] = 'field_data_cap_profileid';
+  $handler->display->display_options['fields']['cap_profileid_1']['field'] = 'cap_profileid';
+  $handler->display->display_options['fields']['cap_profileid_1']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_profileid_1']['label'] = 'Research project collaborators profileId';
+  $handler->display->display_options['fields']['cap_profileid_1']['settings'] = array(
+    'thousand_separator' => '',
+    'prefix_suffix' => 1,
+  );
+  /* Field: Field collection item: title */
+  $handler->display->display_options['fields']['cap_title_1']['id'] = 'cap_title_1';
+  $handler->display->display_options['fields']['cap_title_1']['table'] = 'field_data_cap_title';
+  $handler->display->display_options['fields']['cap_title_1']['field'] = 'cap_title';
+  $handler->display->display_options['fields']['cap_title_1']['relationship'] = 'cap_collaborators_value';
+  $handler->display->display_options['fields']['cap_title_1']['label'] = 'Research project collaborators title';
+  $handler->display->display_options['fields']['cap_title_1']['type'] = 'text_plain';
+  /* Field: Field collection item: collaborators (cap_collaborators:delta) */
+  $handler->display->display_options['fields']['delta_2']['id'] = 'delta_2';
+  $handler->display->display_options['fields']['delta_2']['table'] = 'field_data_cap_collaborators';
+  $handler->display->display_options['fields']['delta_2']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_2']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['delta_2']['label'] = 'Research project collaborators delta';
+  $handler->display->display_options['fields']['delta_2']['separator'] = '';
+  /* Field: Field collection item: label */
+  $handler->display->display_options['fields']['cap_label_2']['id'] = 'cap_label_2';
+  $handler->display->display_options['fields']['cap_label_2']['table'] = 'field_data_cap_label';
+  $handler->display->display_options['fields']['cap_label_2']['field'] = 'cap_label';
+  $handler->display->display_options['fields']['cap_label_2']['relationship'] = 'cap_media_value';
+  $handler->display->display_options['fields']['cap_label_2']['label'] = 'Research project media label';
+  $handler->display->display_options['fields']['cap_label_2']['type'] = 'text_plain';
+  /* Field: Field collection item: type */
+  $handler->display->display_options['fields']['cap_type']['id'] = 'cap_type';
+  $handler->display->display_options['fields']['cap_type']['table'] = 'field_data_cap_type';
+  $handler->display->display_options['fields']['cap_type']['field'] = 'cap_type';
+  $handler->display->display_options['fields']['cap_type']['relationship'] = 'cap_media_value';
+  $handler->display->display_options['fields']['cap_type']['label'] = 'Research project media type';
+  $handler->display->display_options['fields']['cap_type']['type'] = 'text_plain';
+  /* Field: Field collection item: url */
+  $handler->display->display_options['fields']['cap_url']['id'] = 'cap_url';
+  $handler->display->display_options['fields']['cap_url']['table'] = 'field_data_cap_url';
+  $handler->display->display_options['fields']['cap_url']['field'] = 'cap_url';
+  $handler->display->display_options['fields']['cap_url']['relationship'] = 'cap_media_value';
+  $handler->display->display_options['fields']['cap_url']['label'] = 'Research project media url';
+  $handler->display->display_options['fields']['cap_url']['click_sort_column'] = 'url';
+  $handler->display->display_options['fields']['cap_url']['type'] = 'link_plain';
+  /* Field: Field collection item: media (cap_media:delta) */
+  $handler->display->display_options['fields']['delta_3']['id'] = 'delta_3';
+  $handler->display->display_options['fields']['delta_3']['table'] = 'field_data_cap_media';
+  $handler->display->display_options['fields']['delta_3']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_3']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['delta_3']['label'] = 'Research project media delta';
+  $handler->display->display_options['fields']['delta_3']['separator'] = '';
+  /* Sort criterion: Content: Post date */
+  $handler->display->display_options['sorts']['created']['id'] = 'created';
+  $handler->display->display_options['sorts']['created']['table'] = 'node';
+  $handler->display->display_options['sorts']['created']['field'] = 'created';
+  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
+  /* Filter criterion: Content: Published */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = 1;
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter criterion: Content: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'cap_faculty_profile' => 'cap_faculty_profile',
+  );
+  /* Filter criterion: Field: profileId (cap_profileid) */
+  $handler->display->display_options['filters']['cap_profileid_value']['id'] = 'cap_profileid_value';
+  $handler->display->display_options['filters']['cap_profileid_value']['table'] = 'field_data_cap_profileid';
+  $handler->display->display_options['filters']['cap_profileid_value']['field'] = 'cap_profileid_value';
+  $handler->display->display_options['filters']['cap_profileid_value']['operator'] = 'not empty';
+
+  /* Display: Data export */
+  $handler = $view->new_display('views_data_export', 'Data export', 'views_data_export_1');
+  $handler->display->display_options['pager']['type'] = 'none';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['style_plugin'] = 'views_data_export_csv';
+  $handler->display->display_options['style_options']['provide_file'] = 0;
+  $handler->display->display_options['style_options']['parent_sort'] = 0;
+  $handler->display->display_options['style_options']['quote'] = 1;
+  $handler->display->display_options['style_options']['trim'] = 1;
+  $handler->display->display_options['style_options']['replace_newlines'] = 1;
+  $handler->display->display_options['style_options']['header'] = 1;
+  $handler->display->display_options['path'] = 'projects_export.csv';
+  $export['stanford_cap_api_export_projects'] = $view;
+
   return $export;
 }
