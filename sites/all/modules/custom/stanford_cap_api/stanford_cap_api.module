@@ -803,7 +803,7 @@ function stanford_cap_api_node_delete($node) {
  */
 function stanford_cap_api_node_view($node, $view_mode) {
   $update_strategy = variable_get('cap_profile_update', 'nightly');
-  if ($node->type = 'cap_faculty_profile' && $view_mode == 'full' && $update_strategy == 'viewing') {
+  if ($node->type == 'cap_faculty_profile' && $view_mode == 'full' && $update_strategy == 'viewing') {
     $profile_id = db_select('cap_api_profiles', 'p')
       ->condition('nid', $node->nid)
       ->fields('p', array('profile_id'))
