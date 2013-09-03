@@ -74,6 +74,12 @@ function stanford_cap_api_field_default_field_instances() {
         'type' => 'link_default',
         'weight' => 2,
       ),
+      'stanford_cap_instructor' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),

@@ -7,8 +7,7 @@
 /**
  * Implements hook_ctools_plugin_api().
  */
-function stanford_cap_api_ctools_plugin_api() {
-  list($module, $api) = func_get_args();
+function stanford_cap_api_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => "1");
   }
@@ -17,7 +16,7 @@ function stanford_cap_api_ctools_plugin_api() {
 /**
  * Implements hook_views_api().
  */
-function stanford_cap_api_views_api() {
+function stanford_cap_api_views_api($module = NULL, $api = NULL) {
   return array("api" => "3.0");
 }
 
