@@ -920,11 +920,6 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['filters']['type']['value'] = array(
     'cap_faculty_profile' => 'cap_faculty_profile',
   );
-  /* Filter criterion: Field: profileId (cap_profileid) */
-  $handler->display->display_options['filters']['cap_profileid_value']['id'] = 'cap_profileid_value';
-  $handler->display->display_options['filters']['cap_profileid_value']['table'] = 'field_data_cap_profileid';
-  $handler->display->display_options['filters']['cap_profileid_value']['field'] = 'cap_profileid_value';
-  $handler->display->display_options['filters']['cap_profileid_value']['operator'] = 'not empty';
 
   /* Display: Data export */
   $handler = $view->new_display('views_data_export', 'Data export', 'views_data_export_1');
