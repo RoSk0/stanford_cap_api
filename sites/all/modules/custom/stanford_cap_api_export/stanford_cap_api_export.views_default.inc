@@ -668,13 +668,13 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['relationships']['cap_researchprojects_value']['id'] = 'cap_researchprojects_value';
   $handler->display->display_options['relationships']['cap_researchprojects_value']['table'] = 'field_data_cap_researchprojects';
   $handler->display->display_options['relationships']['cap_researchprojects_value']['field'] = 'cap_researchprojects_value';
+  $handler->display->display_options['relationships']['cap_researchprojects_value']['required'] = TRUE;
   $handler->display->display_options['relationships']['cap_researchprojects_value']['delta'] = '-1';
   /* Relationship: Field collection item: projectType (cap_projecttype) */
   $handler->display->display_options['relationships']['cap_projecttype_value']['id'] = 'cap_projecttype_value';
   $handler->display->display_options['relationships']['cap_projecttype_value']['table'] = 'field_data_cap_projecttype';
   $handler->display->display_options['relationships']['cap_projecttype_value']['field'] = 'cap_projecttype_value';
   $handler->display->display_options['relationships']['cap_projecttype_value']['relationship'] = 'cap_researchprojects_value';
-  $handler->display->display_options['relationships']['cap_projecttype_value']['required'] = TRUE;
   $handler->display->display_options['relationships']['cap_projecttype_value']['delta'] = '-1';
   /* Relationship: Field collection item: collaborators (cap_collaborators) */
   $handler->display->display_options['relationships']['cap_collaborators_value']['id'] = 'cap_collaborators_value';
