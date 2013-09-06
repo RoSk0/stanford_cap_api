@@ -6,8 +6,6 @@
 
 define('ENTRY_PER_PAGE', 25);
 
-
-
 /**
  * Form builder for details page.
  */

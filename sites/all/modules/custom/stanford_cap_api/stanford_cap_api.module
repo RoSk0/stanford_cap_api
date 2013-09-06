@@ -1987,19 +1987,22 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
 
       case 'image':
         $ext = drupal_substr($field_data['contentType'], 6);
-        $request_url = str_replace('irt-dev', 'med', $field_data['url']);
+        // @todo Remove before release.
+        $request_url = str_replace('cap-irt-dev', 'med', $field_data['url']);
         parse_str(parse_url($field_data['url'], PHP_URL_QUERY), $query);
         $profile_id = $query['facultyId'];
 
         $response = drupal_http_request($request_url);
         if (property_exists($response, 'error')) {
-          $error_msg = 'Failed to fetch profile image of type %type for profile'
+          $error_msg = 'Failed to fetch profile image of field %field_name for profile'
             . ' %profile_id . Error code is'
             . ' %code, error message is "%msg", request string was "%request".';
           $vars = array(
             '%code' => $response->code,
             '%msg' => $response->status_message,
-            '%request' => $response->request,
+            '%request' => $request_url,
+            '%profile_id' => $profile_id,
+            '%field_name' => $field_name,
           );
           watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
 
