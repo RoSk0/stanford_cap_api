@@ -21,8 +21,7 @@ function stanford_cap_api_menu() {
     'weight' => -5,
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_details_form'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'file' => 'stanford_cap_api.admin.inc',
   );
 
@@ -38,8 +37,7 @@ function stanford_cap_api_menu() {
     'description' => 'Provides administrators ability to change CAP API access settings.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_settings_form'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'weight' => 10,
     'file' => 'stanford_cap_api.admin.inc',
     'type' => MENU_LOCAL_TASK,
@@ -50,8 +48,7 @@ function stanford_cap_api_menu() {
     'description' => 'Provides administrators ability to import CAP profiles.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_import_form'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'weight' => -4,
     'file' => 'stanford_cap_api.admin.inc',
     'type' => MENU_LOCAL_TASK,
@@ -62,10 +59,9 @@ function stanford_cap_api_menu() {
     'description' => 'Provides administrators ability to import CAP profiles.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_import_result_form'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'file' => 'stanford_cap_api.admin.inc',
-    'type' => MENU_CALLBACK
+    'type' => MENU_CALLBACK,
   );
 
   $items['admin/config/cap/profile_test'] = array(
@@ -73,8 +69,7 @@ function stanford_cap_api_menu() {
     'description' => 'Faculty Profile Structure Synchronization',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_profile_test'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'file' => 'stanford_cap_api.admin.inc',
     'weight' => 11,
     'type' => MENU_LOCAL_TASK,
@@ -84,8 +79,7 @@ function stanford_cap_api_menu() {
     'title' => 'Manage profiles',
     'description' => 'Provides administrators ability to manage CAP profiles.',
     'page callback' => 'stanford_cap_api_manage',
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'weight' => 0,
     'file' => 'stanford_cap_api.admin.inc',
     'type' => MENU_LOCAL_TASK,
@@ -96,8 +90,7 @@ function stanford_cap_api_menu() {
     'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_group_sync_form'),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'weight' => -5,
     'file' => 'stanford_cap_api.admin.inc',
     'type' => MENU_LOCAL_TASK,
@@ -107,8 +100,7 @@ function stanford_cap_api_menu() {
     'title' => 'Drop group from synchronization',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_group_sync_drop_form', 4),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'type' => MENU_CALLBACK,
     'file' => 'stanford_cap_api.admin.inc',
   );
@@ -117,8 +109,7 @@ function stanford_cap_api_menu() {
     'title' => 'Synchronize group',
     'page callback' => 'stanford_cap_api_group_sync_now',
     'page arguments' => array(4),
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'type' => MENU_CALLBACK,
     'file' => 'stanford_cap_api.admin.inc',
   );
@@ -126,8 +117,7 @@ function stanford_cap_api_menu() {
   $items['stanford-cap-api-user-autocomplete'] = array(
     'title' => 'Autocomplete for CAP profile names',
     'page callback' => 'stanford_cap_api_user_autocomplete',
-    // @todo Proper access check.
-    'access callback' => TRUE,
+    'access arguments' => array('administer cap api'),
     'type' => MENU_CALLBACK,
     'file' => 'stanford_cap_api.admin.inc',
   );
@@ -136,15 +126,27 @@ function stanford_cap_api_menu() {
 }
 
 /**
- * Implements hook_preprocess_page
+ * Implements hook_permission().
  */
-function stanford_cap_api_preprocess_page(&$variables){
-  // include css files only on admin pages
-  if(arg(0) == 'admin' && arg(1) == 'config' && arg(2) == 'cap'){
+function stanford_cap_api_permission() {
+  $permissions = array(
+    'administer cap api' => array(
+      'title' => t('Administer CAP API'),
+    ),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function stanford_cap_api_preprocess_page(&$variables) {
+  // Include css files only on admin pages.
+  if (arg(0) == 'admin' && arg(1) == 'config' && arg(2) == 'cap') {
     drupal_add_css(drupal_get_path('module', 'stanford_cap_api') . '/css/stanford_cap_api.css');
   }
 }
-
 
 /**
  * Synchronize fields structure from CAP profile to Drupal.
@@ -354,13 +356,10 @@ function stanford_cap_api_request($endpoint, $params = array()) {
 }
 
 /**
- * Save organization fetch from CAP API.
+ * Save organization fetched from CAP API.
  *
  * @param array $organization
  *   Array containing organization description.
- * @param int $orgid
- *   Organization ID inside Stanford University. Could be 0 for root entry,
- * Stanford University itself.
  */
 function stanford_cap_api_save_organization($organization) {
   $orgid =& drupal_static(__FUNCTION__, CAP_ROOT_ORGANIZATION_ID);
@@ -547,8 +546,10 @@ function stanford_cap_api_profile_sync($profile) {
 /**
  * Save profile fields to node.
  *
- * @param $node
- * @param $profile
+ * @param object $node
+ *   Nodes objects, to which fields will be attached.
+ * @param array $profile
+ *   Profile fetched from CAP API.
  */
 function stanford_cap_api_node_fields_import($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
@@ -576,8 +577,10 @@ function stanford_cap_api_node_fields_import($node, $profile) {
 /**
  * Update profile fields in node.
  *
- * @param $node
- * @param $profile
+ * @param object $node
+ *   Nodes objects, to which fields will be attached.
+ * @param array $profile
+ *   Profile fetched from CAP API.
  */
 function stanford_cap_api_node_fields_update($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
@@ -606,7 +609,7 @@ function stanford_cap_api_node_fields_update($node, $profile) {
  * @param array $profile_ids
  *   Array of profile ID's.
  */
-function stanford_cap_api_profile_import_multiply($profile_ids) {
+function stanford_cap_api_profile_import_multiple($profile_ids) {
   foreach ($profile_ids as $profile_id) {
     stanford_cap_api_profile_import($profile_id);
   }
@@ -620,7 +623,7 @@ function stanford_cap_api_update_profiles() {
     ->fields('profiles', array('profile_id'))
     ->execute()
     ->fetchCol();
-  stanford_cap_api_profile_import_multiply($profile_ids);
+  stanford_cap_api_profile_import_multiple($profile_ids);
 }
 
 /**
@@ -759,6 +762,7 @@ function stanford_cap_api_sync_group_sync($type, $name) {
       $count = stanford_cap_api_sync_org_members($name);
       stanford_cap_api_sync_group_save($type, $name, $count, REQUEST_TIME);
       break;
+
     case 'workgroup':
       $count = stanford_cap_api_sync_workgroup_members($name);
       stanford_cap_api_sync_group_save($type, $name, $count, REQUEST_TIME);
@@ -831,7 +835,7 @@ function stanford_cap_api_hierarchical_select_root_level() {
     ->fields('orgs', array('name'))
     ->execute()
     ->fetchField();
-  $label = $label ? t($label) : t('Organizations not imported yet');
+  $label = $label ? check_plain($label) : t('Organizations not imported yet');
 
   return array(CAP_ROOT_ORGANIZATION_ID => $label);
 }
@@ -1441,13 +1445,19 @@ function _stanford_cap_api_get_field_base_def($type, $name) {
 /**
  * Generates instance info for profile fields.
  *
- * @param $type
- * @param $name
- * @param $label
+ * @param string $type
+ *   Field type.
+ * @param string $name
+ *   Field name.
+ * @param string $label
+ *   Field label.
+ * @param string $fc_field
+ *   Field collection field name.
  *
  * @return array|FALSE
+ *   Field instance definition or FALSE.
  */
-function _stanford_cap_api_get_field_instance_def($type, $name, $label, $fc_field = FALSE) {
+function _stanford_cap_api_get_field_instance_def($type, $name, $label, $fc_field = '') {
   $info = FALSE;
   $label = check_plain($label);
   switch ($type) {
@@ -1779,7 +1789,7 @@ function _stanford_cap_api_get_field_instance_def($type, $name, $label, $fc_fiel
 /**
  * Writes created field name to DB.
  *
- * @param string $field_name.
+ * @param string $field_name .
  */
 function _stanford_cap_api_log_field($field_name) {
   $record = array('field_name' => $field_name);
