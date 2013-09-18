@@ -692,6 +692,12 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['nid']['id'] = 'nid';
   $handler->display->display_options['fields']['nid']['table'] = 'node';
   $handler->display->display_options['fields']['nid']['field'] = 'nid';
+  /* Field: Content: uid */
+  $handler->display->display_options['fields']['cap_uid']['id'] = 'cap_uid';
+  $handler->display->display_options['fields']['cap_uid']['table'] = 'field_data_cap_uid';
+  $handler->display->display_options['fields']['cap_uid']['field'] = 'cap_uid';
+  $handler->display->display_options['fields']['cap_uid']['label'] = 'sunet_id';
+  $handler->display->display_options['fields']['cap_uid']['type'] = 'text_plain';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
