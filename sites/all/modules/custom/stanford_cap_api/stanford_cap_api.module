@@ -235,61 +235,69 @@ function stanford_cap_api_user_access($permission, $node_type) {
  */
 function stanford_cap_api_auth($user = '', $pass = '') {
 
-  $auth_uri = variable_get('cap_auth_uri', 'https://authz-test.stanford.edu/oauth/token');
-  $user = empty($user) ? variable_get('cap_username', '') : $user;
-  $pass = empty($pass) ? variable_get('cap_password', '') : $pass;
+  $token_expire = variable_get('stanford_cap_api_token_expire', REQUEST_TIME);
+  if ($token_expire <= REQUEST_TIME) {
+    $auth_uri = variable_get('cap_auth_uri', 'https://authz-test.stanford.edu/oauth/token');
+    $user = empty($user) ? variable_get('cap_username', '') : $user;
+    $pass = empty($pass) ? variable_get('cap_password', '') : $pass;
 
-  $params = array(
-    'grant_type' => 'client_credentials',
-    'scope' => 'profiles.read_public',
-  );
-
-  if (empty($user) || empty($pass)) {
-    return FALSE;
-  }
-
-  // Append user/pass, some system doesn't support http_build_url.
-  $uri = parse_url($auth_uri);
-
-  $host = $user . ':' . $pass . '@' . $uri['host'];
-  $auth_url = str_replace($uri['host'], $host, $auth_uri);
-
-  $auth_url = url($auth_url, array('query' => $params, 'external' => TRUE));
-  $response = drupal_http_request($auth_url);
-  // Error could be here as well.
-  if (property_exists($response, 'error')) {
-    $error_msg = 'Failed to fetch data from CAP API service. Error code is'
-      . ' %code, error message is "%msg", request string was "%request".';
-    $vars = array(
-      '%code' => $response->code,
-      '%msg' => $response->status_message,
-      '%request' => $response->request,
+    $params = array(
+      'grant_type' => 'client_credentials',
+      'scope' => 'profiles.read_public',
     );
-    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
+
+    if (empty($user) || empty($pass)) {
+      return FALSE;
+    }
+
+    // Append user/pass, some system doesn't support http_build_url.
+    $uri = parse_url($auth_uri);
+
+    $host = $user . ':' . $pass . '@' . $uri['host'];
+    $auth_url = str_replace($uri['host'], $host, $auth_uri);
+
+    $auth_url = url($auth_url, array('query' => $params, 'external' => TRUE));
+    $response = drupal_http_request($auth_url);
+    // Error could be here as well.
+    if (property_exists($response, 'error')) {
+      $error_msg = 'Failed to fetch data from CAP API service. Error code is'
+        . ' %code, error message is "%msg", request string was "%request".';
+      $vars = array(
+        '%code' => $response->code,
+        '%msg' => $response->status_message,
+        '%request' => $response->request,
+      );
+      watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
+
+      return FALSE;
+    }
+
+    // Log bad API authentication.
+    $data = json_decode($response->data, TRUE);
+    if (array_key_exists('error', $data)) {
+      $error_msg = 'Error found in CAP API response. Error message is "%msg",'
+        . ' response data was "%data".';
+      $vars = array(
+        '%msg' => $data['error_description'],
+        '%data' => print_r($data, TRUE),
+      );
+      watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
+
+      return FALSE;
+    }
+
+    // Authentication successful, return the access token.
+    if (array_key_exists('access_token', $data)) {
+      variable_set('stanford_cap_api_token_expire', REQUEST_TIME + $data['expires_in']);
+      variable_set('stanford_cap_api_token', $data['access_token']);
+      return $data['access_token'];
+    }
 
     return FALSE;
   }
-
-  // Log bad API authentication.
-  $data = json_decode($response->data, TRUE);
-  if (array_key_exists('error', $data)) {
-    $error_msg = 'Error found in CAP API response. Error message is "%msg",'
-      . ' response data was "%data".';
-    $vars = array(
-      '%msg' => $data['error_description'],
-      '%data' => print_r($data, TRUE),
-    );
-    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
-
-    return FALSE;
+  else {
+    return variable_get('stanford_cap_api_token', '');
   }
-
-  // Authentication successful, return the access token.
-  if (array_key_exists('access_token', $data)) {
-    return $data['access_token'];
-  }
-
-  return FALSE;
 }
 
 /**
