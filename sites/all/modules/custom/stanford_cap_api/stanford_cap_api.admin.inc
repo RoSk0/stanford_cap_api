@@ -218,7 +218,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Endpoint'),
     '#description' => t('CAP API endpoint URI, only useful when switching between development/production environment.'),
-    '#default_value' => variable_get('cap_api_base_url', 'http://irt-dev.stanford.edu/cap-api'),
+    '#default_value' => variable_get('cap_api_base_url', 'https://cap-beta.stanford.edu/cap-api'),
   );
 
   $form['advanced']['cap_auth_uri'] = array(
@@ -525,7 +525,7 @@ function stanford_cap_api_import_result_form($form, &$form_state) {
     );
     $options = array();
     foreach ($search_response['values'] as $profile) {
-      $href = _stanford_cap_api_format_cap_profile_url($profile);
+      $href = _stanford_cap_api_get_cap_profile_url($profile);
 
       $options[$profile['profileId']] = array(
         'name' => array(
@@ -669,7 +669,15 @@ function stanford_cap_api_reset() {
   foreach ($fields as $field) {
     field_delete_field($field);
   }
-  field_purge_batch(100);
+  $deleted_fields = field_read_instances(array('deleted' => 1), array('include_deleted' => 1));
+  $operations = array();
+  foreach ($deleted_fields as $deleted_field) {
+    $operations[] = array(
+      'field_purge_batch',
+      array(1),
+    );
+  }
+  batch_set(array('operations' => $operations));
   db_delete('cap_api_fields')->execute();
   drupal_set_message(t('Faculty profile content type has being resetted to default.'));
 }
@@ -825,7 +833,7 @@ function stanford_cap_api_group_sync_form($form, &$form_state) {
       'profiles' => t('Profiles in group'),
     );
     $options = array();
-    $group_types = array('organization', 'workgroup', 'school');
+    $group_types = array('organization', 'workgroup');
     $form['groups_to_save'] = array(
       '#type' => 'container',
       '#tree' => TRUE,

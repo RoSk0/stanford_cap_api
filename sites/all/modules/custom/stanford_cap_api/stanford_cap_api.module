@@ -312,22 +312,19 @@ function stanford_cap_api_auth($user = '', $pass = '') {
  *   Decoded JSON response or FALSE.
  */
 function stanford_cap_api_request($endpoint, $params = array()) {
-  // Real endpoint is "http://irt-dev.stanford.edu/cap-api"
-  $api_base = variable_get('cap_api_base_url', 'http://irt-dev.stanford.edu/cap-api');
+  $api_base = variable_get('cap_api_base_url', 'https://cap-beta.stanford.edu/cap-api');
 
   $access_token = stanford_cap_api_auth();
   // Unable to fetch an auth token.
-  if (!$access_token) {
+  if (empty($access_token)) {
     return FALSE;
   }
 
-  $query = array(
-    'access_token' => $access_token,
-  );
+  $params['access_token'] = $access_token;
 
   $request_url = url($api_base . $endpoint, array(
-    'query' => $params += $query,
-    'external' => TRUE,
+      'query' => $params,
+      'external' => TRUE,
   ));
 
   $response = drupal_http_request($request_url);
@@ -443,6 +440,7 @@ function stanford_cap_api_profile_import($profile_id) {
   $etag = stanford_cap_api_get_profile_etag($profile_id);
   $stored_metadata = stanford_cap_api_get_stored_profile_data($profile_id);
   if (empty($etag) && !empty($stored_metadata['etag'])) {
+    // Profile is synced, but deleted from CAP.
     $action = variable_get('cap_orphaned_profile_action', 'unpublish');
     switch ($action) {
       case 'unpublish':
@@ -473,6 +471,7 @@ function stanford_cap_api_profile_import($profile_id) {
     // Do nothing, we have synced flag off.
   }
   elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
+    // Profile not stored or updated.
     $profile = stanford_cap_api_get_profile($profile_id);
     if ($profile) {
       stanford_cap_api_synchronize_fields($profile);
@@ -497,6 +496,26 @@ function stanford_cap_api_get_profile($profile_id) {
   }
 
   return $cache[$profile_id];
+}
+
+/**
+ * Returns profile type.
+ *
+ * @param array $profile
+ *   CAP API profile.
+ *
+ * @return string
+ *   Type.
+ */
+function stanford_cap_api_get_profile_type($profile) {
+  foreach ($profile['affiliations'] as $affiliation => $enabled) {
+    if ($affiliation == 'capFaculty' && $enabled) {
+      $type = 'faculty';
+      break;
+    }
+  }
+
+  return $type;
 }
 
 /**
@@ -566,7 +585,7 @@ function stanford_cap_api_node_fields_import($node, $profile) {
     _stanford_cap_api_save_field($node, $nw, $field_name, $field_data);
   }
 
-  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_format_cap_profile_url($profile)));
+  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
   $profile_id = $profile['profileId'];
@@ -606,7 +625,7 @@ function stanford_cap_api_node_fields_update($node, $profile) {
       _stanford_cap_api_save_field($node, $nw, $field_name, $field_data);
     }
   }
-  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_format_cap_profile_url($profile)));
+  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
 }
@@ -1816,17 +1835,24 @@ function _stanford_cap_api_log_field($field_name) {
  * @return string
  *   CAP network profile URL.
  */
-function _stanford_cap_api_format_cap_profile_url($profile) {
-  $href = 'https://med.stanford.edu/profiles/';
-  if (!empty($profile['names']['legal'])) {
-    $href .= 'stanford/';
-    $href .= $profile['names']['legal']['firstName'];
-    $href .= '_' . $profile['names']['legal']['lastName'];
+function _stanford_cap_api_get_cap_profile_url($profile) {
+  $href = '';
+  if (isset($profile['meta']) && !empty($profile['meta']['links'])) {
+    foreach ($profile['meta']['links'] as $link) {
+      // Searching for public link.
+      if ($link['rel'] == 'https://cap.stanford.edu/rel/public') {
+        $href = $link['href'];
+        break;
+      }
+    }
   }
-  elseif (!empty($profile['names']['preferred'])) {
-    $href .= 'stanford/';
-    $href .= $profile['names']['preferred']['firstName'];
-    $href .= '_' . $profile['names']['preferred']['lastName'];
+  if (empty($href)) {
+    // Fallback.
+    $href = variable_get('stanford_cap_uri', 'https://profiles-beta.stanford.edu/');
+    if (!empty($profile['alias'])) {
+      // Public profile link not found, lets generate it.
+      $href .= $profile['alias'];
+    }
   }
 
   return $href;
@@ -1886,13 +1912,17 @@ function _stanford_cap_api_sync_subfields($subfields, $node_field_name) {
  * @return string
  *   Drupal field name..
  */
-function _stanford_cap_api_generate_field_name($field_name) {
-  $node_field_name = 'cap_' . drupal_strtolower($field_name);
-  if (drupal_strlen($node_field_name) > 32) {
-    $node_field_name = substr($node_field_name, 0, 32);
+function _stanford_cap_api_generate_field_name($field_name, $human = FALSE) {
+  if ($human) {
+    // Do machine name from human.
+    $replace_pattern = '/[^a-z0-9_]+/i';
+    $replace = '_';
+    // Marking field names.
+    $field_name = 'h_' . preg_replace($replace_pattern, $replace, $field_name);
   }
+  $node_field_name = 'cap_' . drupal_strtolower($field_name);
 
-  return $node_field_name;
+  return substr($node_field_name, 0, 32);
 }
 
 /**
@@ -1966,7 +1996,7 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         break;
 
       case 'boolean':
-        if (is_string($field_data)) {
+        if (is_bool($field_data)) {
           $wrapper->{$drupal_field_name}->set($field_data);
         }
         break;
