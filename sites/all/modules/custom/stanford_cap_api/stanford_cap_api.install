@@ -12,6 +12,12 @@ function stanford_cap_api_schema() {
   $schema['cap_api_fields'] = array(
     'description' => 'Stores field name which was created while synchronizing CAP profiles with CAP server.',
     'fields' => array(
+      'id' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
       'field_name' => array(
         'description' => 'Field name.',
         'type' => 'varchar',
@@ -19,7 +25,16 @@ function stanford_cap_api_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'parent_field' => array(
+        'description' => 'Parent name this field attached to.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ),
     ),
+    'primary key' => array('id'),
+    'unique key' => array('field_name'),
   );
 
   $schema['cap_api_orgs'] = array(
