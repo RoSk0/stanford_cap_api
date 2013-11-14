@@ -440,7 +440,6 @@ function stanford_cap_api_profile_import($profile_id) {
     $profile = stanford_cap_api_get_profile($profile_id);
     if ($profile) {
       stanford_cap_api_synchronize_schema();
-      stanford_cap_api_synchronize_fields($profile);
       stanford_cap_api_synchronize_data($profile);
     }
   }
@@ -1385,6 +1384,7 @@ function _stanford_cap_api_gen_field_instance_def_boolean($field_name, $schema, 
       'settings' => array(
         'display_label' => TRUE,
       ),
+      'type' => 'options_onoff',
     ),
   );
 }
@@ -1445,6 +1445,9 @@ function _stanford_cap_api_gen_field_instance_def_field_collection($name, $schem
     'entity_type' => $entity_type,
     'field_name' => $name,
     'label' => $label,
+    'widget' => array(
+      'type' => 'field_collection_embed',
+    ),
   );
 }
 
