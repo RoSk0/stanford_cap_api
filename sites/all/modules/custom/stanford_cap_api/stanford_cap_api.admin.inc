@@ -17,7 +17,7 @@ function stanford_cap_api_details_form($form, &$form_state) {
   $datebox = '<div class="cap_checkbox cap_date"><span>%count</span></div>';
   
   // add the status message
-  $status = stanford_cap_api_auth();
+  $status = stanford_cap_api_auth_status();
   $status_message = t("Currently, your site can't connect to CAP.");
   $status_message .= t('<br><em class="cap_additional">Please check your settings on the ') . l('settings page', 'admin/config/cap/settings') . '.</em>';
   if ($status) {
@@ -218,7 +218,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Endpoint'),
     '#description' => t('CAP API endpoint URI, only useful when switching between development/production environment.'),
-    '#default_value' => variable_get('cap_api_base_url', 'https://cap-beta.stanford.edu/cap-api'),
+    '#default_value' => variable_get('cap_api_base_url', 'https://irt-dev.stanford.edu/cap-api'),
   );
 
   $form['advanced']['cap_auth_uri'] = array(
@@ -635,11 +635,10 @@ function stanford_cap_api_profile_test($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Synchronize fields in the faculty profile'),
     '#submit' => array('stanford_cap_api_test_synchronize'),
-    '#disabled' => TRUE,
   );
   $form['actions']['reset'] = array(
     '#type' => 'submit',
-    '#value' => t('Reset faculty profile content type.'),
+    '#value' => t('Reset faculty profile content type'),
     '#submit' => array('stanford_cap_api_reset'),
   );
 
@@ -650,11 +649,8 @@ function stanford_cap_api_profile_test($form, &$form_state) {
  * Forces module to synchronize CAP profile fields structure.
  */
 function stanford_cap_api_test_synchronize() {
-
-  // @todo Enable button for this submit handler when we will have good fields schema.
   timer_start('fields_sync');
-  $profile = array();
-  stanford_cap_api_synchronize_fields($profile);
+  stanford_cap_api_synchronize_schema();
   $timer = timer_stop('fields_sync');
   drupal_set_message(t('Fields successfully synchronized.'));
   drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000))));
@@ -1013,4 +1009,16 @@ function stanford_cap_api_user_autocomplete($str = '') {
   }
 
   drupal_json_output($matches);
+}
+
+/**
+ * Checks that we can connect to CAP API.
+ */
+function stanford_cap_api_auth_status() {
+  if (stanford_cap_api_get_profile_schema()) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
 }

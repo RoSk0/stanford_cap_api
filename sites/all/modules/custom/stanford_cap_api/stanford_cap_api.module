@@ -150,55 +150,6 @@ function stanford_cap_api_preprocess_page(&$variables) {
 }
 
 /**
- * Synchronize fields structure from CAP profile to Drupal.
- *
- * @param array $profile
- *   CAP profile.
- */
-function stanford_cap_api_synchronize_fields($profile) {
-  foreach ($profile as $cap_field_name => $field_data) {
-    $d_field_name = _stanford_cap_api_generate_field_name($cap_field_name);
-
-    // ++
-    $field_info = field_info_field($d_field_name);
-    $field_type = _stanford_cap_api_get_field_type($cap_field_name);
-    // Field not exists yet.
-    if (empty($field_info)) {
-      $field_info = _stanford_cap_api_get_field_base_def($field_type, $d_field_name);
-      // Do we know about this field type?
-      if (!empty($field_info)) {
-        field_create_field($field_info);
-        // Logging field creation.
-        _stanford_cap_api_log_field($d_field_name);
-      }
-    }
-    $parent_name = _stanford_cap_api_get_parent_field($d_field_name);
-    if (!empty($parent_name)) {
-      $field_instance = field_info_instance('field_collection_item', $d_field_name, $parent_name);
-    }
-    else {
-      $field_instance = field_info_instance('node', $d_field_name, 'cap_faculty_profile');
-    }
-    if (empty($field_instance)) {
-      if (!empty($parent_name)) {
-        $field_instance = _stanford_cap_api_get_field_instance_def($field_type, $d_field_name, $cap_field_name, $parent_name);
-      }
-      else {
-        $field_instance = _stanford_cap_api_get_field_instance_def($field_type, $d_field_name, $cap_field_name);
-      }
-
-      if (!empty($field_instance)) {
-        field_create_instance($field_instance);
-      }
-    }
-    // ++
-    if ($field_type == 'field_collection') {
-      _stanford_cap_api_sync_subfields($field_data, $d_field_name);
-    }
-  }
-}
-
-/**
  * Implements hook_menu_alter().
  */
 function stanford_cap_api_menu_alter(&$items) {
@@ -322,11 +273,11 @@ function stanford_cap_api_auth($user = '', $pass = '') {
  * @param array $params
  *   Additional parameters for request.
  *
- * @return array|FALSE
+ * @return array
  *   Decoded JSON response or FALSE.
  */
 function stanford_cap_api_request($endpoint, $params = array()) {
-  $api_base = variable_get('cap_api_base_url', 'https://cap-beta.stanford.edu/cap-api');
+  $api_base = variable_get('cap_api_base_url', 'https://irt-dev.stanford.edu/cap-api');
 
   $access_token = stanford_cap_api_auth();
   // Unable to fetch an auth token.
@@ -337,9 +288,9 @@ function stanford_cap_api_request($endpoint, $params = array()) {
   $params['access_token'] = $access_token;
 
   $request_url = url($api_base . $endpoint, array(
-      'query' => $params,
-      'external' => TRUE,
-    ));
+    'query' => $params,
+    'external' => TRUE,
+  ));
 
   $response = drupal_http_request($request_url);
   // Error could be here as well.
@@ -488,9 +439,9 @@ function stanford_cap_api_profile_import($profile_id) {
     // Profile not stored or updated.
     $profile = stanford_cap_api_get_profile($profile_id);
     if ($profile) {
-      stanford_cap_api_synchronize_schema($profile);
+      stanford_cap_api_synchronize_schema();
       stanford_cap_api_synchronize_fields($profile);
-      stanford_cap_api_profile_sync($profile);
+      stanford_cap_api_synchronize_data($profile);
     }
   }
 }
@@ -549,7 +500,7 @@ function stanford_cap_api_import_result_finished() {
  * @param array $profile
  *   CAP network profile.
  */
-function stanford_cap_api_profile_sync($profile) {
+function stanford_cap_api_synchronize_data($profile) {
   $nid = db_select('cap_api_profiles', 'cap')
     ->fields('cap', array('nid'))
     ->condition('profile_id', $profile['profileId'])
@@ -932,845 +883,6 @@ function stanford_cap_api_profile_stop_sync_action($entity) {
 }
 
 /**
- * Introduce field type while we have no JSON schema.
- *
- * @todo Drop as we will get access to JSON schema.
- */
-function _stanford_cap_api_get_field_type($field_name) {
-  $type = FALSE;
-  switch ($field_name) {
-    case 'academicYear':
-    case 'academicYear8':
-    case 'activity':
-    case 'address':
-    case 'address2':
-    case 'alias':
-    case 'apiLabel':
-    case 'appointment':
-    case 'californiaPhysicianLicense':
-    case 'catalogNumber':
-    case 'chicagoCitation':
-    case 'city':
-    case 'contentType':
-    case 'dates':
-    case 'degree':
-    case 'department':
-    case 'description':
-    case 'details':
-    case 'display':
-    case 'displayName':
-    case 'doiId':
-    case 'email':
-    case 'etag':
-    case 'fax':
-    case 'fieldOfStudy':
-    case 'firstName':
-    case 'fullName':
-    case 'institution':
-    case 'key':
-    case 'lab':
-    case 'label':
-    case 'lastName':
-    case 'latitude':
-    case 'location':
-    case 'longitude':
-    case 'middleName':
-    case 'name':
-    case 'officeName':
-    case 'org':
-    case 'organizations':
-    case 'orgCode':
-    case 'patentAssignee':
-    case 'patentInventor':
-    case 'patentNumber':
-    case 'patentTitle':
-    case 'personalInterests':
-    case 'personalUrlText':
-    case 'phone':
-    case 'populationServed':
-    case 'position':
-    case 'presentedTo':
-    case 'profileShortDesc':
-    case 'projectTitle':
-    case 'pubMedId':
-    case 'quarter':
-    case 'refPatentCountryCode':
-    case 'refPatentCountryText':
-    case 'rel':
-    case 'researchDesc':
-    case 'researchUrlText':
-    case 'role':
-    case 'specificLocation':
-    case 'state':
-    case 'subject':
-    case 'subjectCode':
-    case 'title':
-    case 'topic':
-    case 'type':
-    case 'uid':
-    case 'universityId':
-    case 'webOfScienceId':
-    case 'yearIssued':
-    case 'zip':
-      $type = 'string';
-      break;
-
-    case 'clinicalFocus':
-    case 'phoneNumbers':
-    case 'terms':
-    case 'keywords':
-    case 'nameTokens':
-      $type = 'string_multiple';
-      break;
-
-    case 'profileUrl':
-    case 'url':
-    case 'href':
-    case 'orgUrl':
-    case 'doiUrl':
-    case 'pubMedUrl':
-    case 'webOfScienceUrl':
-    case 'personalUrl':
-    case 'researchUrl':
-    case 'clinicalTrialsUrl':
-      $type = 'link';
-      break;
-
-    case 'capFaculty':
-    case 'capStaff':
-    case 'capPostdoc':
-    case 'capMdStudent':
-    case 'capMsStudent':
-    case 'capPhdStudent':
-    case 'physician':
-    case 'primaryAlias':
-    case 'ongoingProject':
-    case 'studentInvolvementAvailable':
-    case 'independentStudyInd':
-    case 'exactNameMatch':
-    case 'value':
-    case 'academicInstituteDisplay':
-    case 'bannerDisplay':
-    case 'principalInvestigator':
-    case 'featured':
-    case 'partialNameMatch':
-    case 'showFeaturedPublicationsFirst':
-      $type = 'boolean';
-      break;
-
-    case 'lastModified':
-    case 'startYear':
-    case 'endYear':
-    case 'year':
-    case 'startDate':
-    case 'endDate':
-    case 'lastModifiedDate':
-    case 'firstPublished':
-    case 'patentDate':
-      $type = 'date';
-      break;
-
-    case 'profileId':
-    case 'ordinal':
-    case 'weight':
-    case 'publicationId':
-      $type = 'integer';
-      break;
-
-    case 'abstract':
-    case 'mlaCitation':
-    case 'apaCitation':
-    case 'professionalInterests':
-    case 'currentRoleAtStanford':
-    case 'bio':
-    case 'fullText':
-    case 'shortText':
-    case 'terseText':
-    case 'brief':
-    case 'full':
-      $type = 'text';
-      break;
-
-    case 'activeAffiliations':
-    case 'administrativeAppointments':
-    case 'advisees':
-    case 'advisor':
-    case 'affiliations':
-    case 'aliases':
-    case 'alternateContact':
-    case 'areas':
-    case 'associatedPrograms':
-    case 'clerkships':
-    case 'clinicalContacts':
-    case 'clinicalInterests':
-    case 'collaborators':
-    case 'communityAndInternationalWork':
-    case 'concentrations':
-    case 'contact':
-    case 'courses':
-    case 'coursesTaught':
-    case 'currentResearchInterests':
-    case 'cv':
-    case 'disclosureStatement':
-    case 'documents':
-    case 'education':
-    case 'flags':
-    case 'graduateAndFellowshipPrograms':
-    case 'honorsAndAwards':
-    case 'independentStudyCourses':
-    case 'industryRelationships':
-    case 'internetLinks':
-    case 'labAffiliations':
-    case 'legal':
-    case 'links':
-    case 'longTitle':
-    case 'maintainers':
-    case 'media':
-    case 'membershipOrganizations':
-    case 'mentor':
-    case 'meta':
-    case 'names':
-    case 'nihBiosketch':
-      // @todo Now there are two kinds of "organization" field. One is "string"
-      // and second is field collection. The main problem of handling it is that
-      // there could be multiple field sets in collections.
-      //case 'organization':
-    case 'origCourses':
-    case 'postdoctoralAdvisees':
-    case 'preferred':
-    case 'presentations':
-    case 'primaryContact':
-    case 'professionalOrganizations':
-    case 'profilePatents':
-    case 'profilePhotos':
-    case 'projects':
-    case 'projectType':
-    case 'publications':
-    case 'publicationTags':
-    case 'researchProjects':
-    case 'resume':
-    case 'serviceWork':
-    case 'shortTitle':
-    case 'similarProfiles':
-    case 'stanfordAdvisors':
-    case 'status':
-    case 'supervisors':
-    case 'titles':
-    case 'visibility':
-    case 'workExperience':
-      $type = 'field_collection';
-      break;
-
-    case 'big':
-    case 'bigger':
-    case 'small':
-    case 'square':
-      $type = 'image';
-      break;
-  }
-
-  return $type;
-}
-
-/**
- * Returns Drupal base field definition based of JSON field type.
- */
-function _stanford_cap_api_get_field_base_def($type, $name) {
-  $info = FALSE;
-  switch ($type) {
-    case 'link':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(),
-        'indexes' => array(),
-        'locked' => 0,
-        'module' => 'link',
-        'settings' => array(
-          'attributes' => array(
-            'class' => '',
-            'rel' => '',
-            'target' => 'default',
-          ),
-          'display' => array(
-            'url_cutoff' => 80,
-          ),
-          'enable_tokens' => 1,
-          'title' => 'optional',
-          'title_maxlength' => 128,
-          'title_value' => '',
-          'url' => 0,
-        ),
-        'translatable' => 0,
-        'type' => 'link_field',
-      );
-      break;
-
-    case 'date':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(),
-        'indexes' => array(),
-        'locked' => 0,
-        'module' => 'date',
-        'settings' => array(
-          'cache_count' => 4,
-          'cache_enabled' => 0,
-          'granularity' => array(
-            'day' => 'day',
-            'hour' => 0,
-            'minute' => 0,
-            'month' => 'month',
-            'second' => 0,
-            'year' => 'year',
-          ),
-          'timezone_db' => '',
-          'todate' => '',
-          'tz_handling' => 'none',
-        ),
-        'translatable' => 0,
-        'type' => 'datestamp',
-      );
-      break;
-
-    case 'string':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(
-          'format' => array(
-            'columns' => array(
-              'format' => 'format',
-            ),
-            'table' => 'filter_format',
-          ),
-        ),
-        'indexes' => array(
-          'format' => array(
-            0 => 'format',
-          ),
-        ),
-        'locked' => 0,
-        'module' => 'text',
-        'settings' => array(
-          'max_length' => 255,
-        ),
-        'translatable' => 0,
-        'type' => 'text',
-      );
-      break;
-
-    case 'string_multiple':
-      $info = array(
-        'active' => 1,
-        'cardinality' => -1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(
-          'format' => array(
-            'columns' => array(
-              'format' => 'format',
-            ),
-            'table' => 'filter_format',
-          ),
-        ),
-        'indexes' => array(
-          'format' => array(
-            0 => 'format',
-          ),
-        ),
-        'locked' => 0,
-        'module' => 'text',
-        'settings' => array(
-          'max_length' => 255,
-        ),
-        'translatable' => 0,
-        'type' => 'text',
-      );
-      break;
-
-    case 'text':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(
-          'format' => array(
-            'columns' => array(
-              'format' => 'format',
-            ),
-            'table' => 'filter_format',
-          ),
-        ),
-        'indexes' => array(
-          'format' => array(
-            0 => 'format',
-          ),
-        ),
-        'locked' => 0,
-        'module' => 'text',
-        'settings' => array(),
-        'translatable' => 0,
-        'type' => 'text_long',
-      );
-      break;
-
-    case 'integer':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(),
-        'indexes' => array(),
-        'locked' => 0,
-        'module' => 'number',
-        'settings' => array(),
-        'translatable' => 0,
-        'type' => 'number_integer',
-      );
-      break;
-
-    case 'field_collection':
-      $info = array(
-        'active' => 1,
-        'cardinality' => -1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(),
-        'indexes' => array(),
-        'locked' => 0,
-        'module' => 'field_collection',
-        'settings' => array(
-          'hide_blank_items' => 1,
-          'path' => '',
-        ),
-        'translatable' => 0,
-        'type' => 'field_collection',
-      );
-      break;
-
-    case 'boolean':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(),
-        'indexes' => array(
-          'value' => array(
-            0 => 'value',
-          ),
-        ),
-        'locked' => 0,
-        'module' => 'list',
-        'settings' => array(
-          'allowed_values' => array(
-            0 => '',
-            1 => '',
-          ),
-          'allowed_values_function' => '',
-        ),
-        'translatable' => 0,
-        'type' => 'list_boolean',
-      );
-      break;
-
-    case 'image':
-      $info = array(
-        'active' => 1,
-        'cardinality' => 1,
-        'deleted' => 0,
-        'entity_types' => array(),
-        'field_name' => $name,
-        'foreign keys' => array(
-          'fid' => array(
-            'columns' => array(
-              'fid' => 'fid',
-            ),
-            'table' => 'file_managed',
-          ),
-        ),
-        'indexes' => array(
-          'fid' => array(
-            0 => 'fid',
-          ),
-        ),
-        'locked' => 0,
-        'module' => 'image',
-        'settings' => array(
-          'default_image' => 0,
-          'uri_scheme' => 'public',
-        ),
-        'translatable' => 0,
-        'type' => 'image',
-      );
-      break;
-  }
-
-  return $info;
-}
-
-/**
- * Generates instance info for profile fields.
- *
- * @param string $type
- *   Field type.
- * @param string $name
- *   Field name.
- * @param string $label
- *   Field label.
- * @param string $fc_field
- *   Field collection field name.
- *
- * @return array|FALSE
- *   Field instance definition or FALSE.
- */
-function _stanford_cap_api_get_field_instance_def($type, $name, $label, $fc_field = '') {
-  $info = FALSE;
-  switch ($type) {
-    case 'link':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'link',
-            'settings' => array(),
-            'type' => 'link_default',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'attributes' => array(
-            'class' => '',
-            'configurable_title' => 0,
-            'rel' => '',
-            'target' => 'default',
-            'title' => '',
-          ),
-          'display' => array(
-            'url_cutoff' => 80,
-          ),
-          'enable_tokens' => 1,
-          'rel_remove' => 'default',
-          'title' => 'none',
-          'title_maxlength' => 128,
-          'title_value' => '',
-          'url' => 0,
-          'user_register_form' => FALSE,
-          'validate_url' => 1,
-        ),
-        'widget' => array(
-          'active' => 0,
-          'module' => 'link',
-          'settings' => array(),
-          'type' => 'link_field',
-        ),
-      );
-      break;
-
-    case 'date':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'date',
-            'settings' => array(
-              'format_type' => 'long',
-              'fromto' => 'both',
-              'multiple_from' => '',
-              'multiple_number' => '',
-              'multiple_to' => '',
-            ),
-            'type' => 'date_default',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'default_value' => 'now',
-          'default_value2' => 'same',
-          'default_value_code' => '',
-          'default_value_code2' => '',
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'date',
-          'settings' => array(
-            'display_all_day' => 0,
-            'increment' => 15,
-            'input_format' => 'm/d/Y - H:i:s',
-            'input_format_custom' => '',
-            'label_position' => 'above',
-            'text_parts' => array(),
-            'year_range' => '-3:+3',
-          ),
-          'type' => 'date_select',
-        ),
-      );
-      break;
-
-    case 'string':
-    case 'string_multiple':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'text',
-            'settings' => array(),
-            'type' => 'text_default',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'text_processing' => 0,
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'text',
-          'settings' => array(
-            'size' => 60,
-          ),
-          'type' => 'text_textfield',
-        ),
-      );
-      break;
-
-    case 'text':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'text',
-            'settings' => array(),
-            'type' => 'text_default',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'text_processing' => 1,
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'text',
-          'settings' => array(
-            'rows' => 5,
-          ),
-          'type' => 'text_textarea',
-        ),
-      );
-      break;
-
-    case 'integer':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'number',
-            'settings' => array(
-              'decimal_separator' => '.',
-              'prefix_suffix' => TRUE,
-              'scale' => 0,
-              'thousand_separator' => ' ',
-            ),
-            'type' => 'number_integer',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'max' => '',
-          'min' => '',
-          'prefix' => '',
-          'suffix' => '',
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 0,
-          'module' => 'number',
-          'settings' => array(),
-          'type' => 'number',
-        ),
-      );
-      break;
-
-    case 'boolean':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => array(
-          0 => array(
-            'value' => 0,
-          ),
-        ),
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'list',
-            'settings' => array(),
-            'type' => 'list_default',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'options',
-          'settings' => array(
-            'display_label' => 1,
-          ),
-          'type' => 'options_onoff',
-        ),
-      );
-      break;
-
-    case 'field_collection':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'default_value' => NULL,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'field_collection',
-            'settings' => array(
-              'add' => 'Add',
-              'delete' => 'Delete',
-              'description' => TRUE,
-              'edit' => 'Edit',
-              'view_mode' => 'full',
-            ),
-            'type' => 'field_collection_view',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 0,
-          'module' => 'field_collection',
-          'settings' => array(),
-          'type' => 'field_collection_embed',
-        ),
-      );
-      break;
-
-    case 'image':
-      $info = array(
-        'bundle' => empty($fc_field) ? 'cap_faculty_profile' : $fc_field,
-        'deleted' => 0,
-        'description' => '',
-        'display' => array(
-          'default' => array(
-            'label' => 'above',
-            'module' => 'image',
-            'settings' => array(
-              'image_link' => '',
-              'image_style' => '',
-            ),
-            'type' => 'image',
-          ),
-          'teaser' => array(
-            'label' => 'above',
-            'settings' => array(),
-            'type' => 'hidden',
-          ),
-        ),
-        'entity_type' => empty($fc_field) ? 'node' : 'field_collection_item',
-        'field_name' => $name,
-        'label' => $label,
-        'required' => 0,
-        'settings' => array(
-          'alt_field' => 0,
-          'default_image' => 0,
-          'file_directory' => variable_get('cap_profile_photos', 'profile_photos'),
-          'file_extensions' => 'png gif jpg jpeg',
-          'max_filesize' => '',
-          'max_resolution' => '',
-          'min_resolution' => '',
-          'title_field' => 0,
-          'user_register_form' => FALSE,
-        ),
-        'widget' => array(
-          'active' => 1,
-          'module' => 'image',
-          'settings' => array(
-            'preview_image_style' => 'thumbnail',
-            'progress_indicator' => 'throbber',
-          ),
-          'type' => 'image_image',
-        ),
-      );
-      break;
-  }
-
-  return $info;
-}
-
-/**
  * Writes created field name to DB.
  *
  * @param string $field_name
@@ -1819,51 +931,6 @@ function _stanford_cap_api_get_cap_profile_url($profile) {
   }
 
   return $href;
-}
-
-/**
- * Synchronize profile subfields.
- *
- * @param array $subfields
- *   Subfields of field attached no profile node,
- * @param string $node_field_name
- *   Field name attached to node.
- */
-function _stanford_cap_api_sync_subfields($subfields, $node_field_name) {
-  // Subfields could come in 2 types: 1) array of different fields(e.g. just a
-  // fields set), in this case indexes are field names; 2) array of single field
-  // values - in this case this array is keyed with indexes.
-  // With "array_key_exists(0, $subfields)" we checking for second case.
-  if (is_array($subfields) && !empty($subfields) && array_key_exists(0, $subfields)) {
-    foreach ($subfields as $subfld) {
-      _stanford_cap_api_sync_subfields($subfld, $node_field_name);
-    }
-  }
-  else {
-    foreach ($subfields as $subfield => $subfield_data) {
-      $fc_field_name = _stanford_cap_api_generate_field_name($subfield);
-      $subfield_type = _stanford_cap_api_get_field_type($subfield);
-      $subfield_info = field_info_field($fc_field_name);
-      if (empty($subfield_info)) {
-        $subfield_info = _stanford_cap_api_get_field_base_def($subfield_type, $fc_field_name);
-        if (!empty($subfield_info)) {
-          field_create_field($subfield_info);
-          // Logging field creation.
-          _stanford_cap_api_log_field($fc_field_name);
-        }
-      }
-      $subfield_instance = field_info_instance('field_collection_item', $fc_field_name, $node_field_name);
-      if (empty($subfield_instance)) {
-        $subfield_instance = _stanford_cap_api_get_field_instance_def($subfield_type, $fc_field_name, $subfield, $node_field_name);
-        if (!empty($subfield_instance)) {
-          field_create_instance($subfield_instance);
-        }
-      }
-      if ($subfield_type == 'field_collection') {
-        _stanford_cap_api_sync_subfields($subfield_data, $fc_field_name);
-      }
-    }
-  }
 }
 
 /**
@@ -2058,63 +1125,14 @@ function _stanford_cap_api_sync_group_wrapper($group_type, $group_name) {
 }
 
 /**
- * Synchronize profile structure for given profile.
- *
- * @param array $profile
- *   CAP API profile.
+ * Synchronize profile structure based on profile schema.
  */
-function stanford_cap_api_synchronize_schema($profile) {
-  $profile_type = stanford_cap_api_get_profile_type($profile);
-  $schema = stanford_cap_api_get_profile_schema($profile_type);
-  foreach ($schema['headings'] as $heading) {
-    if (!empty($heading['name']) && !empty($heading['sections'])) {
-      $h_name = _stanford_cap_api_generate_field_name($heading['name'], TRUE);
-      $type = 'field_collection';
-      // ++
-      $field_info = field_info_field($h_name);
-      if (empty($field_info)) {
-        // Field not exists yet.
-        $field_info = _stanford_cap_api_get_field_base_def($type, $h_name);
-        field_create_field($field_info);
-        // Logging field creation.
-        _stanford_cap_api_log_field($h_name);
-      }
-      $field_instance = field_info_instance('node', $h_name, 'cap_faculty_profile');
-      if (empty($field_instance)) {
-        $field_instance = _stanford_cap_api_get_field_instance_def($type, $h_name, $heading['name']);
-        if (!empty($field_instance)) {
-          field_create_instance($field_instance);
-        }
-      }
-      // ++
-      foreach ($heading['sections'] as $section) {
-        if (!empty($section['name']) && !empty($section['fields'])) {
-          $field = array_shift($section['fields']);
-          $field['name'] = _stanford_cap_api_generate_field_name($field['attribute']);
-          $field['type'] = _stanford_cap_api_get_field_type($field['attribute']);
-
-          // ++
-          $field_info = field_info_field($field['name']);
-          if (empty($field_info)) {
-            // Field not exists yet.
-            $field_info = _stanford_cap_api_get_field_base_def($field['type'], $field['name']);
-            // Do we know about this field type?
-            if (!empty($field_info)) {
-              field_create_field($field_info);
-              // Logging field creation.
-              _stanford_cap_api_log_field($field['name'], $h_name);
-            }
-          }
-          $field_instance = field_info_instance('field_collection_item', $field['name'], $h_name);
-          if (empty($field_instance)) {
-            $field_instance = _stanford_cap_api_get_field_instance_def($field['type'], $field['name'], $section['name'], $h_name);
-            if (!empty($field_instance)) {
-              field_create_instance($field_instance);
-            }
-          }
-          // ++
-        }
-      }
+function stanford_cap_api_synchronize_schema() {
+  $schema = stanford_cap_api_get_profile_schema();
+  // Basic check that we have an expected schema.
+  if (is_array($schema) && $schema['type'] == 'object' && !empty($schema['properties'])) {
+    foreach ($schema['properties'] as $f_name => $f_schema) {
+      _stanford_cap_api_synchronize_schema_subfields($f_name, $f_schema);
     }
   }
 }
@@ -2122,47 +1140,351 @@ function stanford_cap_api_synchronize_schema($profile) {
 /**
  * Get schema for profile type.
  *
- * @param string $profile_type
- *   Profile type.
- *
- * @return array|FALSE
+ * @return array
  *   Profile type schema.
  */
-function stanford_cap_api_get_profile_schema($profile_type) {
-  return stanford_cap_api_request('/api/cap/v1/layouts/' . $profile_type);
+function stanford_cap_api_get_profile_schema() {
+  return stanford_cap_api_request('/api/cap/v1/schemas/profile');
 }
+
+
 
 /**
- * Get parent field name for specified field.
- *
- * @param string $field_name
- *   Machine readable Drupal field name.
- *
- * @return string
- *   Parent field name, empty string, if field attached directly to node,
- *   or FALSE.
+ * Generate field info based in field schema.
  */
-function _stanford_cap_api_get_parent_field($field_name) {
-  $cache =& drupal_static(__FUNCTION__, array());
-  if (empty($cache[$field_name])) {
-    $cache[$field_name] = db_select('cap_api_fields')
-      ->fields('cap_api_fields', array('parent_field'))
-      ->condition('field_name', $field_name)
-      ->execute()
-      ->fetchField();
+function _stanford_cap_api_generate_field_info($field_name, array $field_schema) {
+  $info = NULL;
+  switch ($field_schema['type']) {
+    case 'array':
+      switch ($field_schema['items']['type']) {
+        case 'string':
+          $info = _stanford_cap_api_gen_field_base_def_text($field_name, $field_schema, TRUE);
+          break;
+
+        case 'object':
+          $info = _stanford_cap_api_gen_field_base_def_field_collection($field_name, $field_schema, TRUE);
+          break;
+
+        default:
+          $message = 'Unknown field items type "@type" in CAP profile schema: @schema';
+          $vars = array(
+            '@type' => $field_schema['items']['type'],
+            '@schema' => print_r($field_schema, TRUE),
+          );
+          watchdog('stanford_cap_api', $message, $vars, WATCHDOG_WARNING);
+      }
+      break;
+
+    case 'object':
+      if (!empty($field_schema['properties'])) {
+        $props = $field_schema['properties'];
+        // This is not the real collection.
+        // Simple string.
+        if (isset($props['html']) && isset($props['text']) && count($props) == 2) {
+          $info = _stanford_cap_api_gen_field_base_def_text($field_name, $props['text']);
+        }
+        // Date field.
+        elseif (isset($props['value']) && isset($props['html']) && isset($props['text']) && count($props) == 3) {
+          $schema = $props['value'];
+          if ($schema['type'] == 'string') {
+            if (isset($schema['format']) && $schema['format'] == 'DATE_TIME') {
+              $info = _stanford_cap_api_gen_field_base_def_date($field_name, $schema);
+            }
+          }
+        }
+        else {
+          $info = _stanford_cap_api_gen_field_base_def_field_collection($field_name, $field_schema);
+        }
+      }
+      break;
+
+    case 'string':
+      $info = _stanford_cap_api_gen_field_base_def_text($field_name, $field_schema);
+      break;
+
+    case 'boolean':
+      $info = _stanford_cap_api_gen_field_base_def_boolean($field_name, $field_schema);
+      break;
+
+    case 'integer':
+      $info = _stanford_cap_api_gen_field_base_def_integer($field_name, $field_schema);
+      break;
+
+    default:
+      $message = 'Unknown field type "@type" in CAP profile schema: @schema';
+      $vars = array(
+        '@type' => $field_schema['type'],
+        '@schema' => print_r($field_schema, TRUE),
+      );
+      watchdog('stanford_cap_api', $message, $vars, WATCHDOG_WARNING);
   }
 
-  return $cache[$field_name];
+  return $info;
 }
 
-function test() {
-  $profile = stanford_cap_api_get_profile(8311);
-  stanford_cap_api_synchronize_schema($profile);
-  stanford_cap_api_synchronize_fields($profile);
-  stanford_cap_api_profile_sync($profile);
+function _stanford_cap_api_generate_instance_info($type, $field_name, $schema, $parent_field = '') {
+  $info = NULL;
+  switch ($type) {
+    case 'text':
+      $info = _stanford_cap_api_gen_field_instance_def_text($field_name, $schema, $parent_field);
+      break;
+
+    case 'list_boolean':
+      $info = _stanford_cap_api_gen_field_instance_def_boolean($field_name, $schema, $parent_field);
+      break;
+
+    case 'field_collection':
+      $info = _stanford_cap_api_gen_field_instance_def_field_collection($field_name, $schema, $parent_field);
+      break;
+
+    case 'date':
+      $info = _stanford_cap_api_gen_field_instance_def_date($field_name, $schema, $parent_field);
+      break;
+
+    case 'number_integer':
+      $info = _stanford_cap_api_gen_field_instance_def_integer($field_name, $schema, $parent_field);
+      break;
+
+    default:
+      // todo: Log failed attempt.
+  }
+
+  return $info;
 }
 
-function _stanford_cap_api_import_faculty() {
+function _stanford_cap_api_synchronize_schema_subfields($f_name, $f_schema, $parent_field = NULL) {
+  if (empty($f_schema['metadata'])) {
+    $field_name = _stanford_cap_api_generate_field_name($f_name);
+    $field_info = field_info_field($field_name);
+    if (empty($field_info)) {
+      $field_info = _stanford_cap_api_generate_field_info($field_name, $f_schema);
+      // Do we know about this field type?
+      if (!empty($field_info)) {
+        field_create_field($field_info);
+        // Logging field creation.
+        _stanford_cap_api_log_field($field_name, $parent_field);
+      }
+    }
+    $parent_entity = empty($parent_field) ? 'node' : 'field_collection_item';
+    $parent_entity_bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+    $field_instance = field_info_instance($parent_entity, $field_name, $parent_entity_bundle);
+    if (empty($field_instance) && !empty($field_info)) {
+      $field_instance = _stanford_cap_api_generate_instance_info($field_info['type'], $field_name, $f_schema, $parent_field);
+      if (!empty($field_instance)) {
+        field_create_instance($field_instance);
+      }
+      else {
+        // @todo: Log failed attempt.
+      }
+    }
+    if ($field_info['type'] == 'field_collection') {
+      $subfields = array();
+      if ($f_schema['type'] == 'array' && $f_schema['items']['type'] == 'object') {
+        $subfields = $f_schema['items']['properties'];
+      }
+      elseif ($f_schema['type'] == 'object' && !empty($f_schema['properties'])) {
+        $subfields = $f_schema['properties'];
+      }
+
+      foreach ($subfields as $subfield => $schema) {
+        _stanford_cap_api_synchronize_schema_subfields($subfield, $schema, $field_name);
+      }
+    }
+  }
+}
+
+function _stanford_cap_api_gen_field_base_def_text($field_name, $field_schema, $multivalue = FALSE) {
+  $cardinality = $multivalue ? -1 : 1;
+  if (!empty($field_schema['maxLength']) && is_numeric($field_schema['maxLength'])) {
+    $max_length = (int) $field_schema['maxLength'];
+  }
+  else {
+    $max_length = 255;
+  }
+
+  $info = array(
+    'cardinality' => $cardinality,
+    'field_name' => $field_name,
+    'settings' => array(
+      'max_length' => $max_length,
+    ),
+    'type' => 'text',
+  );
+
+  return $info;
+}
+
+function _stanford_cap_api_gen_field_base_def_integer($field_name, $field_schema, $multivalue = FALSE) {
+  $cardinality = $multivalue ? -1 : 1;
+
+  return array(
+    'cardinality' => $cardinality,
+    'field_name' => $field_name,
+    'type' => 'number_integer',
+  );
+}
+
+function _stanford_cap_api_gen_field_base_def_field_collection($field_name, $field_schema, $multivalue = FALSE) {
+  $cardinality = $multivalue ? -1 : 1;
+
+  return array(
+    'cardinality' => $cardinality,
+    'field_name' => $field_name,
+    'type' => 'field_collection',
+  );
+}
+
+function _stanford_cap_api_gen_field_base_def_boolean($field_name, $field_schema, $multivalue = FALSE) {
+  $cardinality = $multivalue ? -1 : 1;
+
+  return array(
+    'cardinality' => $cardinality,
+    'field_name' => $field_name,
+    'type' => 'list_boolean',
+  );
+}
+
+function _stanford_cap_api_gen_field_base_def_date($field_name, $field_schema, $multivalue = FALSE) {
+  $cardinality = $multivalue ? -1 : 1;
+
+  return array(
+    'cardinality' => $cardinality,
+    'settings' => array(
+      'granularity' => array(
+        'month' => 'month',
+        'day' => 'day',
+        'hour' => 'hour',
+        'minute' => 'minute',
+        'second' => 'second',
+        'year' => 'year',
+      ),
+      'tz_handling' => 'site',
+      'timezone_db' => 'UTC',
+      'cache_enabled' => 0,
+      'cache_count' => '4',
+      'todate' => '',
+    ),
+    'field_name' => $field_name,
+    'type' => 'date',
+  );
+}
+
+function _stanford_cap_api_gen_field_instance_def_boolean($field_name, $schema, $parent_field) {
+  $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
+  $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+  $label = empty($schema['title']) ? '' : $schema['title'];
+  $description = empty($schema['description']) ? '' : $schema['description'];
+
+  return array(
+    'bundle' => $bundle,
+    'description' => $description,
+    'entity_type' => $entity_type,
+    'field_name' => $field_name,
+    'label' => $label,
+    'widget' => array(
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+    ),
+  );
+}
+
+function _stanford_cap_api_gen_field_instance_def_integer($field_name, $schema, $parent_field) {
+  $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
+  $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+  $label = empty($schema['title']) ? '' : $schema['title'];
+  $description = empty($schema['description']) ? '' : $schema['description'];
+
+  return array(
+    'label' => $label,
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'type' => 'number_integer',
+        'settings' => array(
+          'thousand_separator' => '',
+          'prefix_suffix' => 0,
+          'decimal_separator' => '.',
+          'scale' => 0,
+        ),
+        'module' => 'number',
+      ),
+    ),
+    'description' => $description,
+    'field_name' => $field_name,
+    'entity_type' => $entity_type,
+    'bundle' => $bundle,
+  );
+}
+
+function _stanford_cap_api_gen_field_instance_def_text($name, $schema, $parent_field = '') {
+  $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
+  $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+  $label = empty($schema['title']) ? '' : $schema['title'];
+  $description = empty($schema['description']) ? '' : $schema['description'];
+
+  return array(
+    'bundle' => $bundle,
+    'default_value' => NULL,
+    'description' => $description,
+    'entity_type' => $entity_type,
+    'field_name' => $name,
+    'label' => $label,
+  );
+}
+
+function _stanford_cap_api_gen_field_instance_def_field_collection($name, $schema, $parent_field = '') {
+  $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
+  $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+  $label = empty($schema['title']) ? '' : $schema['title'];
+  $description = empty($schema['description']) ? '' : $schema['description'];
+
+  return array(
+    'bundle' => $bundle,
+    'description' => $description,
+    'entity_type' => $entity_type,
+    'field_name' => $name,
+    'label' => $label,
+  );
+}
+
+function _stanford_cap_api_gen_field_instance_def_date($name, $schema, $parent_field = '') {
+  $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
+  $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+  $label = empty($schema['title']) ? '' : $schema['title'];
+  $description = empty($schema['description']) ? '' : $schema['description'];
+
+  return array(
+    'label' => $label,
+    'widget' => array(
+      'weight' => '0',
+      'type' => 'date_select',
+      'module' => 'date',
+      'active' => 1,
+      'settings' => array(
+        'input_format' => 'm/d/Y - H:i:s',
+        'input_format_custom' => '',
+        'year_range' => '-3:+3',
+        'increment' => '15',
+        'label_position' => 'above',
+        'text_parts' => array(),
+      ),
+    ),
+    'settings' => array(
+      'default_value' => 'blank',
+      'default_value_code' => '',
+      'default_value2' => 'same',
+      'default_value_code2' => '',
+      'user_register_form' => FALSE,
+    ),
+    'description' => $description,
+    'field_name' => $name,
+    'entity_type' => $entity_type,
+    'bundle' => $bundle,
+  );
+}
+
+function _stanford_cap_api_import_faculties() {
   // Returns only faculty profiles.
   // Request URL
   // https://cap-beta.stanford.edu/cap-api/api/cap/v1/orgs/stanford/profiles?affiliations=capFaculty&summarize=false
