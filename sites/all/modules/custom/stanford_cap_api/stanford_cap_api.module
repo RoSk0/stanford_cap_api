@@ -503,7 +503,8 @@ function stanford_cap_api_synchronize_data($profile) {
   $nid = db_select('cap_api_profiles', 'cap')
     ->fields('cap', array('nid'))
     ->condition('profile_id', $profile['profileId'])
-    ->execute()->fetchField();
+    ->execute()
+    ->fetchField();
   $node = $nid ? node_load($nid) : FALSE;
   if ($node) {
     stanford_cap_api_node_fields_update($node, $profile);
@@ -600,30 +601,33 @@ function stanford_cap_api_node_fields_update($node, $profile) {
   $profile_id = $profile['profileId'];
   foreach ($profile as $field_name => $field_data) {
     $drupal_field = _stanford_cap_api_generate_field_name($field_name);
-    $hash = db_select('cap_api_field_hashes', 'hashes')
-      ->condition('profile_id', $profile_id)
-      ->condition('field_name', $drupal_field)
-      ->fields('hashes', array('hash'))
-      ->execute()
-      ->fetchField();
-    if ($hash == serialize($node->{$drupal_field})) {
-      // Field data didn't changed till import, this means we can update it.
-      $nw->{$drupal_field}->set(NULL);
-      $d_field_name = _stanford_cap_api_generate_field_name($field_name);
-      $parent_field = _stanford_cap_api_get_parent_field($d_field_name);
-      if (!empty($parent_field)) {
-        $fc_item = entity_create('field_collection_item', array('field_name' => $parent_field));
-        $entity_type = 'node';
-        $fc_item->setHostEntity($entity_type, $node);
-        $fc_item->save(TRUE);
-        $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
-        foreach ($field_data as $fc_subfield => $fc_subfield_data) {
-          _stanford_cap_api_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data);
+    $props_info = $nw->getPropertyInfo();
+    if (isset($props_info[$drupal_field])) {
+      $hash = db_select('cap_api_field_hashes', 'hashes')
+        ->condition('profile_id', $profile_id)
+        ->condition('field_name', $drupal_field)
+        ->fields('hashes', array('hash'))
+        ->execute()
+        ->fetchField();
+      if ($hash == serialize($node->{$drupal_field})) {
+        // Field data didn't changed till import, this means we can update it.
+        $nw->{$drupal_field}->set(NULL);
+        $d_field_name = _stanford_cap_api_generate_field_name($field_name);
+        $parent_field = _stanford_cap_api_get_parent_field($d_field_name);
+        if (!empty($parent_field)) {
+          $fc_item = entity_create('field_collection_item', array('field_name' => $parent_field));
+          $entity_type = 'node';
+          $fc_item->setHostEntity($entity_type, $node);
+          $fc_item->save(TRUE);
+          $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+          foreach ($field_data as $fc_subfield => $fc_subfield_data) {
+            _stanford_cap_api_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data);
+          }
+          $fc_item->save(TRUE);
         }
-        $fc_item->save(TRUE);
-      }
-      else {
-        _stanford_cap_api_save_field($node, $nw, $field_name, $field_data);
+        else {
+          _stanford_cap_api_save_field($node, $nw, $field_name, $field_data);
+        }
       }
     }
   }
@@ -937,9 +941,11 @@ function _stanford_cap_api_get_cap_profile_url($profile) {
  *
  * @param string $field_name
  *   CAP profile field name.
+ * @param boolean $human
+ *   Indicates that this is human readable string.
  *
  * @return string
- *   Drupal field name..
+ *   Drupal field name.
  */
 function _stanford_cap_api_generate_field_name($field_name, $human = FALSE) {
   if ($human) {
@@ -971,8 +977,8 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
   $drupal_field_name = _stanford_cap_api_generate_field_name($field_name);
   $props_info = $wrapper->getPropertyInfo();
   if (isset($props_info[$drupal_field_name])) {
-    $field_type = _stanford_cap_api_get_field_type($field_name);
-    switch ($field_type) {
+    $field_info = field_info_field($drupal_field_name);
+    switch ($field_info['type']) {
       case 'link':
         if (is_string($field_data)) {
           $wrapper->{$drupal_field_name}->set(array('url' => $field_data));
@@ -988,38 +994,36 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         }
         break;
 
-      case 'string':
+      case 'text':
         if (is_string($field_data)) {
-          // @todo Sometimes 'label' field just a bit longer then we expect,
-          // e.g. 264-270 chars, so we truncating data to 255 until we get schema.
-          $wrapper->{$drupal_field_name}->set(drupal_substr($field_data, 0, 255));
+          $value = _stanford_cap_api_get_field_value_text($field_name, $field_data, $field_info);
+          $wrapper->{$drupal_field_name}->set($value);
         }
-        elseif (is_array($field_data) && !empty($field_data['html'])) {
-          $wrapper->{$drupal_field_name}->set(drupal_substr($field_data['html'], 0, 255));
+        elseif (is_array($field_data) && !empty($field_data['html']) && !empty($field_data['text'])) {
+          $field_data = $field_data['text'];
+          $value = _stanford_cap_api_get_field_value_text($field_name, $field_data, $field_info);
+          $wrapper->{$drupal_field_name}->set($value);
         }
-        break;
-
-      case 'string_multiple':
-        if (!is_array($field_data)) {
-          $error_msg = 'Field name: @field_name. Expecting array, got: @data.';
-          $vars = array(
-            '@field_name' => $field_name,
-            '@data' => print_r($field_data, TRUE),
-          );
-          watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
-        }
-        else {
+        elseif (is_array($field_data) && $field_info['cardinality'] == '-1') {
           $values = array();
-          foreach ($field_data as $field) {
-            if (is_string($field)) {
-              $values[] = drupal_substr($field, 0, 255);
+          foreach ($field_data as $f_data) {
+            if (is_string($f_data)) {
+              $values[] = _stanford_cap_api_get_field_value_text($field_name, $f_data, $field_info);
+            }
+            else {
+              $error_msg = 'Field name: @field_name. Expecting string , got: @data.';
+              $vars = array(
+                '@field_name' => $field_name,
+                '@data' => print_r($field_data, TRUE),
+              );
+              watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
             }
           }
           $wrapper->{$drupal_field_name}->set($values);
         }
         break;
 
-      case 'text':
+      case 'text_long':
         $data['format'] = 'full_html';
         if (is_string($field_data)) {
           $data['value'] = $field_data;
@@ -1040,13 +1044,13 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         }
         break;
 
-      case 'integer':
+      case 'number_integer':
         if (is_numeric($field_data)) {
           $wrapper->{$drupal_field_name}->set($field_data);
         }
         break;
 
-      case 'boolean':
+      case 'list_boolean':
         if (is_bool($field_data)) {
           $wrapper->{$drupal_field_name}->set($field_data);
         }
@@ -1113,6 +1117,50 @@ function _stanford_cap_api_save_field(&$entity, &$wrapper, $field_name, $field_d
         break;
     }
   }
+  else {
+    $message = 'Field "@field" was in profile, but were not defined in schema. Field data: @data';
+    $vars = array(
+      '@field' => $field_name,
+      '@data' => $field_data,
+    );
+    watchdog('stanford_cap_api', $message, $vars, WATCHDOG_WARNING);
+  }
+}
+
+/**
+ * Get field value for text field.
+ *
+ * @param string $field_name
+ *   Field name.
+ * @param array $field_data
+ *   Field data to process.
+ * @param array $field_info
+ *   Field info.
+ *
+ * @return string
+ *   String to save as field value.
+ */
+function _stanford_cap_api_get_field_value_text($field_name, $field_data, $field_info) {
+  $max_length = $field_info['columns']['value']['length'];
+  $data_length = strlen($field_data);
+  if ($data_length > $max_length) {
+    $value = drupal_substr($field_data, 0, $max_length);
+    $error_msg = 'Field "@field_name" data truncated. Expected data length "@length", got "@got".';
+    $vars = array(
+      '@field_name' => $field_name,
+      '@length' => $max_length,
+      '@got' => $data_length,
+    );
+    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
+    _stanford_cap_api_log_longest_field_length($data_length);
+
+    return $value;
+  }
+  else {
+    $value = $field_data;
+
+    return $value;
+  }
 }
 
 /**
@@ -1146,12 +1194,19 @@ function stanford_cap_api_get_profile_schema() {
   return stanford_cap_api_request('/api/cap/v1/schemas/profile');
 }
 
-
-
 /**
  * Generate field info based in field schema.
+ *
+ * @param string $field_name
+ *   Generated Drupal field name.
+ * @param array $field_schema
+ *   Field schema form CAP API.
+ *
+ * @return array
+ *   Array used in field_create_field().
+ * @see field_create_field()
  */
-function _stanford_cap_api_generate_field_info($field_name, array $field_schema) {
+function _stanford_cap_api_generate_field_info($field_name, $field_schema) {
   $info = NULL;
   switch ($field_schema['type']) {
     case 'array':
@@ -1221,6 +1276,22 @@ function _stanford_cap_api_generate_field_info($field_name, array $field_schema)
   return $info;
 }
 
+/**
+ * Generate field instance info for specified field type.
+ *
+ * @param string $type
+ *   Field type.
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $schema
+ *   Field schema form CAP API.
+ * @param string $parent_field
+ *   Parent field name.
+ *
+ * @return array
+ *   Array used in field_create_instance().
+ * @see field_create_instance()
+ */
 function _stanford_cap_api_generate_instance_info($type, $field_name, $schema, $parent_field = '') {
   $info = NULL;
   switch ($type) {
@@ -1243,15 +1314,24 @@ function _stanford_cap_api_generate_instance_info($type, $field_name, $schema, $
     case 'number_integer':
       $info = _stanford_cap_api_gen_field_instance_def_integer($field_name, $schema, $parent_field);
       break;
-
-    default:
-      // todo: Log failed attempt.
   }
 
   return $info;
 }
 
+/**
+ * Helper to synchronize CAP profile fields structure.
+ *
+ * @param string $f_name
+ *   CAP API profile field name.
+ * @param array $f_schema
+ *   CAP API profile field schema.
+ * @param string $parent_field
+ *   Parent field name. This is Drupal field name.
+ */
 function _stanford_cap_api_synchronize_schema_subfields($f_name, $f_schema, $parent_field = NULL) {
+  // We don't store metadata fields.
+  // @todo: Or maybe we should?
   if (empty($f_schema['metadata'])) {
     $field_name = _stanford_cap_api_generate_field_name($f_name);
     $field_info = field_info_field($field_name);
@@ -1273,7 +1353,11 @@ function _stanford_cap_api_synchronize_schema_subfields($f_name, $f_schema, $par
         field_create_instance($field_instance);
       }
       else {
-        // @todo: Log failed attempt.
+        $message = 'Failed to create field instance. Field info: @field_info';
+        $vars = array(
+          '@field_info' => print_r($field_info, TRUE),
+        );
+        watchdog('stanford_cap_api', $message, $vars, WATCHDOG_WARNING);
       }
     }
     if ($field_info['type'] == 'field_collection') {
@@ -1292,6 +1376,20 @@ function _stanford_cap_api_synchronize_schema_subfields($f_name, $f_schema, $par
   }
 }
 
+/**
+ * Generate field info for text field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $field_schema
+ *   Field schema form CAP API.
+ * @param bool $multivalue
+ *   Indicates if the field is multivalue.
+ *
+ * @return array
+ *   Array used in field_create_field().
+ * @see field_create_field()
+ */
 function _stanford_cap_api_gen_field_base_def_text($field_name, $field_schema, $multivalue = FALSE) {
   $cardinality = $multivalue ? -1 : 1;
   if (!empty($field_schema['maxLength']) && is_numeric($field_schema['maxLength'])) {
@@ -1313,6 +1411,20 @@ function _stanford_cap_api_gen_field_base_def_text($field_name, $field_schema, $
   return $info;
 }
 
+/**
+ * Generate field info for integer field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $field_schema
+ *   Field schema form CAP API.
+ * @param bool $multivalue
+ *   Indicates if the field is multivalue.
+ *
+ * @return array
+ *   Array used in field_create_field().
+ * @see field_create_field()
+ */
 function _stanford_cap_api_gen_field_base_def_integer($field_name, $field_schema, $multivalue = FALSE) {
   $cardinality = $multivalue ? -1 : 1;
 
@@ -1323,6 +1435,20 @@ function _stanford_cap_api_gen_field_base_def_integer($field_name, $field_schema
   );
 }
 
+/**
+ * Generate field info for field collection field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $field_schema
+ *   Field schema form CAP API.
+ * @param bool $multivalue
+ *   Indicates if the field is multivalue.
+ *
+ * @return array
+ *   Array used in field_create_field().
+ * @see field_create_field()
+ */
 function _stanford_cap_api_gen_field_base_def_field_collection($field_name, $field_schema, $multivalue = FALSE) {
   $cardinality = $multivalue ? -1 : 1;
 
@@ -1333,6 +1459,20 @@ function _stanford_cap_api_gen_field_base_def_field_collection($field_name, $fie
   );
 }
 
+/**
+ * Generate field info for boolean field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $field_schema
+ *   Field schema form CAP API.
+ * @param bool $multivalue
+ *   Indicates if the field is multivalue.
+ *
+ * @return array
+ *   Array used in field_create_field().
+ * @see field_create_field()
+ */
 function _stanford_cap_api_gen_field_base_def_boolean($field_name, $field_schema, $multivalue = FALSE) {
   $cardinality = $multivalue ? -1 : 1;
 
@@ -1343,6 +1483,20 @@ function _stanford_cap_api_gen_field_base_def_boolean($field_name, $field_schema
   );
 }
 
+/**
+ * Generate field info for date field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $field_schema
+ *   Field schema form CAP API.
+ * @param bool $multivalue
+ *   Indicates if the field is multivalue.
+ *
+ * @return array
+ *   Array used in field_create_field().
+ * @see field_create_field()
+ */
 function _stanford_cap_api_gen_field_base_def_date($field_name, $field_schema, $multivalue = FALSE) {
   $cardinality = $multivalue ? -1 : 1;
 
@@ -1368,6 +1522,20 @@ function _stanford_cap_api_gen_field_base_def_date($field_name, $field_schema, $
   );
 }
 
+/**
+ * Generate field instance info for boolean field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $schema
+ *   Field schema form CAP API.
+ * @param string $parent_field
+ *   Parent field name.
+ *
+ * @return array
+ *   Array used in field_create_instance().
+ * @see field_create_instance()
+ */
 function _stanford_cap_api_gen_field_instance_def_boolean($field_name, $schema, $parent_field) {
   $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
@@ -1389,6 +1557,20 @@ function _stanford_cap_api_gen_field_instance_def_boolean($field_name, $schema, 
   );
 }
 
+/**
+ * Generate field instance info for integer field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $schema
+ *   Field schema form CAP API.
+ * @param string $parent_field
+ *   Parent field name.
+ *
+ * @return array
+ *   Array used in field_create_instance().
+ * @see field_create_instance()
+ */
 function _stanford_cap_api_gen_field_instance_def_integer($field_name, $schema, $parent_field) {
   $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
@@ -1417,7 +1599,21 @@ function _stanford_cap_api_gen_field_instance_def_integer($field_name, $schema, 
   );
 }
 
-function _stanford_cap_api_gen_field_instance_def_text($name, $schema, $parent_field = '') {
+/**
+ * Generate field instance info for text field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $schema
+ *   Field schema form CAP API.
+ * @param string $parent_field
+ *   Parent field name.
+ *
+ * @return array
+ *   Array used in field_create_instance().
+ * @see field_create_instance()
+ */
+function _stanford_cap_api_gen_field_instance_def_text($field_name, $schema, $parent_field = '') {
   $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
@@ -1428,12 +1624,26 @@ function _stanford_cap_api_gen_field_instance_def_text($name, $schema, $parent_f
     'default_value' => NULL,
     'description' => $description,
     'entity_type' => $entity_type,
-    'field_name' => $name,
+    'field_name' => $field_name,
     'label' => $label,
   );
 }
 
-function _stanford_cap_api_gen_field_instance_def_field_collection($name, $schema, $parent_field = '') {
+/**
+ * Generate field instance info for field collection field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $schema
+ *   Field schema form CAP API.
+ * @param string $parent_field
+ *   Parent field name.
+ *
+ * @return array
+ *   Array used in field_create_instance().
+ * @see field_create_instance()
+ */
+function _stanford_cap_api_gen_field_instance_def_field_collection($field_name, $schema, $parent_field = '') {
   $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
@@ -1443,7 +1653,7 @@ function _stanford_cap_api_gen_field_instance_def_field_collection($name, $schem
     'bundle' => $bundle,
     'description' => $description,
     'entity_type' => $entity_type,
-    'field_name' => $name,
+    'field_name' => $field_name,
     'label' => $label,
     'widget' => array(
       'type' => 'field_collection_embed',
@@ -1451,7 +1661,21 @@ function _stanford_cap_api_gen_field_instance_def_field_collection($name, $schem
   );
 }
 
-function _stanford_cap_api_gen_field_instance_def_date($name, $schema, $parent_field = '') {
+/**
+ * Generate field instance info for date field.
+ *
+ * @param string $field_name
+ *   Drupal field name.
+ * @param array $schema
+ *   Field schema form CAP API.
+ * @param string $parent_field
+ *   Parent field name.
+ *
+ * @return array
+ *   Array used in field_create_instance().
+ * @see field_create_instance()
+ */
+function _stanford_cap_api_gen_field_instance_def_date($field_name, $schema, $parent_field = '') {
   $entity_type = empty($parent_field) ? 'node' : 'field_collection_item';
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
@@ -1481,19 +1705,41 @@ function _stanford_cap_api_gen_field_instance_def_date($name, $schema, $parent_f
       'user_register_form' => FALSE,
     ),
     'description' => $description,
-    'field_name' => $name,
+    'field_name' => $field_name,
     'entity_type' => $entity_type,
     'bundle' => $bundle,
   );
 }
 
-function _stanford_cap_api_import_faculties() {
-  // Returns only faculty profiles.
-  // Request URL
-  // https://cap-beta.stanford.edu/cap-api/api/cap/v1/orgs/stanford/profiles?affiliations=capFaculty&summarize=false
-  $faculties = stanford_cap_api_request('/api/cap/v1/orgs/stanford/profiles', array(
-    'affiliations' => 'capFaculty',
-    'summarize' => 'false',
-  ));
-  dpm($faculties);
+/**
+ * Get parent field name for specified field.
+ *
+ * @param string $field_name
+ *   Machine readable Drupal field name.
+ *
+ * @return string
+ *   Parent field name, empty string, if field attached directly to node,
+ *   or FALSE.
+ */
+function _stanford_cap_api_get_parent_field($field_name) {
+  $cache =& drupal_static(__FUNCTION__, array());
+  if (empty($cache[$field_name])) {
+    $cache[$field_name] = db_select('cap_api_fields')
+      ->fields('cap_api_fields', array('parent_field'))
+      ->condition('field_name', $field_name)
+      ->execute()
+      ->fetchField();
+  }
+
+  return $cache[$field_name];
+}
+
+/**
+ * We might want to know largest field size.
+ */
+function _stanford_cap_api_log_longest_field_length($length) {
+  $stored_length = variable_get('stanford_cap_api_longest_field_length');
+  if ($stored_length < $length) {
+    variable_set('stanford_cap_api_longest_field_length', $length);
+  }
 }
