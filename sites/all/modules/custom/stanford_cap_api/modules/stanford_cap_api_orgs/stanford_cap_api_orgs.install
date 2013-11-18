@@ -10,7 +10,7 @@
  *
  * Creates a vocabulary to store Stanford University Org Code Hierarchy.
  */
-function stanford_cap_api_orgcodes_enable() {
+function stanford_cap_api_orgs_enable() {
 
 }
 

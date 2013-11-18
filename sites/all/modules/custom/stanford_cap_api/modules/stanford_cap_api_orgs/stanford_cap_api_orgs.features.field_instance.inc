@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * stanford_cap_api_orgcodes.features.field_instance.inc
+ * stanford_cap_api_orgs.features.field_instance.inc
  */
 
 /**
  * Implements hook_field_default_field_instances().
  */
-function stanford_cap_api_orgcodes_field_default_field_instances() {
+function stanford_cap_api_orgs_field_default_field_instances() {
   $field_instances = array();
 
   // Exported field_instance: 'taxonomy_term-stanford_org_code_hierarchy-field_alias'

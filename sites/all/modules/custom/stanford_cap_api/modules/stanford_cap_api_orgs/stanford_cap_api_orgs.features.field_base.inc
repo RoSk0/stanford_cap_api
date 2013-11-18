@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * stanford_cap_api_orgcodes.features.field_base.inc
+ * stanford_cap_api_orgs.features.field_base.inc
  */
 
 /**
  * Implements hook_field_default_field_bases().
  */
-function stanford_cap_api_orgcodes_field_default_field_bases() {
+function stanford_cap_api_orgs_field_default_field_bases() {
   $field_bases = array();
 
   // Exported field_base: 'field_alias'
