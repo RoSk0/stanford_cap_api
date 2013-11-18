@@ -7,7 +7,6 @@
 include_once 'stanford_cap_api.features.inc';
 include_once 'stanford_cap_api.hierarchical_select.inc';
 
-define('CAP_ROOT_ORGANIZATION_ID', 1);
 
 /**
  * Implements hook_menu().
@@ -326,53 +325,6 @@ function stanford_cap_api_request($endpoint, $params = array()) {
 }
 
 /**
- * Save organization fetched from CAP API.
- *
- * @param array $organization
- *   Array containing organization description.
- */
-function stanford_cap_api_save_organization($organization) {
-  $orgid =& drupal_static(__FUNCTION__, CAP_ROOT_ORGANIZATION_ID);
-  $organization['orgid'] = $orgid;
-  if (isset($organization['children'])) {
-    $childrens = $organization['children'];
-    $parent_id = $orgid;
-    $childrens_id = array();
-    foreach ($childrens as $children) {
-      $children['parent'] = $parent_id;
-      $orgid++;
-      $childrens_id[] = $orgid;
-      stanford_cap_api_save_organization($children);
-    }
-    $organization['children'] = $childrens_id;
-  }
-  drupal_write_record('cap_api_orgs', $organization);
-}
-
-/**
- * Imports organizations from CAP API.
- *
- * Organizations have tree structure. To import them we must specify top level
- * organization code. This can be code of root entry - Stanford University(AA00)
- * itself, or code of one of departments, like School of Medicine(VAAA).
- *
- * @param string $top
- *   Top level organization code.
- */
-function stanford_cap_api_import_organizations($top = 'AA00') {
-  db_delete('cap_api_orgs')->execute();
-  // Organizations endpoint.
-  $endpoint = '/api/cap/v1/orgs';
-  $params = array('orgCodes' => $top);
-  $data = stanford_cap_api_request($endpoint, $params);
-  if ($data) {
-    foreach ($data as $organization) {
-      stanford_cap_api_save_organization($organization);
-    }
-  }
-}
-
-/**
  * Implements hook_cron().
  */
 function stanford_cap_api_cron() {
@@ -381,17 +333,8 @@ function stanford_cap_api_cron() {
   $date = new DateObject('now', $tz);
   $hour_of_day = (int) $date->format('G');
   if ($hour_of_day >= 1 && $hour_of_day <= 5) {
-    stanford_cap_api_import_organizations();
     stanford_cap_api_update_profiles();
     stanford_cap_api_sync_group_cron();
-  }
-  // Check if we have organizations imported.
-  $ids = db_select('cap_api_orgs', 'orgs')
-    ->fields('orgs', array('id'))
-    ->execute()
-    ->fetchCol();
-  if (empty($ids)) {
-    stanford_cap_api_import_organizations();
   }
 }
 

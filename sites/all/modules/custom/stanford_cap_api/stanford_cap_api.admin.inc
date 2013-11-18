@@ -273,14 +273,6 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
   variable_set('cap_orphaned_profile_action', $values['orphaned_profile_action']);
   variable_set('cap_profile_update', $values['cap_profile_update']);
   drupal_set_message(t('Configuration saved.'));
-  // Check if we have organizations imported.
-  $ids = db_select('cap_api_orgs', 'orgs')
-    ->fields('orgs', array('id'))
-    ->execute()
-    ->fetchCol();
-  if (empty($ids) && !empty($values['cap_username']) && !empty($values['cap_password'])) {
-    stanford_cap_api_import_organizations();
-  }
 }
 
 /**
