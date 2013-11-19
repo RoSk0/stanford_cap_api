@@ -12,6 +12,20 @@ define('CAP_ORGS_VOCAB', 'stanford_org_code_hierarchy');
 
 /**
  * Imports organizations from CAP API.
+ */
+function stanford_cap_api_orgs_import() {
+  $organizations = stanford_cap_api_orgs_get();
+
+  if ($organizations) {
+    foreach ($organizations as $organization) {
+      stanford_cap_api_orgs_save_organization($organization);
+    }
+  }
+  variable_set('stanford_cap_api_orgs_organizations_imported', TRUE);
+}
+
+/**
+ * Get information about organizations hierarchy from CAP API.
  *
  * Organizations have tree structure. To import them we must specify top level
  * organization code. This can be code of root entry - Stanford University(AA00)
@@ -19,28 +33,16 @@ define('CAP_ORGS_VOCAB', 'stanford_org_code_hierarchy');
  *
  * @param string $top
  *   Top level organization code.
+ *
+ * @return array
+ *   Organizations hierarchy.
  */
-function stanford_cap_api_orgs_import_organizations($top = 'AA00') {
+function stanford_cap_api_orgs_get($top = 'AA00') {
   // Organizations endpoint.
   $endpoint = '/api/cap/v1/orgs';
   $params = array('orgCodes' => $top);
-  $data = stanford_cap_api_request($endpoint, $params);
-  if ($data) {
-    // Lets drop all existing organizations.
-    $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
-    $tids = db_select('taxonomy_term_data', 't')
-      ->fields('t', array('tid'))
-      ->condition('vid', $voc->vid)
-      ->execute()
-      ->fetchCol();
-    entity_delete_multiple('taxonomy_term', $tids);
-    foreach ($data as $organization) {
-      stanford_cap_api_orgs_save_organization($organization);
-    }
-  }
-  if ($top == 'AA00') {
-    variable_set('stanford_cap_api_orgs_organizations_imported', TRUE);
-  }
+
+  return stanford_cap_api_request($endpoint, $params);
 }
 
 /**
@@ -54,7 +56,29 @@ function stanford_cap_api_orgs_import_organizations($top = 'AA00') {
 function stanford_cap_api_orgs_save_organization($organization, $parent_tid = NULL) {
   $weight =& drupal_static(__FUNCTION__, array());
   $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
-  $org_term = new stdClass();
+  $efq = new EntityFieldQuery();
+  $efq->entityCondition('entity_type', 'taxonomy_term');
+  foreach ($organization['orgCodes'] as $code) {
+    $efq->fieldCondition('field_org_codes', 'value', $code);
+  }
+  $results = $efq->execute();
+  if (!empty($results['taxonomy_term']) && count($results['taxonomy_term']) == 1) {
+    // We have this organization.
+    $org_term = array_shift($results['taxonomy_term']);
+    $org_term = taxonomy_term_load($org_term->tid);
+  }
+  elseif (empty($results['taxonomy_term'])) {
+    $org_term = new stdClass();
+  }
+  elseif (!empty($results['taxonomy_term']) && count($results['taxonomy_term']) > 1) {
+    $tids = array_keys($results['taxonomy_term']);
+    $message = 'Something is wrong, there is more then one organization with the same set of orgCodes. Term ids returned by query: @tids. Organization data from CAP API: @organization';
+    $vars = array(
+      '@tids' => implode(', ', $tids),
+      '@organization' => print_r($organization, TRUE),
+    );
+    watchdog('stanford_cap_api_orgs', $message, $vars);
+  }
   $org_term->name = $organization['name'];
   $org_term->vid = $voc->vid;
   $org_term->description = '';
@@ -90,9 +114,12 @@ function stanford_cap_api_orgs_save_organization($organization, $parent_tid = NU
  * Implements hook_cron().
  */
 function stanford_cap_api_orgs_cron() {
-  // Check if we have organizations imported.
-  if (!variable_get('stanford_cap_api_orgs_organizations_imported', FALSE)) {
-    stanford_cap_api_orgs_import_organizations();
+  // Run cron tasks between 1 and 5 hours.
+  $tz = variable_get('date_default_timezone');
+  $date = new DateObject('now', $tz);
+  $hour_of_day = (int) $date->format('G');
+  if ($hour_of_day >= 1 && $hour_of_day <= 5) {
+    stanford_cap_api_orgs_import();
   }
 }
 
@@ -134,7 +161,7 @@ function stanford_cap_api_orgs_form_stanford_cap_api_details_form_alter(&$form, 
       $form['actions']['import_orgs'] = array(
         '#type' => 'button',
         '#value' => t('Import organizations'),
-        '#submit' => array('stanford_cap_api_orgs_import_organizations'),
+        '#submit' => array('stanford_cap_api_orgs_import'),
       );
     }
     else {
@@ -142,15 +169,14 @@ function stanford_cap_api_orgs_form_stanford_cap_api_details_form_alter(&$form, 
       $form['actions']['import_orgs'] = array(
         '#type' => 'submit',
         '#value' => t('Import organizations'),
-        '#submit' => array('stanford_cap_api_orgs_import_organizations'),
+        '#submit' => array('stanford_cap_api_orgs_import'),
       );
     }
   }
   else {
-    $count_query = db_select('taxonomy_term_data', 't')->countQuery();
-    $orgs_count = $count_query->execute()->fetchField();
+    $orgs_count = db_select('taxonomy_term_data', 't')->countQuery()->execute()->fetchField();
     $form['organizations'] = array(
-      '#markup' => theme('cap_info_item', array('info' => $orgs_count, 'message' => t('organizations imported.'))),
+      '#markup' => theme('cap_info_item', array('info' => $orgs_count, 'message' => t('Organizations imported.'))),
     );
   }
 }
