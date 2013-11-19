@@ -99,9 +99,9 @@ function stanford_cap_api_auth($user = '', $pass = '', $auth_uri = '') {
         ' Additional data from response: @data';
       $vars = array(
         '%code' => $response->code,
-        '%msg' => $response->status_message,
+        '%msg' => isset($response->status_message) ? $response->status_message : $response->error,
         '%request' => $auth_url,
-        '@data' => $response->data,
+        '@data' => isset($response->data) ? $response->data : '',
       );
       watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
 
@@ -197,3 +197,30 @@ function stanford_cap_api_request($endpoint, $params = array()) {
   }
 }
 
+/**
+ * Implements hook_theme().
+ */
+function stanford_cap_api_theme() {
+  $path = drupal_get_path('module', 'stanford_cap_api') . '/templates';
+
+  return array(
+    'cap_status_item' => array(
+      'variables' => array(
+        'status' => FALSE,
+        'message' => '',
+        'additional' => NULL,
+      ),
+      'path' => $path,
+      'template' => 'status_item',
+    ),
+    'cap_info_item' => array(
+      'variables' => array(
+        'info' => NULL,
+        'message' => '',
+        'additional' => NULL,
+      ),
+      'path' => $path,
+      'template' => 'info_item',
+    ),
+  );
+}

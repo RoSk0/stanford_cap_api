@@ -24,16 +24,16 @@
   line-height: 50px;
 }
 
-.cap_checkbox SPAN EM {
+.cap_checkbox span em {
   font-style: normal;
   line-height: 48px;
 }
 
-.cap_cannot_connect {
+.cap_status_bad {
   background: #8C1515 url('../images/checks.png') 2px 2px no-repeat;
 }
 
-.cap_can_connect {
+.cap_status_good {
   background: #009B76 url('../images/checks.png') -50px 2px no-repeat;
 }
 

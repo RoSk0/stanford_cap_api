@@ -10,25 +10,23 @@
 function stanford_cap_api_details_form($form, &$form_state) {
   $form['#attached']['css'][] = drupal_get_path('module', 'stanford_cap_api') . '/css/stanford_cap_api.css';
 
-  // Checkboxes, used to display status and icons.
-  $checkbox = '<div class="cap_checkbox cap_cannot_connect"><span></span></div>';
-
   // Status message.
   $status = stanford_cap_api_auth_status();
-  $status_message = t("Currently, your site can't connect to CAP.");
-  $status_message .= t('<br><em class="cap_additional">Please check your settings on the ') . l('settings page', 'admin/config/cap/settings') . '.</em>';
   if ($status) {
-    $checkbox = '<div class="cap_checkbox cap_can_connect"><span></span></div>';
     $status_message = t('Currently, your site can connect to CAP.');
+    $additional = NULL;
   }
-
-  $form['status_wrapper'] = array(
-    '#type' => 'container',
-    '#prefix' => '<div class="cap_info_wrapper">',
-    '#suffix' => '<div class="clearfix"></div></div>',
+  else {
+    $status_message = t("Currently, your site can't connect to CAP.");
+    $additional = t('Please check your settings on the !link.', array('!link' => l(t('settings page'), 'admin/config/cap/settings')));
+  }
+  $vars = array(
+    'status' => $status,
+    'message' => $status_message,
+    'additional' => $additional,
   );
-  $form['status_wrapper']['status'] = array(
-    '#markup' => $checkbox . $status_message,
+  $form['status'] = array(
+    '#markup' => theme('cap_status_item', $vars),
   );
 
   return $form;
