@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * stanford_cap_api.features.field_instance.inc
+ * stanford_cap_api_profiles.features.field_instance.inc
  */
 
 /**
  * Implements hook_field_default_field_instances().
  */
-function stanford_cap_api_field_default_field_instances() {
+function stanford_cap_api_profiles_field_default_field_instances() {
   $field_instances = array();
 
   // Exported field_instance: 'node-cap_faculty_profile-body'

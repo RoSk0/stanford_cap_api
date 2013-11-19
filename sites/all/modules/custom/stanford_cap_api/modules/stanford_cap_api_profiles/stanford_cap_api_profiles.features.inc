@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * stanford_cap_api.features.inc
+ * stanford_cap_api_profiles.features.inc
  */
 
 /**
  * Implements hook_ctools_plugin_api().
  */
-function stanford_cap_api_ctools_plugin_api($module = NULL, $api = NULL) {
+function stanford_cap_api_profiles_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => "1");
   }
@@ -16,14 +16,14 @@ function stanford_cap_api_ctools_plugin_api($module = NULL, $api = NULL) {
 /**
  * Implements hook_views_api().
  */
-function stanford_cap_api_views_api($module = NULL, $api = NULL) {
+function stanford_cap_api_profiles_views_api($module = NULL, $api = NULL) {
   return array("api" => "3.0");
 }
 
 /**
  * Implements hook_node_info().
  */
-function stanford_cap_api_node_info() {
+function stanford_cap_api_profiles_node_info() {
   $items = array(
     'cap_faculty_profile' => array(
       'name' => t('Faculty profile'),

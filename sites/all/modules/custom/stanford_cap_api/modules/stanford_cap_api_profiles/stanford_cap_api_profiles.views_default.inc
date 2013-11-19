@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * stanford_cap_api.views_default.inc
+ * stanford_cap_api_profiles.views_default.inc
  */
 
 /**
  * Implements hook_views_default_views().
  */
-function stanford_cap_api_views_default_views() {
+function stanford_cap_api_profiles_views_default_views() {
   $export = array();
 
   $view = new view();
@@ -150,7 +150,7 @@ function stanford_cap_api_views_default_views() {
       'override_label' => 0,
       'label' => '',
     ),
-    'action::stanford_cap_api_profile_stop_sync_action' => array(
+    'action::stanford_cap_api_profiles_profile_stop_sync_action' => array(
       'selected' => 1,
       'postpone_processing' => 0,
       'skip_confirmation' => 1,
