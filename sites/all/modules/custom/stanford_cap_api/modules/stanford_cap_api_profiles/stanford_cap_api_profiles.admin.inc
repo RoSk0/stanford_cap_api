@@ -119,7 +119,6 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
   );
 
   $form['#submit'][] = 'stanford_cap_api_profiles_settings_form_submit';
-
 }
 
 /**
@@ -218,13 +217,13 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
   $form['workgroup'] = array(
     '#type' => 'textfield',
     '#title' => t('Workgroup'),
-    '#description'    => t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here.', array('!here' => $link)),
+    '#description' => t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here.', array('!here' => $link)),
   );
 
   $form['university_id'] = array(
     '#type' => 'textfield',
     '#title' => t('University ID'),
-    '#description'    => t('Please enter the university id for the profile you wish to import.'),
+    '#description' => t('Please enter the university id for the profile you wish to import.'),
   );
 
   $form['sunet_id'] = array(
@@ -453,13 +452,11 @@ function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state
  * Form builder for import result page.
  */
 function stanford_cap_api_profiles_profile_test($form, &$form_state) {
-  $form['description_wrapper'] = array(
-    '#type' => 'container',
-  );
-  $description = 'Please use the options below to test the faculty profile'
-    . ' structure synchronization.';
-  $form['description_wrapper']['description'] = array(
-    '#markup' => $description,
+  $form['description'] = array(
+    '#type' => 'item',
+    '#prefix' => '<h3>',
+    '#suffix' => '</h3>',
+    '#markup' => t('Please use the options below to test the faculty profile structure synchronization.'),
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -522,14 +519,9 @@ function stanford_cap_api_profiles_manage() {
  */
 function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
 
-  $form['description_wrapper'] = array(
-    '#type' => 'container',
-  );
-  $description = 'CAP profiles associated with specific groups can be'
-    . ' automatically synced with this site on an ongoing basis. Use the tools'
-    . ' on this page to manage the groups that are synced with the site.';
-  $form['description_wrapper']['description'] = array(
-    '#markup' => t($description),
+  $form['description'] = array(
+    '#type' => 'item',
+    '#markup' => t('CAP profiles associated with specific groups can be automatically synced with this site on an ongoing basis. Use the tools on this page to manage the groups that are synced with the site.'),
   );
 
   if (empty($form_state['values'])) {
@@ -560,12 +552,11 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
         $delete_link . ' | ' . $sync_link,
       );
     }
-    $empty = 'No groups were saved for synchronization yet.';
 
     $table = theme('table', array(
       'header' => $header,
       'rows' => $rows,
-      'empty' => t($empty),
+      'empty' => t('No groups were saved for synchronization yet.'),
     ));
 
     $form['groups']['groups_list'] = array(
@@ -588,17 +579,18 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
     );
     */
 
-    $org_description = 'Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code'
-      . ' Hierarchy !here.';
-    $url = 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/';
+    $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
+    $link = l(t('by clicking here'), 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/');
     $form['new_group']['organization'] = array(
       '#type' => 'hierarchical_select',
       '#title' => t('Organization'),
-      '#description' => t($org_description, array('!here' => l(t('by clicking here'), $url))),
+      '#description' => t('Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code Hierarchy !here.', array('!here' => $link)),
       '#size' => 1,
       '#config' => array(
-        'module' => 'stanford_cap_api_profiles',
-        'params' => array(),
+        'module' => 'hs_taxonomy',
+        'params' => array(
+          'vid' => $voc->vid,
+        ),
         'save_lineage' => 0,
         'enforce_deepest' => 0,
         'entity_count' => 0,
@@ -634,15 +626,11 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
       '#default_value' => 'none',
     );
 
-    
-    $workgroup_desc = t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here');
-    $url = 'https://workgroup.stanford.edu';
-    
-    
+    $link = l(t('at the workgroup manager website'), 'https://workgroup.stanford.edu');
     $form['new_group']['workgroup'] = array(
-      '#type'           => 'textfield',
-      '#title'          => t('Workgroup'),
-      '#description'    => t($workgroup_desc, array('!here' => l(t('at the workgroup manager website.'), $url))),
+      '#type' => 'textfield',
+      '#title' => t('Workgroup'),
+      '#description' => t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here.', array('!here' => $link)),
     );
 
     $form['new_group']['search'] = array(
@@ -670,12 +658,11 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
     foreach ($group_types as $group_type) {
       switch ($group_type) {
         case 'organization':
-          $org_codes = db_select('cap_api_orgs', 'orgs')
-            ->condition('orgid', $form_state['values'][$group_type][0])
-            ->fields('orgs', array('orgCodes'))->execute()->fetchField();
+          $term_wrapper = entity_metadata_wrapper('taxonomy_term', $form_state['values'][$group_type][0]);
+          $org_codes = $term_wrapper->field_org_codes->value();
           $name = '';
           if (!empty($org_codes)) {
-            $name = implode(',', unserialize($org_codes));
+            $name = implode(',', $org_codes);
           }
           break;
 
@@ -687,7 +674,7 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
         $count = _stanford_cap_api_profiles_get_group_profiles_count($group_type, $name);
         $label = check_plain($name);
         if ($group_type == 'organization') {
-          $label = stanford_cap_api_profiles_hierarchical_select_item_get_label($form_state['values'][$group_type][0]);
+          $label = $term_wrapper->name->value();
         }
         $options[$group_type] = array('name' => $label, 'profiles' => $count);
         $form['groups_to_save'][$group_type] = array(
