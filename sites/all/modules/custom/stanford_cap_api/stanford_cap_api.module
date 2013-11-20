@@ -171,7 +171,7 @@ function stanford_cap_api_request($endpoint, $params = array()) {
       . ' %code, error message is "%msg", request string was "%request".';
     $vars = array(
       '%code' => $response->code,
-      '%msg' => $response->status_message,
+      '%msg' => isset($response->status_message) ? $response->status_message : $response->error,
       '%request' => $request_url,
     );
     watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);

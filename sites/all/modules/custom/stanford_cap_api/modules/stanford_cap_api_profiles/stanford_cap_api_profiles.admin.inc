@@ -7,170 +7,82 @@
 define('ENTRY_PER_PAGE', 25);
 
 /**
- * Form builder for details page.
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adding info to details page.
  */
-function stanford_cap_api_profiles_details_form($form, &$form_state) {
-
-  // checkboxes, used to display status and icons
-  $checkbox = '<div class="cap_checkbox cap_cannot_connect"><span></span></div>';
-  $countbox = '<div class="cap_checkbox cap_total"><span>%count</span></div>';
-  $datebox = '<div class="cap_checkbox cap_date"><span>%count</span></div>';
-  
-  // add the status message
-  $status = stanford_cap_api_profiles_auth_status();
-  $status_message = t("Currently, your site can't connect to CAP.");
-  $status_message .= t('<br><em class="cap_additional">Please check your settings on the ') . l('settings page', 'admin/config/cap/settings') . '.</em>';
-  if ($status) {
-    $checkbox = '<div class="cap_checkbox cap_can_connect"><span></span></div>';
-    $status_message = t('Currently, your site can connect to CAP.');
-  }
-
-  $form['status_wrapper'] = array(
-    '#type' => 'container',
-    '#prefix' => '<div class="cap_info_wrapper">',
-    '#suffix' => '<div class="clearfix"></div></div>',
-  );
-  $form['status_wrapper']['status'] = array(
-    '#markup' => $checkbox . $status_message,
-  );
-
+function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$form, &$form_state) {
   $query = new EntityFieldQuery();
   $count = $query
     ->entityCondition('entity_type', 'node')
     ->entityCondition('bundle', 'cap_faculty_profile')
     ->count()
     ->execute();
-    
-  // text for the count of profiles
-  $countbox = t($countbox, array('%count' => $count));
-  $count_text = $countbox . t('CAP profile(s) are being stored in your website.');
-  $import_groups = l(t('importing groups'), 'admin/config/cap/group');
-  $import_people = l(t('importing individual profiles'), 'admin/config/cap/import');
-    
-  $count_text .= t('<br><em class="cap_additional">You can add more by ') . $import_groups . ' or ' . $import_people . '.</em>';
-  
-  $form['count_wrapper'] = array(
-    '#type' => 'container',
-    '#prefix' => '<div class="cap_info_wrapper">',
-    '#suffix' => '<div class="clearfix"></div></div>',
-    );
-  $form['count_wrapper']['count'] = array(
-    '#markup' => $count_text,
+  $additional_vars = array(
+    '!groups' => l(t('importing groups'), 'admin/config/cap/group'),
+    '!people' => l(t('importing individual profiles'), 'admin/config/cap/import'),
+  );
+  $vars = array(
+    'info' => $count,
+    'message' => t('CAP profile(s) are being stored in your website.'),
+    'additional' => t('You can add more by !groups or !people.', $additional_vars),
+  );
+
+  $form['profiles'] = array(
+    '#markup' => theme('cap_info_item', $vars),
   );
 
   $sync_date_stamp = variable_get('stanford_cap_api_profiles_cron_last_run', 0);
-  
-  $diff = round((time() - $sync_date_stamp)/60/60);
-  $datebox = t($datebox, array('%count' => $diff));
-  
+  $additional = t('You can adjust the frequency of updates on the !settings.', array('!settings' => l(t('settings page'), 'admin/config/cap/settings')));
   if (empty($sync_date_stamp)) {
-    $sync_text = t('CAP profiles were not sync yet.');
+    $vars = array(
+      'message' => t('CAP profiles were not sync yet.'),
+      'additional' => $additional,
+    );
+
+    $form['profiles'] = array(
+      '#markup' => theme('cap_status_item', $vars),
+    );
   }
   else {
-    $sync_text = t('Hour(s) since last sync.');
-  }
-  $sync_text .= t('<br><em class="cap_additional">You can adjust the frequency of updates on the ') . l('settings page', 'admin/config/cap/settings') . '.</em>';
-  
-  
-  
-  $form['sync_date_wrapper'] = array(
-    '#type' => 'container',
-    '#prefix' => '<div class="cap_info_wrapper">',
-    '#suffix' => '<div class="clearfix"></div></div>',
+    $vars = array(
+      'info' => round((time() - $sync_date_stamp) / 60 / 60),
+      'message' => t('Hour(s) since last sync.'),
+      'additional' => $additional,
     );
-  $form['sync_date_wrapper']['sync_date'] = array(
-    '#markup' => $datebox . $sync_text,
-  );
 
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['synchronize'] = array(
-    '#type' => 'submit',
-    '#value' => t('Synchronize'),
-  );
-
-  return $form;
-}
-
-/**
- * Details form submit handler.
- */
-function stanford_cap_api_profiles_details_form_submit() {
-
-  variable_set('stanford_cap_api_profiles_cron_last_run', REQUEST_TIME);
-  $batch = array(
-    'title' => t('Synchronizing profiles'),
-    'operations' => array(array('stanford_cap_api_profiles_update_profiles', array())),
-  );
-  batch_set($batch);
+    $form['profiles'] = array(
+      '#markup' => theme('cap_info_item', $vars),
+    );
+  }
 }
 
 /**
  * Form builder for settings page.
  */
-function stanford_cap_api_profiles_settings_form($form, &$form_state) {
-
-  drupal_set_title(t('CAP API settings'));
-
-  $form['connection'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Connection information'),
-  );
-
-  $form['connection']['description_wrapper'] = array(
-    '#type' => 'container',
-  );
-  $description = 'Please enter the information you use to connect to the'
-    . ' CAP API. This will be used for each callback to the CAP API itself.';
-  $form['connection']['description_wrapper']['description'] = array(
-    '#markup' => t($description),
-  );
-
-  $form['connection']['cap_username'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Username:'),
-    '#default_value' => variable_get('cap_username', ''),
-  );
-
-  $form['connection']['cap_password'] = array(
-    '#type' => 'password',
-    '#title' => t('Password:'),
-  );
+function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$form, &$form_state) {
 
   $form['synchronization'] = array(
     '#type' => 'fieldset',
     '#title' => t('Profile Editing'),
   );
 
-  $form['synchronization']['description_wrapper'] = array(
-    '#type' => 'container',
-  );
-  $description = 'These options allow authorized users to change the structure and content of CAP profiles. Please note, any changes to profiles will be ';
-  $description .= 'specific to this site, and will not make their way back up to CAP.';
-    
-    
-  $form['synchronization']['description_wrapper']['description'] = array(
-    '#markup' => t($description),
+  $form['synchronization']['description'] = array(
+    '#type' => 'item',
+    '#markup' => t('These options allow authorized users to change the structure and content of CAP profiles. Please note, any changes to profiles will be specific to this site, and will not make their way back up to CAP.'),
   );
 
-  $custom_fields_description = 'Check this box to allow users to add / edit'
-    . ' / modify fields that are part of faculty profiles. This will allow'
-    . ' administrators to customize the information that is stored as part of'
-    . ' each CAP profile.';
   $form['synchronization']['cap_custom_fields'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow user to create custom fields?'),
-    '#description' => t($custom_fields_description),
+    '#description' => t('Check this box to allow users to add / edit / modify fields that are part of faculty profiles. This will allow administrators to customize the information that is stored as part of each CAP profile.'),
     '#default_value' => variable_get('cap_custom_fields', FALSE),
   );
 
-  $custom_fields_description = 'Check this box to allow users to edit the'
-    . ' information contained in a CAP profile. Editing a profile will cause'
-    . ' information to be changed for profiles displayed on this website only,'
-    . ' and changes will not be synchronized back up to the CAP system.';
   $form['synchronization']['cap_allow_edit'] = array(
     '#type' => 'checkbox',
     '#title' => t('Allow user to edit CAP profile information?'),
-    '#description' => t($custom_fields_description),
+    '#description' => t('Check this box to allow users to edit the information contained in a CAP profile. Editing a profile will cause information to be changed for profiles displayed on this website only, and changes will not be synchronized back up to the CAP system.'),
     '#default_value' => variable_get('cap_allow_edit', FALSE),
   );
 
@@ -206,73 +118,20 @@ function stanford_cap_api_profiles_settings_form($form, &$form_state) {
     '#options' => $options,
   );
 
-  $form['advanced'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Advanced'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#description' => t('Advanced setting for CAP API and authentication URIs'),
-  );
+  $form['#submit'][] = 'stanford_cap_api_profiles_settings_form_submit';
 
-  $form['advanced']['cap_api_base_url'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Endpoint'),
-    '#description' => t('CAP API endpoint URI, only useful when switching between development/production environment.'),
-    '#default_value' => variable_get('cap_api_base_url', 'https://irt-dev.stanford.edu/cap-api'),
-  );
-
-  $form['advanced']['cap_auth_uri'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Authentication URI'),
-    '#description' => t('CAP API authentication URL.'),
-    '#default_value' => variable_get('cap_auth_uri', 'https://authz-test.stanford.edu/oauth/token'),
-  );
-
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save settings'),
-  );
-
-  return $form;
 }
 
-/**
- * Validation handler for settings form.
- */
-function stanford_cap_api_profiles_settings_form_validate($form, &$form_state) {
-  if (!empty($form_state['values']['cap_username']) && !empty($form_state['values']['cap_password'])) {
-    $auth_token = stanford_cap_api_profiles_auth($form_state['values']['cap_username'], $form_state['values']['cap_password']);
-    if (!$auth_token) {
-      $msg = "Error. Can't connect to Stanford CAP API."
-        . " Please check your username and password.";
-      form_set_error('cap_username', t($msg));
-      form_set_error('cap_password');
-    }
-  }
-}
 
 /**
  * Submit handler for settings form.
  */
 function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
-  $config_vars = array(
-    'cap_username',
-    'cap_password',
-    'cap_api_base_url',
-    'cap_auth_uri',
-  );
   $values = $form_state['values'];
-  foreach ($config_vars as $config_var) {
-    if (!empty($values[$config_var])) {
-      variable_set($config_var, $values[$config_var]);
-    }
-  }
   variable_set('cap_custom_fields', $values['cap_custom_fields']);
   variable_set('cap_allow_edit', $values['cap_allow_edit']);
   variable_set('cap_orphaned_profile_action', $values['orphaned_profile_action']);
   variable_set('cap_profile_update', $values['cap_profile_update']);
-  drupal_set_message(t('Configuration saved.'));
 }
 
 /**
@@ -429,7 +288,7 @@ function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
   }
 
   $_SESSION['search_params'] = $params;
-  $_SESSION['search_response'] = stanford_cap_api_profiles_request('/api/profiles/v1', $params);
+  $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $params);
 
   $form_state['redirect'] = 'admin/config/cap/import/result';
 }
@@ -485,7 +344,7 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
     $search_params = $_SESSION['search_params'];
     if ($page_num != 1) {
       $search_params['p'] = $page_num;
-      $_SESSION['search_response'] = stanford_cap_api_profiles_request('/api/profiles/v1', $search_params);
+      $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $search_params);
       $search_response = $_SESSION['search_response'];
     }
     else {
@@ -494,7 +353,7 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
       }
       else {
         $search_params['p'] = $page_num;
-        $_SESSION['search_response'] = stanford_cap_api_profiles_request('/api/profiles/v1', $search_params);
+        $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $search_params);
         $search_response = $_SESSION['search_response'];
       }
     }
@@ -917,7 +776,7 @@ function _stanford_cap_api_profiles_get_group_profiles_count($type, $name) {
   switch ($type) {
     case 'organization':
       $params = array('orgCodes' => $name);
-      $data = stanford_cap_api_profiles_request('/api/profiles/v1', $params);
+      $data = stanford_cap_api_request('/api/profiles/v1', $params);
       if ($data) {
         $count = $data['totalCount'];
       }
@@ -925,7 +784,7 @@ function _stanford_cap_api_profiles_get_group_profiles_count($type, $name) {
 
     case 'workgroup':
       $params = array('privGroups' => $name);
-      $data = stanford_cap_api_profiles_request('/api/profiles/v1', $params);
+      $data = stanford_cap_api_request('/api/profiles/v1', $params);
       if ($data) {
         $count = $data['totalCount'];
       }
@@ -992,7 +851,7 @@ function stanford_cap_api_profiles_group_sync_now($id) {
 function stanford_cap_api_profiles_user_autocomplete($str = '') {
   $matches = array();
   if ($str) {
-    $response = stanford_cap_api_profiles_request('/api/cap/v1/search/autocomplete', array('q' => $str));
+    $response = stanford_cap_api_request('/api/cap/v1/search/autocomplete', array('q' => $str));
     if (!empty($response['count'])) {
       foreach ($response['values'] as $match) {
         $matches[$match['name']] = $match['name'];
@@ -1001,16 +860,4 @@ function stanford_cap_api_profiles_user_autocomplete($str = '') {
   }
 
   drupal_json_output($matches);
-}
-
-/**
- * Checks that we can connect to CAP API.
- */
-function stanford_cap_api_profiles_auth_status() {
-  if (stanford_cap_api_profiles_get_profile_schema()) {
-    return TRUE;
-  }
-  else {
-    return FALSE;
-  }
 }

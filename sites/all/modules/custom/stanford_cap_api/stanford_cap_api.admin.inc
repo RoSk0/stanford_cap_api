@@ -44,10 +44,8 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#title' => t('Connection information'),
   );
 
-  $form['connection']['description_wrapper'] = array(
-    '#type' => 'container',
-  );
   $form['connection']['description_wrapper']['description'] = array(
+    '#type' => 'item',
     '#markup' => t('Please enter the information you use to connect to the CAP API. This will be used for each callback to the CAP API itself.'),
   );
 
@@ -63,7 +61,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#title' => t('Password:'),
   );
 
-  $form['advanced'] = array(
+  $form['connection']['advanced'] = array(
     '#type' => 'fieldset',
     '#title' => t('Advanced'),
     '#collapsible' => TRUE,
@@ -71,7 +69,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#description' => t('Advanced setting for CAP API and authentication URIs'),
   );
 
-  $form['advanced']['cap_api_base_url'] = array(
+  $form['connection']['advanced']['cap_api_base_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Endpoint'),
     '#description' => t('CAP API endpoint URI, only useful when switching between development/production environment.'),
@@ -79,7 +77,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
-  $form['advanced']['cap_auth_uri'] = array(
+  $form['connection']['advanced']['cap_auth_uri'] = array(
     '#type' => 'textfield',
     '#title' => t('Authentication URI'),
     '#description' => t('CAP API authentication URL.'),
