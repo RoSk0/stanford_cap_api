@@ -719,23 +719,21 @@ function _stanford_cap_api_profiles_get_cap_profile_url($profile) {
  *
  * @param string $field_name
  *   CAP profile field name.
- * @param boolean $human
+ * @param string $parent
  *   Indicates that this is human readable string.
  *
  * @return string
  *   Drupal field name.
  */
-function _stanford_cap_api_profiles_generate_field_name($field_name, $human = FALSE) {
-  if ($human) {
-    // Do machine name from human.
-    $replace_pattern = '/[^a-z0-9_]+/i';
-    $replace = '_';
-    // Marking field names.
-    $field_name = 'h_' . preg_replace($replace_pattern, $replace, $field_name);
+function _stanford_cap_api_profiles_generate_field_name($field_name, $parent = '') {
+  $replacements = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
+  $hash = md5($parent . '_' . $field_name);
+  if (is_numeric($hash[0])) {
+    $replacement_index = (int) $hash[0];
+    $hash[0] = $replacements[$replacement_index];
   }
-  $node_field_name = 'cap_' . drupal_strtolower($field_name);
 
-  return substr($node_field_name, 0, 32);
+  return $hash;
 }
 
 /**
@@ -1111,7 +1109,7 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
   // We don't store metadata fields.
   // @todo: Or maybe we should?
   if (empty($f_schema['metadata'])) {
-    $field_name = _stanford_cap_api_profiles_generate_field_name($f_name);
+    $field_name = _stanford_cap_api_profiles_generate_field_name($f_name, $parent_field);
     $field_info = field_info_field($field_name);
     if (empty($field_info)) {
       $field_info = _stanford_cap_api_profiles_generate_field_info($field_name, $f_schema);
