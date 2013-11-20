@@ -4,7 +4,7 @@
  * Administrative pages for Stanford CAP API module.
  */
 
-define('ENTRY_PER_PAGE', 25);
+define('CAP_PROFILES_ENTRY_PER_PAGE', 25);
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -40,7 +40,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
       'additional' => $additional,
     );
 
-    $form['profiles'] = array(
+    $form['sync_date'] = array(
       '#markup' => theme('cap_status_item', $vars),
     );
   }
@@ -51,7 +51,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
       'additional' => $additional,
     );
 
-    $form['profiles'] = array(
+    $form['sync_date'] = array(
       '#markup' => theme('cap_info_item', $vars),
     );
   }
@@ -122,7 +122,6 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
 
 }
 
-
 /**
  * Submit handler for settings form.
  */
@@ -139,16 +138,9 @@ function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
  */
 function stanford_cap_api_profiles_import_form($form, &$form_state) {
 
-  $form['description_wrapper'] = array(
-    '#type' => 'container',
-  );
-  $description = 'Individual CAP Profiles can be imported into the system by identifying'
-    . ' the correct faculty members to add to your website. Use the tools below to search for '
-    . ' individual profiles, and you can select specific profiles for import '
-    . '  on the next screen.';
-    
-  $form['description_wrapper']['description'] = array(
-    '#markup' => t($description),
+  $form['description'] = array(
+    '#type' => 'item',
+    '#markup' => t('Individual CAP Profiles can be imported into the system by identifying the correct faculty members to add to your website. Use the tools below to search for  individual profiles, and you can select specific profiles for import   on the next screen.'),
   );
 
   $form['header'] = array(
@@ -157,12 +149,11 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
     '#suffix' => '</h3>',
   );
 
-  $name_desc = 'Please enter a name to search for. You can search using a partial match, or by selecting from the list of suggested names.';
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('First name / Last name'),
     '#autocomplete_path' => 'stanford-cap-api-user-autocomplete',
-    '#description' => t($name_desc),
+    '#description' => t('Please enter a name to search for. You can search using a partial match, or by selecting from the list of suggested names.'),
   );
 
   /**
@@ -176,17 +167,17 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
   );
   */
 
-  $org_description = 'Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code'
-    . ' Hierarchy !here.';
-  $url = 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/';
-    
+  $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
+  $link = l(t('by clicking here'), 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/');
   $form['organization'] = array(
     '#type' => 'hierarchical_select',
     '#title' => t('Organization'),
     '#size' => 1,
     '#config' => array(
-      'module' => 'stanford_cap_api_profiles',
-      'params' => array(),
+      'module' => 'hs_taxonomy',
+      'params' => array(
+        'vid' => $voc->vid,
+      ),
       'save_lineage' => 0,
       'enforce_deepest' => 0,
       'entity_count' => 0,
@@ -220,32 +211,26 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
       'render_flat_select' => 0,
     ),
     '#default_value' => 'none',
-    '#description' => t($org_description, array('!here' => l(t('by clicking here'), $url))),
+    '#description' => t('Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code Hierarchy !here.', array('!here' => $link)),
   );
 
-  
-  $workgroup_desc = t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here');
-  $url = 'https://workgroup.stanford.edu';
-  
+  $link = l(t('at the workgroup manager website.'), 'https://workgroup.stanford.edu');
   $form['workgroup'] = array(
     '#type' => 'textfield',
     '#title' => t('Workgroup'),
-    '#description'    => t($workgroup_desc, array('!here' => l(t('at the workgroup manager website.'), $url))),
+    '#description'    => t('Please enter the name of the workgroup you wish to import. You can learn more about workgroups at Stanford, and get proper names for import, !here.', array('!here' => $link)),
   );
 
-  $uiddesc = t('Please enter the university id for the profile you wish to import.');
-  
   $form['university_id'] = array(
     '#type' => 'textfield',
     '#title' => t('University ID'),
-    '#description'    => t($uiddesc),
+    '#description'    => t('Please enter the university id for the profile you wish to import.'),
   );
 
-  $sunetdesc = t('Please enter SUNET ids for the profiles you wish to import. You can enter multiple SUNET IDs by separating them with a comma.');
   $form['sunet_id'] = array(
     '#type' => 'textarea',
     '#title' => t('SUNet ID'),
-    '#description' => t($sunetdesc),
+    '#description' => t('Please enter SUNET ids for the profiles you wish to import. You can enter multiple SUNET IDs by separating them with a comma.'),
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -263,16 +248,15 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
 function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
   $values = $form_state['values'];
 
-  $params = array('ps' => ENTRY_PER_PAGE);
+  $params = array('ps' => CAP_PROFILES_ENTRY_PER_PAGE);
 
   if (!empty($values['name'])) {
     $params['name'] = check_plain($values['name']);
   }
   if (!empty($values['organization'][0])) {
-    $org_codes = db_select('cap_api_orgs', 'orgs')
-      ->condition('orgid', $values['organization'][0])
-      ->fields('orgs', array('orgCodes'))->execute()->fetchField();
-    $params['orgCodes'] = implode(',', unserialize($org_codes));
+    $term_wrapper = entity_metadata_wrapper('taxonomy_term', $values['organization'][0]);
+    $org_codes = $term_wrapper->field_org_codes->value();
+    $params['orgCodes'] = implode(',', $org_codes);
   }
   if (!empty($values['workgroup'])) {
     $params['privGroups'] = _stanford_cap_api_profiles_prepare_list_str($values['workgroup']);
@@ -325,10 +309,8 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
       '#type' => 'container',
     );
     $link = l(t('Start new search.'), 'admin/config/cap/import');
-    $description = 'Please select the CAP profiles you would like to import'
-      . ' into your site. !link';
     $form['description_wrapper']['description'] = array(
-      '#markup' => t($description, array('!link' => $link)),
+      '#markup' => t('Please select the CAP profiles you would like to import into your site. !link', array('!link' => $link)),
     );
 
     $form['results_wrapper'] = array(
@@ -358,8 +340,8 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
       }
     }
 
-    $start = $search_response['firstPage'] ? 1 : ENTRY_PER_PAGE * ($search_response['page'] - 1) + 1;
-    $end = $search_response['lastPage'] ? $search_response['totalCount'] : ENTRY_PER_PAGE * $search_response['page'];
+    $start = $search_response['firstPage'] ? 1 : CAP_PROFILES_ENTRY_PER_PAGE * ($search_response['page'] - 1) + 1;
+    $end = $search_response['lastPage'] ? $search_response['totalCount'] : CAP_PROFILES_ENTRY_PER_PAGE * $search_response['page'];
     $total = $search_response['totalCount'];
 
     $form['results_wrapper']['results'] = array(
@@ -426,10 +408,9 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
     $form['description_wrapper'] = array(
       '#type' => 'container',
     );
-    $description = "Search has returned no results. !link";
     $link = l(t('Want to try again?'), 'admin/config/cap/import');
     $form['description_wrapper']['description'] = array(
-      '#markup' => t($description, array('!link' => $link)),
+      '#markup' => t("Search has returned no results. !link", array('!link' => $link)),
     );
   }
 
