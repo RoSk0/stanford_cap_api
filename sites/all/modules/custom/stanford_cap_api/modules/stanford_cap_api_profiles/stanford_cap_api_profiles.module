@@ -1643,8 +1643,3 @@ function _stanford_cap_api_profiles_log_longest_field_length($length) {
     variable_set('stanford_cap_api_profiles_longest_field_length', $length);
   }
 }
-
-function test() {
-  stanford_cap_api_profiles_profile_import(13520);
-//  stanford_cap_api_profiles_synchronize_schema();
-}
