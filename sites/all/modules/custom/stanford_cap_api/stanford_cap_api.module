@@ -71,7 +71,7 @@ function stanford_cap_api_permission() {
 function stanford_cap_api_auth($user = '', $pass = '', $auth_uri = '') {
 
   $token_expire = variable_get('stanford_cap_api_token_expire', REQUEST_TIME);
-  if ($token_expire <= REQUEST_TIME) {
+  if ($token_expire <= REQUEST_TIME || !empty($user) || !empty($pass)) {
     $auth_uri = empty($auth_uri) ? variable_get('cap_auth_uri', 'https://authz.stanford.edu/oauth/token') : $auth_uri;
     $user = empty($user) ? variable_get('cap_username', '') : $user;
     $pass = empty($pass) ? variable_get('cap_password', '') : $pass;
