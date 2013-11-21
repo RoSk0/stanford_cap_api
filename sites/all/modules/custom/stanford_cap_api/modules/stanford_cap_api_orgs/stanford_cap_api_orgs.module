@@ -178,7 +178,12 @@ function stanford_cap_api_orgs_form_stanford_cap_api_details_form_alter(&$form, 
     }
   }
   else {
-    $orgs_count = db_select('taxonomy_term_data', 't')->countQuery()->execute()->fetchField();
+    $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
+    $orgs_count = db_select('taxonomy_term_data', 't')
+      ->condition('vid', $voc->vid)
+      ->countQuery()
+      ->execute()
+      ->fetchField();
     $form['organizations'] = array(
       '#markup' => theme('cap_info_item', array('info' => $orgs_count, 'message' => t('Organizations imported.'))),
     );
