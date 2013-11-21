@@ -56,28 +56,32 @@ function stanford_cap_api_orgs_get($top = 'AA00') {
 function stanford_cap_api_orgs_save_organization($organization, $parent_tid = NULL) {
   $weight =& drupal_static(__FUNCTION__, array());
   $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
-  $efq = new EntityFieldQuery();
-  $efq->entityCondition('entity_type', 'taxonomy_term');
-  foreach ($organization['orgCodes'] as $code) {
-    $efq->fieldCondition('field_org_codes', 'value', $code);
-  }
-  $results = $efq->execute();
-  if (!empty($results['taxonomy_term']) && count($results['taxonomy_term']) == 1) {
+  // Some organizations can have 16 and more orgCodes,
+  // which is making EFQ useless.
+  $result = db_select('field_data_field_org_codes', 'field_org_codes')
+    ->fields('field_org_codes', array('entity_id'))
+    ->condition('entity_type', 'taxonomy_term')
+    ->condition('bundle', CAP_ORGS_VOCAB)
+    ->condition('field_org_codes_value', $organization['orgCodes'])
+    ->groupBy('entity_id')
+    ->execute()
+    ->fetchCol();
+  if (!empty($result) && count($result) == 1) {
     // We have this organization.
-    $org_term = array_shift($results['taxonomy_term']);
-    $org_term = taxonomy_term_load($org_term->tid);
+    $org_term_tid = array_shift($result);
+    $org_term = taxonomy_term_load($org_term_tid);
   }
-  elseif (empty($results['taxonomy_term'])) {
+  elseif (empty($result)) {
     $org_term = new stdClass();
   }
-  elseif (!empty($results['taxonomy_term']) && count($results['taxonomy_term']) > 1) {
-    $tids = array_keys($results['taxonomy_term']);
+  elseif (!empty($result) && count($result) > 1) {
     $message = 'Something is wrong, there is more then one organization with the same set of orgCodes. Term ids returned by query: @tids. Organization data from CAP API: @organization';
     $vars = array(
-      '@tids' => implode(', ', $tids),
+      '@tids' => implode(', ', $result),
       '@organization' => print_r($organization, TRUE),
     );
     watchdog('stanford_cap_api_orgs', $message, $vars);
+    return;
   }
   $org_term->name = $organization['name'];
   $org_term->vid = $voc->vid;
