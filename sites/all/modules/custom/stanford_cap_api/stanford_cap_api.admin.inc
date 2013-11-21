@@ -73,7 +73,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Endpoint'),
     '#description' => t('CAP API endpoint URI, only useful when switching between development/production environment.'),
-    '#default_value' => variable_get('cap_api_base_url', 'https://irt-dev.stanford.edu/cap-api'),
+    '#default_value' => variable_get('cap_api_base_url', 'https://cap.stanford.edu/cap-api'),
     '#required' => TRUE,
   );
 
@@ -81,7 +81,7 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Authentication URI'),
     '#description' => t('CAP API authentication URL.'),
-    '#default_value' => variable_get('cap_auth_uri', 'https://authz-test.stanford.edu/oauth/token'),
+    '#default_value' => variable_get('cap_auth_uri', 'https://authz.stanford.edu/oauth/token'),
     '#required' => TRUE,
   );
 
