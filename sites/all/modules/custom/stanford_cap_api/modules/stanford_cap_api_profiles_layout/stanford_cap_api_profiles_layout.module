@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Stanford CAP API profiles layout feature.
+ */
+
+include_once 'stanford_cap_api_profiles_layout.features.inc';
