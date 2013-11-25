@@ -638,11 +638,8 @@ function stanford_cap_api_profiles_profile_stop_sync_action($entity) {
  * @param string $parent
  *   Parent field name.
  */
-function _stanford_cap_api_profiles_log_field($field_name, $parent = NULL) {
+function _stanford_cap_api_profiles_log_field($field_name) {
   $record = array('field_name' => $field_name);
-  if (isset($parent)) {
-    $record['parent_field'] = $parent;
-  }
   drupal_write_record('cap_api_fields', $record);
   watchdog('stanford_cap_api_profiles', 'Field @field was created by stanford_cap_api_profiles module.', array('@field' => $field_name));
 }
@@ -687,15 +684,16 @@ function _stanford_cap_api_profiles_get_cap_profile_url($profile) {
  * @param string $field_name
  *   CAP profile field name.
  * @param string $parent
- *   Indicates that this is human readable string.
+ *   Parent field name.
  *
  * @return string
  *   Drupal field name.
  */
 function _stanford_cap_api_profiles_generate_field_name($field_name, $parent = '') {
-  $replacements = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
-  $hash = md5($parent . '_' . $field_name);
+  $field_path = empty($parent) ? $field_name : $parent . '.' . $field_name;
+  $hash = md5($field_path);
   if (is_numeric($hash[0])) {
+    $replacements = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
     $replacement_index = (int) $hash[0];
     $hash[0] = $replacements[$replacement_index];
   }
@@ -1103,10 +1101,10 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
  *   CAP API profile field name.
  * @param array $f_schema
  *   CAP API profile field schema.
- * @param string $parent_field
+ * @param string $drupal_parent_field
  *   Parent field name. This is Drupal field name.
  */
-function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $parent_field = NULL) {
+function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '') {
   // We don't store metadata fields.
   // @todo: Or maybe we should?
   if (empty($f_schema['metadata'])) {
@@ -1118,16 +1116,18 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       if (!empty($field_info)) {
         field_create_field($field_info);
         // Logging field creation.
-        _stanford_cap_api_profiles_log_field($drupal_field_name, $parent_field);
+        _stanford_cap_api_profiles_log_field($drupal_field_name);
       }
     }
     $parent_entity = empty($parent_field) ? 'node' : 'field_collection_item';
-    $parent_entity_bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
+    $parent_entity_bundle = empty($parent_field) ? 'cap_faculty_profile' : $drupal_parent_field;
     $field_instance = field_info_instance($parent_entity, $drupal_field_name, $parent_entity_bundle);
     if (empty($field_instance) && !empty($field_info)) {
-      $field_instance = _stanford_cap_api_profiles_generate_instance_info($field_info['type'], $drupal_field_name, $f_schema, $parent_field);
+      $field_instance = _stanford_cap_api_profiles_generate_instance_info($field_info['type'], $drupal_field_name, $f_schema, $drupal_parent_field);
       if (!empty($field_instance)) {
         field_create_instance($field_instance);
+        $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
+        _stanford_cap_api_profiles_log_field_map($drupal_field_name, $field_path, $parent_entity, $parent_entity_bundle);
       }
       else {
         $message = 'Failed to create field instance. Field info: @field_info';
@@ -1147,7 +1147,9 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       }
 
       foreach ($subfields as $subfield => $schema) {
-        _stanford_cap_api_profiles_synchronize_schema_subfields($subfield, $schema, $drupal_field_name);
+        // We need this field to successfully apply profile layout.
+        $profile_field = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
+        _stanford_cap_api_profiles_synchronize_schema_subfields($subfield, $schema, $drupal_field_name, $profile_field);
       }
     }
   }
@@ -1612,29 +1614,6 @@ function _stanford_cap_api_profiles_gen_field_instance_def_taxonomy_term_referen
 }
 
 /**
- * Get parent field name for specified field.
- *
- * @param string $field_name
- *   Machine readable Drupal field name.
- *
- * @return string
- *   Parent field name, empty string, if field attached directly to node,
- *   or FALSE.
- */
-function _stanford_cap_api_profiles_get_parent_field($field_name) {
-  $cache =& drupal_static(__FUNCTION__, array());
-  if (empty($cache[$field_name])) {
-    $cache[$field_name] = db_select('cap_api_fields')
-      ->fields('cap_api_fields', array('parent_field'))
-      ->condition('field_name', $field_name)
-      ->execute()
-      ->fetchField();
-  }
-
-  return $cache[$field_name];
-}
-
-/**
  * We might want to know largest field size.
  */
 function _stanford_cap_api_profiles_log_longest_field_length($length) {
@@ -1642,4 +1621,14 @@ function _stanford_cap_api_profiles_log_longest_field_length($length) {
   if ($stored_length < $length) {
     variable_set('stanford_cap_api_profiles_longest_field_length', $length);
   }
+}
+
+function _stanford_cap_api_profiles_log_field_map($field_name, $field_path, $entity_type, $bundle) {
+  $record = array(
+    'field_name' => $field_name,
+    'field_path' => $field_path,
+    'entity_type' => $entity_type,
+    'bundle' => $bundle,
+  );
+  drupal_write_record('cap_api_fields_map', $record);
 }

@@ -21,20 +21,55 @@ function stanford_cap_api_profiles_schema() {
       'field_name' => array(
         'description' => 'Field name.',
         'type' => 'varchar',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'parent_field' => array(
-        'description' => 'Parent name this field attached to.',
-        'type' => 'varchar',
-        'length' => 64,
+        'length' => 32,
         'not null' => TRUE,
         'default' => '',
       ),
     ),
     'primary key' => array('id'),
     'unique key' => array('field_name'),
+  );
+
+  $schema['cap_api_fields_map'] = array(
+    'description' => 'Stores field name which was created while synchronizing CAP profiles with CAP server.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'field_name' => array(
+        'description' => 'Field name.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'field_path' => array(
+        'description' => 'Field path used by profile layout to identify this field.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'entity_type' => array(
+        'description' => 'Entity type this field attached to.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'bundle' => array(
+        'description' => 'Entity bundle this field attached to.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique key' => array('field_name', 'field_path', 'entity_type', 'bundle'),
   );
 
   $schema['cap_api_profiles'] = array(
