@@ -684,7 +684,8 @@ function _stanford_cap_api_profiles_get_cap_profile_url($profile) {
  * @param string $field_name
  *   CAP profile field name.
  * @param string $parent
- *   Parent field name.
+ *   Full parent field path(e.g "shortTitle.label" for 'label' field attached
+ * to 'shortTitle').
  *
  * @return string
  *   Drupal field name.
@@ -772,9 +773,7 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
         }
         elseif (is_array($field_data) && $field_info['cardinality'] == '-1') {
           foreach ($field_data as $f_data) {
-            if (is_string($f_data)) {
-            }
-            else {
+            if (!is_string($f_data)) {
               $error_msg = 'Field name: @field_name. Expecting string , got: @data.';
               $vars = array(
                 '@field_name' => $field_name,
@@ -786,8 +785,14 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
           }
           $wrapper->{$drupal_field_name}->set($field_data);
         }
-        elseif (is_array($field_data) && !empty($field_data['html']) && !empty($field_data['text']) && count($field_data) == 2) {
-          $wrapper->{$drupal_field_name}->set($field_data['text']);
+        else {
+          $error_msg = 'Field name: @field_name. Expecting string , got: @data.';
+          $vars = array(
+            '@field_name' => $field_name,
+            '@data' => print_r($field_data, TRUE),
+          );
+          watchdog('stanford_cap_api_profiles', $error_msg, $vars, WATCHDOG_WARNING);
+          break;
         }
         break;
 
@@ -820,7 +825,7 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
         // This is multi-value field collection.
         if (is_array($field_data) && !empty($field_data) && array_key_exists(0, $field_data)) {
           foreach ($field_data as $fc_subfield_data) {
-            _stanford_cap_api_profiles_save_field($entity, $wrapper, $field_name, $fc_subfield_data, $drupal_field_name);
+            _stanford_cap_api_profiles_save_field($entity, $wrapper, $field_name, $fc_subfield_data, $parent_field);
           }
         }
         else {
@@ -831,7 +836,8 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
             $fc_item->save(TRUE);
             $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
             foreach ($field_data as $fc_subfield => $fc_subfield_data) {
-              _stanford_cap_api_profiles_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, $drupal_field_name);
+              $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
+              _stanford_cap_api_profiles_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, $field_path);
             }
             $fc_item->save(TRUE);
           }
@@ -881,7 +887,7 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
     $message = 'Field "@field" was in profile, but were not defined in schema. Field data: @data';
     $vars = array(
       '@field' => $field_name,
-      '@data' => $field_data,
+      '@data' => print_r($field_data, TRUE),
     );
     watchdog('stanford_cap_api_profiles', $message, $vars, WATCHDOG_WARNING);
   }
@@ -995,12 +1001,8 @@ function _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $fie
       if (!empty($field_schema['properties'])) {
         $props = $field_schema['properties'];
         // This is not the real collection.
-        // Simple string.
-        if (isset($props['html']) && isset($props['text']) && count($props) == 2) {
-          $info = _stanford_cap_api_profiles_gen_field_base_def_text_long($drupal_field_name, $props['text']);
-        }
         // Date field.
-        elseif (isset($props['value']) && isset($props['html']) && isset($props['text']) && count($props) == 3) {
+        if (isset($props['value']) && isset($props['html']) && isset($props['text']) && count($props) == 3) {
           $schema = $props['value'];
           if ($schema['type'] == 'string') {
             if (isset($schema['format']) && $schema['format'] == 'DATE_TIME') {
@@ -1147,8 +1149,8 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
 
     foreach ($subfields as $subfield => $schema) {
       // We need this field to successfully apply profile layout.
-      $profile_field = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
-      _stanford_cap_api_profiles_synchronize_schema_subfields($subfield, $schema, $drupal_field_name, $profile_field);
+      $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
+      _stanford_cap_api_profiles_synchronize_schema_subfields($subfield, $schema, $drupal_field_name, $field_path);
     }
   }
 }
