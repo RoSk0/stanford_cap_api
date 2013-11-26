@@ -117,6 +117,7 @@ function stanford_cap_api_profiles_layout_reset($display_mode = 'full') {
     unset($instance['display'][$display_mode]);
     field_update_instance($instance);
   }
+  variable_del('stanford_cap_api_profiles_layout_modified');
 }
 
 /**
