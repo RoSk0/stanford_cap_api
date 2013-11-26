@@ -18,7 +18,7 @@ function stanford_cap_api_details_form($form, &$form_state) {
   }
   else {
     $status_message = t("Currently, your site can't connect to CAP.");
-    $additional = t('Please check your settings on the !link.', array('!link' => l(t('settings page'), 'admin/config/cap/settings')));
+    $additional = t('Please check your settings on the !link.', array('!link' => l(t('settings page'), 'admin/config/cap/config/settings')));
   }
   $vars = array(
     'status' => $status,

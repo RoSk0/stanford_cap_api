@@ -13,7 +13,7 @@ include_once 'stanford_cap_api_profiles.admin.inc';
 function stanford_cap_api_profiles_menu() {
   $items = array();
 
-  $items['admin/config/cap/import'] = array(
+  $items['admin/config/cap/config/import'] = array(
     'title' => 'Profile import',
     'description' => 'Provides administrators ability to import CAP profiles.',
     'page callback' => 'drupal_get_form',
@@ -24,7 +24,7 @@ function stanford_cap_api_profiles_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['admin/config/cap/import/result'] = array(
+  $items['admin/config/cap/config/import/result'] = array(
     'title' => 'Profile import',
     'description' => 'Provides administrators ability to import CAP profiles.',
     'page callback' => 'drupal_get_form',
@@ -34,7 +34,7 @@ function stanford_cap_api_profiles_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['admin/config/cap/profile_test'] = array(
+  $items['admin/config/cap/config/profile_test'] = array(
     'title' => 'Faculty Profile Structure Synchronization',
     'description' => 'Faculty Profile Structure Synchronization',
     'page callback' => 'drupal_get_form',
@@ -45,7 +45,7 @@ function stanford_cap_api_profiles_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['admin/config/cap/manage'] = array(
+  $items['admin/config/cap/config/manage'] = array(
     'title' => 'Manage profiles',
     'description' => 'Provides administrators ability to manage CAP profiles.',
     'page callback' => 'stanford_cap_api_profiles_manage',
@@ -55,7 +55,7 @@ function stanford_cap_api_profiles_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['admin/config/cap/group'] = array(
+  $items['admin/config/cap/config/group'] = array(
     'title' => 'Group import',
     'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
     'page callback' => 'drupal_get_form',
@@ -66,7 +66,7 @@ function stanford_cap_api_profiles_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['admin/config/cap/group/%/delete'] = array(
+  $items['admin/config/cap/config/group/%/delete'] = array(
     'title' => 'Drop group from synchronization',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_profiles_group_sync_drop_form', 4),
@@ -75,7 +75,7 @@ function stanford_cap_api_profiles_menu() {
     'file' => 'stanford_cap_api_profiles.admin.inc',
   );
 
-  $items['admin/config/cap/group/%/sync'] = array(
+  $items['admin/config/cap/config/group/%/sync'] = array(
     'title' => 'Synchronize group',
     'page callback' => 'stanford_cap_api_profiles_group_sync_now',
     'page arguments' => array(4),
@@ -271,7 +271,7 @@ function stanford_cap_api_profiles_import_result_finished() {
   drupal_set_message(t('Profiles imported!'));
   unset($_SESSION['search_params']);
   unset($_SESSION['search_response']);
-  drupal_goto('admin/config/cap/import');
+  drupal_goto('admin/config/cap/config/import');
 }
 
 /**

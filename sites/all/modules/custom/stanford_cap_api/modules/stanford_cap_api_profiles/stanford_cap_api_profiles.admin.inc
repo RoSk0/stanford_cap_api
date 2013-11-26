@@ -19,8 +19,8 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
     ->count()
     ->execute();
   $additional_vars = array(
-    '!groups' => l(t('importing groups'), 'admin/config/cap/group'),
-    '!people' => l(t('importing individual profiles'), 'admin/config/cap/import'),
+    '!groups' => l(t('importing groups'), 'admin/config/cap/config/group'),
+    '!people' => l(t('importing individual profiles'), 'admin/config/cap/config/import'),
   );
   $vars = array(
     'info' => $count,
@@ -33,7 +33,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
   );
 
   $sync_date_stamp = variable_get('stanford_cap_api_profiles_cron_last_run', 0);
-  $additional = t('You can adjust the frequency of updates on the !settings.', array('!settings' => l(t('settings page'), 'admin/config/cap/settings')));
+  $additional = t('You can adjust the frequency of updates on the !settings.', array('!settings' => l(t('settings page'), 'admin/config/cap/config/settings')));
   if (empty($sync_date_stamp)) {
     $vars = array(
       'message' => t('CAP profiles were not sync yet.'),
@@ -273,7 +273,7 @@ function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
   $_SESSION['search_params'] = $params;
   $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $params);
 
-  $form_state['redirect'] = 'admin/config/cap/import/result';
+  $form_state['redirect'] = 'admin/config/cap/config/import/result';
 }
 
 /**
@@ -307,7 +307,7 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
     $form['description_wrapper'] = array(
       '#type' => 'container',
     );
-    $link = l(t('Start new search.'), 'admin/config/cap/import');
+    $link = l(t('Start new search.'), 'admin/config/cap/config/import');
     $form['description_wrapper']['description'] = array(
       '#markup' => t('Please select the CAP profiles you would like to import into your site. !link', array('!link' => $link)),
     );
@@ -407,7 +407,7 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
     $form['description_wrapper'] = array(
       '#type' => 'container',
     );
-    $link = l(t('Want to try again?'), 'admin/config/cap/import');
+    $link = l(t('Want to try again?'), 'admin/config/cap/config/import');
     $form['description_wrapper']['description'] = array(
       '#markup' => t("Search has returned no results. !link", array('!link' => $link)),
     );
@@ -543,8 +543,8 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
     );
     $rows = array();
     foreach ($groups as $group) {
-      $delete_link = l(t('Remove'), 'admin/config/cap/group/' . $group->id . '/delete');
-      $sync_link = l(t('Sync now'), 'admin/config/cap/group/' . $group->id . '/sync');
+      $delete_link = l(t('Remove'), 'admin/config/cap/config/group/' . $group->id . '/delete');
+      $sync_link = l(t('Sync now'), 'admin/config/cap/config/group/' . $group->id . '/sync');
       $rows[] = array(
         check_plain($group->name),
         t('%count profiles', array('%count' => $group->count)),
@@ -772,7 +772,7 @@ function stanford_cap_api_profiles_group_sync_drop_form($form, &$form_state, $id
   $form_addition = array('id' => array('#type' => 'value', '#value' => $id));
   $question = t('Are you sure you want to stop syncing this group?');
 
-  return confirm_form($form_addition, $question, 'admin/config/cap/group', NULL, t('Delete'));
+  return confirm_form($form_addition, $question, 'admin/config/cap/config/group', NULL, t('Delete'));
 }
 
 /**
@@ -780,7 +780,7 @@ function stanford_cap_api_profiles_group_sync_drop_form($form, &$form_state, $id
  */
 function stanford_cap_api_profiles_group_sync_drop_form_submit($form, &$form_state) {
   stanford_cap_api_profiles_sync_group_drop($form_state['values']['id']);
-  $form_state['redirect'] = 'admin/config/cap/group';
+  $form_state['redirect'] = 'admin/config/cap/config/group';
   drupal_set_message(t('Group was successfully deleted.'));
 }
 
@@ -807,7 +807,7 @@ function stanford_cap_api_profiles_group_sync_now($id) {
     @estimate | Elapsed: @elapsed'),
   );
   batch_set($batch);
-  batch_process('admin/config/cap/group');
+  batch_process('admin/config/cap/config/group');
 }
 
 /**

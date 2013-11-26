@@ -47,7 +47,7 @@ function stanford_cap_api_profiles_views_default_views() {
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No CAP profiles are being stored in the site. You can <a href="/admin/config/cap/import">add profiles</a> or <a href="/admin/config/cap/group">add groups</a>.';
+  $handler->display->display_options['empty']['area']['content'] = 'No CAP profiles are being stored in the site. You can <a href="/admin/config/cap/config/import">add profiles</a> or <a href="/admin/config/cap/config/group">add groups</a>.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Field: Bulk operations: Content */
   $handler->display->display_options['fields']['views_bulk_operations']['id'] = 'views_bulk_operations';

@@ -15,20 +15,30 @@ function stanford_cap_api_menu() {
     'description' => 'Community Academic Profiles API screens.',
     'position' => 'right',
     'weight' => -5,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/config/cap/config'] = array(
+    'title' => 'Details',
+    'description' => "Displays information about the site's connection to the CAP API.",
+    'weight' => -10,
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stanford_cap_api_details_form'),
     'access arguments' => array('administer cap api'),
     'file' => 'stanford_cap_api.admin.inc',
   );
 
-  $items['admin/config/cap/details'] = array(
+  $items['admin/config/cap/config/details'] = array(
     'title' => 'Details',
     'description' => "Displays information about the site's connection to the CAP API.",
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
 
-  $items['admin/config/cap/settings'] = array(
+  $items['admin/config/cap/config/settings'] = array(
     'title' => 'Settings',
     'description' => 'Provides administrators ability to change CAP API access settings.',
     'page callback' => 'drupal_get_form',
