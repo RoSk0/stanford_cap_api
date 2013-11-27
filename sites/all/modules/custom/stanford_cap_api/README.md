@@ -1,3 +1,6 @@
+CAP_drupal
+==========
+
 1. Getting Started
 
 * Some modules are required by the Stanford CAP API modules. Please make sure
