@@ -769,7 +769,16 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
 
       case 'text_long':
         if (is_string($field_data)) {
-          $wrapper->{$drupal_field_name}->set($field_data);
+          // Contains HTML?
+          if($props_info[$drupal_field_name]['type'] == 'text_formatted') {
+            $wrapper->{$drupal_field_name}->set(array(
+              'value' => $field_data,
+              'format' => 'full_html_for_cap_profiles',
+            ));
+          }
+          else {
+            $wrapper->{$drupal_field_name}->set($field_data);
+          }
         }
         elseif (is_array($field_data) && $field_info['cardinality'] == '-1') {
           foreach ($field_data as $f_data) {
@@ -1069,7 +1078,7 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
       break;
 
     case 'text_long':
-      $info = _stanford_cap_api_profiles_gen_field_instance_def_text($field_name, $schema, $parent_field);
+      $info = _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name, $schema, $parent_field);
       break;
 
     case 'list_boolean':
@@ -1500,6 +1509,8 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
+  $text_processing = drupal_strtolower($schema['title']) == 'html';
+
   $instance = array(
     'bundle' => $bundle,
     'description' => $description,
@@ -1507,7 +1518,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name
     'field_name' => $field_name,
     'label' => $label,
     'settings' => array(
-      'text_processing' => 0,
+      'text_processing' => $text_processing,
     ),
   );
 
@@ -1682,4 +1693,9 @@ function _stanford_cap_api_profiles_log_field_map($field_name, $field_path, $ent
     'bundle' => $bundle,
   );
   drupal_write_record('cap_api_fields_map', $record);
+}
+
+function test() {
+  dpm(field_info_field('c9200966e078f341e864df45f4218a21'), 'HTML');
+  dpm(field_info_field('c02ca101750919cc5586446fa1ae206b'), 'Text');
 }
