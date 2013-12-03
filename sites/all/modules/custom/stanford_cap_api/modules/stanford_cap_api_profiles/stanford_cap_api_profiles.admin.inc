@@ -463,7 +463,7 @@ function stanford_cap_api_profiles_profile_test($form, &$form_state) {
   $form['actions']['sync'] = array(
     '#type' => 'submit',
     '#value' => t('Synchronize fields in the faculty profile'),
-    '#submit' => array('stanford_cap_api_profiles_test_synchronize'),
+    '#submit' => array('_stanford_cap_api_profiles_sync_schema_batch'),
   );
   $form['actions']['reset'] = array(
     '#type' => 'submit',
@@ -472,17 +472,6 @@ function stanford_cap_api_profiles_profile_test($form, &$form_state) {
   );
 
   return $form;
-}
-
-/**
- * Forces module to synchronize CAP profile fields structure.
- */
-function stanford_cap_api_profiles_test_synchronize() {
-  timer_start('fields_sync');
-  stanford_cap_api_profiles_synchronize_schema();
-  $timer = timer_stop('fields_sync');
-  drupal_set_message(t('Fields successfully synchronized.'));
-  drupal_set_message(t('This operation took %time seconds.', array('%time' => floor($timer['time'] / 1000))));
 }
 
 /**
