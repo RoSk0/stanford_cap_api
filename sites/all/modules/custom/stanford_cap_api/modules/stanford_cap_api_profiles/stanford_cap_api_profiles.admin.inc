@@ -425,6 +425,9 @@ function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state
     drupal_set_message(t('Nothing to import. Profiles list is empty.'));
   }
   else {
+    if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
+      stanford_cap_api_profiles_synchronize_schema(TRUE);
+    }
     $profiles = $form_state['values']['profiles'];
     $operations = array();
     foreach ($profiles as $profile) {
