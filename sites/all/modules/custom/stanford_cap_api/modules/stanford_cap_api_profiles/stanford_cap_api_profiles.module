@@ -1753,7 +1753,6 @@ function _stanford_cap_api_profiles_schema_hash($schema) {
  * Helper to show some info about schema synchronization batch.
  */
 function _stanford_cap_api_profiles_sync_schema_batch_finished() {
-  drupal_set_message(t('Fields successfully synchronized.'));
   $time = REQUEST_TIME - variable_get('stanford_cap_api_profiles_sync_schema_batch');
   variable_del('stanford_cap_api_profiles_sync_schema_batch');
   drupal_set_message(t('Fields successfully synchronized.'));
