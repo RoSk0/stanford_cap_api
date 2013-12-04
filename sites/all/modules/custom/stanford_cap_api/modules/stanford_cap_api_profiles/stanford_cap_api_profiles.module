@@ -155,9 +155,6 @@ function stanford_cap_api_profiles_user_access($permission, $node_type) {
   return $access;
 }
 
-
-
-
 /**
  * Implements hook_cron().
  */
@@ -822,7 +819,7 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
       case 'text_long':
         if (is_string($field_data)) {
           // Contains HTML?
-          if($props_info[$drupal_field_name]['type'] == 'text_formatted') {
+          if ($props_info[$drupal_field_name]['type'] == 'text_formatted') {
             $wrapper->{$drupal_field_name}->set(array(
               'value' => $field_data,
               'format' => 'full_html_for_cap_profiles',
@@ -1005,7 +1002,6 @@ function _stanford_cap_api_profiles_sync_group_wrapper($group_type, $group_name)
  *   Field name form CAP API.
  * @param array $field_schema
  *   Field schema form CAP API.
-
  *
  * @return array
  *   Array used in field_create_field().

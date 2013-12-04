@@ -46,7 +46,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
   }
   else {
     $vars = array(
-      'info' => round((time() - $sync_date_stamp) / 60 / 60),
+      'info' => round((REQUEST_TIME - $sync_date_stamp) / 60 / 60),
       'message' => t('Hour(s) since last sync.'),
       'additional' => $additional,
     );
