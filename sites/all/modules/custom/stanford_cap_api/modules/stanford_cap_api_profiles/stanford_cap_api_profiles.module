@@ -632,6 +632,13 @@ function stanford_cap_api_profiles_profile_stop_sync_action($entity) {
 
 /**
  * Synchronize profile structure based on profile schema.
+ *
+ * Could be called in 2 modes: 1) batch mode - when field creation will be
+ * queued in batch operations; 2) normal mode - field will be created during
+ * function execution, good for cron and drush runs.
+ *
+ * @param bool $batch
+ *   Indicates that batch mode should be used.
  */
 function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
   if ($batch) {
@@ -1138,7 +1145,8 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
  * @param string $parent_field
  *   Parent field name.
  * @param array $operations
- *   Array to gather operations for batch processing.
+ *   Array to gather operations for batch processing, also used as indicator
+ *   for batch mode.
  */
 function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '', &$operations = NULL) {
   $drupal_field_name = _stanford_cap_api_profiles_generate_field_name($f_name, $parent_field);
