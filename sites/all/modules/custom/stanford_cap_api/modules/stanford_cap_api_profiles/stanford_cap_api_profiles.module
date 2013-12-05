@@ -92,6 +92,14 @@ function stanford_cap_api_profiles_menu() {
     'file' => 'stanford_cap_api_profiles.admin.inc',
   );
 
+  $items['stanford-cap-api-org-autocomplete'] = array(
+    'title' => 'Autocomplete for CAP organization names',
+    'page callback' => 'stanford_cap_api_profiles_taxonomy_autocomplete',
+    'access arguments' => array('administer cap api'),
+    'type' => MENU_CALLBACK,
+    'file' => 'stanford_cap_api_profiles.admin.inc',
+  );
+
   return $items;
 }
 
@@ -1769,4 +1777,11 @@ function _stanford_cap_api_profiles_sync_schema_batch_finished() {
  */
 function _stanford_cap_api_profiles_sync_schema_batch() {
   stanford_cap_api_profiles_synchronize_schema(TRUE);
+}
+
+function test() {
+  $tag = 'test (1)';
+  dpm($tag);
+  dpm(drupal_explode_tags($tag));
+
 }

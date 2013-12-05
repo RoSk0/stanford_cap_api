@@ -155,62 +155,13 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
     '#description' => t('Please enter a name to search for. You can search using a partial match, or by selecting from the list of suggested names.'),
   );
 
-  /**
-   * Disabling this field until we get a better explanation of how it works from MEDIRT
-   * @TODO: get better documentation on this field
-   */
-  /*
-  $form['school'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Organization alias'),
-  );
-  */
-
-  $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
   $link = l(t('by clicking here'), 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/');
   $form['organization'] = array(
-    '#type' => 'hierarchical_select',
+    '#type' => 'textfield',
     '#title' => t('Organization'),
-    '#size' => 1,
-    '#config' => array(
-      'module' => 'hs_taxonomy',
-      'params' => array(
-        'vid' => $voc->vid,
-      ),
-      'save_lineage' => 0,
-      'enforce_deepest' => 0,
-      'entity_count' => 0,
-      'require_entity' => 0,
-      'resizable' => 1,
-      'level_labels' => array(
-        'status' => 0,
-        'labels' => array(
-          0 => t('University'),
-        ),
-      ),
-      'dropbox' => array(
-        'status' => 0,
-        'title' => t('All selections'),
-        'limit' => 0,
-        'reset_hs' => 1,
-      ),
-      'editability' => array(
-        'status' => 0,
-        'item_types' => array(),
-        'allowed_levels' => array(
-          0 => 0,
-          1 => 0,
-          2 => 0,
-        ),
-        'allow_new_levels' => 0,
-        'max_levels' => 3,
-      ),
-      'animation_delay' => 400,
-      'special_items' => array(),
-      'render_flat_select' => 0,
-    ),
-    '#default_value' => 'none',
     '#description' => t('Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code Hierarchy !here.', array('!here' => $link)),
+    '#default_value' => '',
+    '#autocomplete_path' => 'stanford-cap-api-org-autocomplete',
   );
 
   $link = l(t('at the workgroup manager website.'), 'https://workgroup.stanford.edu');
@@ -252,8 +203,8 @@ function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
   if (!empty($values['name'])) {
     $params['name'] = check_plain($values['name']);
   }
-  if (!empty($values['organization'][0])) {
-    $term_wrapper = entity_metadata_wrapper('taxonomy_term', $values['organization'][0]);
+  if (!empty($values['organization'])) {
+    $term_wrapper = entity_metadata_wrapper('taxonomy_term', _stanford_cap_api_profiles_get_term_tid($values['organization']));
     $org_codes = $term_wrapper->field_org_codes->value();
     $params['orgCodes'] = implode(',', $org_codes);
   }
@@ -560,62 +511,13 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
       '#title' => t('Add new group'),
     );
 
-    /**
-     * Removing this for now, does not appear in the API
-     * @TODO: confirm with Darryl how the name search works for orgs
-     */
-    /*
-    $form['new_group']['school'] = array(
-      '#type' => 'textfield',
-      '#title' => t('School/Department'),
-    );
-    */
-
-    $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
     $link = l(t('by clicking here'), 'http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/');
     $form['new_group']['organization'] = array(
-      '#type' => 'hierarchical_select',
+      '#type' => 'textfield',
       '#title' => t('Organization'),
       '#description' => t('Please select the name of the organization you wish to import. You can learn more about Stanford University Org Code Hierarchy !here.', array('!here' => $link)),
-      '#size' => 1,
-      '#config' => array(
-        'module' => 'hs_taxonomy',
-        'params' => array(
-          'vid' => $voc->vid,
-        ),
-        'save_lineage' => 0,
-        'enforce_deepest' => 0,
-        'entity_count' => 0,
-        'require_entity' => 0,
-        'resizable' => 1,
-        'level_labels' => array(
-          'status' => 0,
-          'labels' => array(
-            0 => t('University'),
-          ),
-        ),
-        'dropbox' => array(
-          'status' => 0,
-          'title' => t('All selections'),
-          'limit' => 0,
-          'reset_hs' => 1,
-        ),
-        'editability' => array(
-          'status' => 0,
-          'item_types' => array(),
-          'allowed_levels' => array(
-            0 => 0,
-            1 => 0,
-            2 => 0,
-          ),
-          'allow_new_levels' => 0,
-          'max_levels' => 3,
-        ),
-        'animation_delay' => 400,
-        'special_items' => array(),
-        'render_flat_select' => 0,
-      ),
-      '#default_value' => 'none',
+      '#default_value' => '',
+      '#autocomplete_path' => 'stanford-cap-api-org-autocomplete',
     );
 
     $link = l(t('at the workgroup manager website'), 'https://workgroup.stanford.edu');
@@ -650,7 +552,7 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
     foreach ($group_types as $group_type) {
       switch ($group_type) {
         case 'organization':
-          $term_wrapper = entity_metadata_wrapper('taxonomy_term', $form_state['values'][$group_type][0]);
+          $term_wrapper = entity_metadata_wrapper('taxonomy_term', _stanford_cap_api_profiles_get_term_tid($form_state['values'][$group_type]));
           $org_codes = $term_wrapper->field_org_codes->value();
           $name = '';
           if (!empty($org_codes)) {
@@ -820,4 +722,59 @@ function stanford_cap_api_profiles_user_autocomplete($str = '') {
   }
 
   drupal_json_output($matches);
+}
+
+/**
+ * Autocomplete callback for organization taxonomy search.
+ *
+ * @param string $tag_typed
+ *   Typed search string.
+ *
+ * @see taxonomy_autocomplete()
+ */
+function stanford_cap_api_profiles_taxonomy_autocomplete($tag_typed = '') {
+  $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
+  $query = db_select('taxonomy_term_data', 't');
+  $query->addTag('translatable');
+  $query->addTag('term_access');
+
+  // Do not select already entered terms.
+  if (!empty($tags_typed)) {
+    $query->condition('t.name', $tags_typed, 'NOT IN');
+  }
+  // Select rows that match by term name.
+  $tags_return = $query
+    ->fields('t', array('tid', 'name'))
+    ->condition('t.vid', $voc->vid)
+    ->condition('t.name', '%' . db_like($tag_typed) . '%', 'LIKE')
+    ->range(0, 10)
+    ->execute()
+    ->fetchAllKeyed();
+
+  $term_matches = array();
+
+  foreach ($tags_return as $tid => $name) {
+    $term_matches[$name . ' (' . $tid . ')'] = check_plain($name);
+  }
+
+  drupal_json_output($term_matches);
+}
+
+/**
+ * Get term tid from composite term name.
+ *
+ * @param string $str
+ *   Composite term name. Term name with added " (TID)".
+ *
+ * @return int
+ *   Term tid or FALSE.
+ */
+function _stanford_cap_api_profiles_get_term_tid($str) {
+  $matches = array();
+  if (preg_match('/^.*\ \((\d+)\)$/', $str, $matches)) {
+    // Term tid captured by first capture group.
+    return $matches[1];
+  }
+
+  return FALSE;
 }
