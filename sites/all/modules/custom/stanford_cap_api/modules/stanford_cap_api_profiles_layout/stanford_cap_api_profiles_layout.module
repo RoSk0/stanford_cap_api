@@ -132,8 +132,15 @@ function stanford_cap_api_profiles_layout_form_stanford_cap_api_profiles_profile
   $form['actions']['layout_reset'] = array(
     '#type' => 'submit',
     '#value' => t('Reset profiles layout'),
-    '#submit' => array('stanford_cap_api_profiles_layout_reset'),
+    '#submit' => array('_stanford_cap_api_profiles_layout_reset_wrapper'),
   );
+}
+
+/**
+ * Wrapper around stanford_cap_api_profiles_layout_reset().
+ */
+function _stanford_cap_api_profiles_layout_reset_wrapper() {
+  stanford_cap_api_profiles_layout_reset();
 }
 
 /**
