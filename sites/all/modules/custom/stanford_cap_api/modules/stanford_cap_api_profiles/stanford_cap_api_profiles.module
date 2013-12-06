@@ -70,7 +70,7 @@ function stanford_cap_api_profiles_menu() {
   $items['admin/config/cap/config/group/%/delete'] = array(
     'title' => 'Drop group from synchronization',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('stanford_cap_api_profiles_group_sync_drop_form', 4),
+    'page arguments' => array('stanford_cap_api_profiles_group_sync_drop_form', 5),
     'access arguments' => array('administer cap api'),
     'type' => MENU_CALLBACK,
     'file' => 'stanford_cap_api_profiles.admin.inc',
@@ -79,7 +79,7 @@ function stanford_cap_api_profiles_menu() {
   $items['admin/config/cap/config/group/%/sync'] = array(
     'title' => 'Synchronize group',
     'page callback' => 'stanford_cap_api_profiles_group_sync_now',
-    'page arguments' => array(4),
+    'page arguments' => array(5),
     'access arguments' => array('administer cap api'),
     'type' => MENU_CALLBACK,
     'file' => 'stanford_cap_api_profiles.admin.inc',
