@@ -6,6 +6,7 @@
 
 include_once 'stanford_cap_api_profiles.features.inc';
 include_once 'stanford_cap_api_profiles.admin.inc';
+define('CAP_FIELDS_PREFIX', 'cap_');
 
 /**
  * Implements hook_menu().
@@ -365,7 +366,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
   $profile_id = $profile['profileId'];
   foreach ($profile as $field_name => $field_data) {
-    $drupal_field_name = _stanford_cap_api_profiles_generate_field_name($field_name);
+    $drupal_field_name = _stanford_cap_api_profiles_get_field_name($field_name, '', TRUE);
     $props_info = $nw->getPropertyInfo();
     if (isset($props_info[$drupal_field_name])) {
       $hash = db_select('cap_api_field_hashes', 'hashes')
@@ -743,20 +744,32 @@ function _stanford_cap_api_profiles_get_cap_profile_url($profile) {
  * @param string $parent
  *   Full parent field path(e.g "shortTitle.label" for 'label' field attached
  * to 'shortTitle').
+ * @param bool $from_db
+ *   Indicates whether Drupal field name should be generated or fetched from DB.
  *
  * @return string
  *   Drupal field name.
  */
-function _stanford_cap_api_profiles_generate_field_name($field_name, $parent = '') {
-  $field_path = empty($parent) ? $field_name : $parent . '.' . $field_name;
-  $hash = md5($field_path);
-  if (is_numeric($hash[0])) {
-    $replacements = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j');
-    $replacement_index = (int) $hash[0];
-    $hash[0] = $replacements[$replacement_index];
+function _stanford_cap_api_profiles_get_field_name($field_name, $parent = '', $from_db = FALSE) {
+  $drupal_field_name = drupal_substr(CAP_FIELDS_PREFIX . drupal_strtolower($field_name), 0, 29);
+  $args = array(':field_name' => $drupal_field_name . '%');
+  $query = 'SELECT COUNT(field_name) AS similar_fields FROM {cap_api_fields_map} WHERE field_name LIKE :field_name';
+  $similar_fields = (int) db_query($query, $args)->fetchField();
+  if ($similar_fields) {
+    if ($from_db) {
+      $field_path = empty($parent) ? $field_name : $parent . '.' . $field_name;
+      $drupal_field_name = db_select('cap_api_fields_map', 'map')
+        ->fields('map', array('field_name'))
+        ->condition('field_path', $field_path)
+        ->execute()
+        ->fetchField();
+    }
+    else {
+      $drupal_field_name .= '_' . ++$similar_fields;
+    }
   }
 
-  return $hash;
+  return $drupal_field_name;
 }
 
 /**
@@ -775,7 +788,7 @@ function _stanford_cap_api_profiles_generate_field_name($field_name, $parent = '
  */
 function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name, $field_data, $parent_field = '') {
 
-  $drupal_field_name = _stanford_cap_api_profiles_generate_field_name($field_name, $parent_field);
+  $drupal_field_name = _stanford_cap_api_profiles_get_field_name($field_name, $parent_field, TRUE);
   $props_info = $wrapper->getPropertyInfo();
   if (isset($props_info[$drupal_field_name])) {
     $field_info = field_info_field($drupal_field_name);
@@ -1153,7 +1166,7 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
  *   for batch mode.
  */
 function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '', &$operations = NULL) {
-  $drupal_field_name = _stanford_cap_api_profiles_generate_field_name($f_name, $parent_field);
+  $drupal_field_name = _stanford_cap_api_profiles_get_field_name($f_name, $parent_field);
   $field_info = field_info_field($drupal_field_name);
   if (empty($field_info)) {
     $field_info = _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $f_name, $f_schema);

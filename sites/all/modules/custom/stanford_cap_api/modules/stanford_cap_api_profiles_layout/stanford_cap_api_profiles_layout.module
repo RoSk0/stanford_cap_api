@@ -40,7 +40,7 @@ function stanford_cap_api_profiles_layout_check_layout() {
       // Creating filed_group for heading.
       $entity_type = 'node';
       $bundle = 'cap_faculty_profile';
-      $group_name = _stanford_cap_api_profiles_generate_field_name($heading['name']);
+      $group_name = _stanford_cap_api_profiles_get_field_name($heading['name']);
       $label = $heading['name'];
       $children = array();
 
@@ -156,7 +156,7 @@ function _stanford_cap_api_profiles_layout_sync_sections($section, $heading_name
   $mode = 'full';
   $bundle = 'cap_faculty_profile';
   $entity_type = 'node';
-  $group_name = _stanford_cap_api_profiles_generate_field_name($section['name']);
+  $group_name = _stanford_cap_api_profiles_get_field_name($section['name']);
   $children = array();
   $field_weight = 0;
   foreach ($section['displayFields'] as $field_path) {
