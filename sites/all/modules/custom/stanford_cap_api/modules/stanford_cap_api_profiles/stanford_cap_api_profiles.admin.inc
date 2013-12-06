@@ -552,8 +552,11 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
     foreach ($group_types as $group_type) {
       switch ($group_type) {
         case 'organization':
-          $term_wrapper = entity_metadata_wrapper('taxonomy_term', _stanford_cap_api_profiles_get_term_tid($form_state['values'][$group_type]));
-          $org_codes = $term_wrapper->field_org_codes->value();
+          $tid = _stanford_cap_api_profiles_get_term_tid($form_state['values'][$group_type]);
+          if ($tid) {
+            $term_wrapper = entity_metadata_wrapper('taxonomy_term', $tid);
+            $org_codes = $term_wrapper->field_org_codes->value();
+          }
           $name = '';
           if (!empty($org_codes)) {
             $name = implode(',', $org_codes);
