@@ -58,7 +58,7 @@ function stanford_cap_api_profiles_layout_check_layout() {
           'label' => $label,
           'format_type' => 'fieldset',
           'format_settings' => array(
-            'formatter' => 'collapsible',
+            'formatter' => 'open',
             'instance_settings' => array(
               'description' => '',
             ),
