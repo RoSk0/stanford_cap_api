@@ -304,6 +304,9 @@ function _stanford_cap_api_profiles_layout_set_instance_display_settings(&$field
       );
       $variable_name = 'field_bundle_settings_field_collection_item__' . $field_instance['field_name'];
       variable_set($variable_name, $variable);
+      $display['settings']['add'] = '';
+      $display['settings']['edit'] = '';
+      $display['settings']['delete'] = '';
     }
   }
 }
