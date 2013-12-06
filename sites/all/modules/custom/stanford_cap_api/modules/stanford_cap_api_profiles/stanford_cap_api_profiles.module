@@ -1575,7 +1575,6 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
-  $text_processing = drupal_strtolower($schema['title']) == 'html';
 
   $instance = array(
     'bundle' => $bundle,
@@ -1584,7 +1583,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name
     'field_name' => $field_name,
     'label' => $label,
     'settings' => array(
-      'text_processing' => $text_processing,
+      'text_processing' => TRUE,
     ),
   );
 
