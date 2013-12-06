@@ -1805,10 +1805,3 @@ function _stanford_cap_api_profiles_sync_schema_batch_finished() {
 function _stanford_cap_api_profiles_sync_schema_batch() {
   stanford_cap_api_profiles_synchronize_schema(TRUE);
 }
-
-function test() {
-  $tag = 'test (1)';
-  dpm($tag);
-  dpm(drupal_explode_tags($tag));
-
-}

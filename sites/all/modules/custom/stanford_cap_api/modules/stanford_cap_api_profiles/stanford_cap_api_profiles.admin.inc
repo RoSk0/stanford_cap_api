@@ -434,19 +434,23 @@ function stanford_cap_api_profiles_profile_test($form, &$form_state) {
 function stanford_cap_api_profiles_reset() {
   $fields = db_select('cap_api_fields', 'f')->fields('f', array('field_name'))
     ->execute()->fetchCol();
-  foreach ($fields as $field) {
-    field_delete_field($field);
-  }
-  $deleted_fields = field_read_instances(array('deleted' => 1), array('include_deleted' => 1));
   $operations = array();
-  foreach ($deleted_fields as $deleted_field) {
-    $operations[] = array(
-      'field_purge_batch',
-      array(1),
-    );
+  foreach ($fields as $field) {
+    if (field_read_field($field)) {
+      $operations[] = array(
+        'field_delete_field',
+        array($field),
+      );
+      $operations[] = array(
+        'field_purge_batch',
+        array(1),
+      );
+    }
   }
   batch_set(array('operations' => $operations));
   db_delete('cap_api_fields')->execute();
+  variable_del('stanford_cap_api_profiles_schema_synchronized');
+  variable_del('stanford_cap_api_profiles_schema_hash');
   drupal_set_message(t('Faculty profile content type has being resetted to default.'));
 }
 
