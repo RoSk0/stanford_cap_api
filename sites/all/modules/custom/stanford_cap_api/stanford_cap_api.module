@@ -254,3 +254,20 @@ function stanford_cap_api_theme() {
     ),
   );
 }
+
+/**
+ * Implements hook_batch_alter().
+ *
+ * In case batch was set in stanford_cap_api_settings_form and module is not
+ * configured set batch redirect to details page.
+ */
+function stanford_cap_api_batch_alter(&$batch) {
+  $username = variable_get('stanford_cap_api_username');
+  if (($batch['source_url'] == 'admin/config/cap/config' || $batch['source_url'] == 'admin/config/cap/config/settings')
+    && (empty($username)
+    || !variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)
+    || !variable_get('stanford_cap_api_profiles_layout_synced', FALSE)
+    || !variable_get('stanford_cap_api_orgs_imported', FALSE))) {
+    $batch['redirect'] = 'admin/config/cap/config/details';
+  }
+}
