@@ -100,6 +100,14 @@ function stanford_cap_api_settings_form($form, &$form_state) {
     '#value' => t('Save settings'),
   );
 
+  $cap_username = variable_get('stanford_cap_api_username');
+  if (empty($cap_username)) {
+    $form['actions']['submit']['#value'] = t('Next');
+  }
+  else {
+    $form['actions']['submit']['#value'] = t('Save settings');
+  }
+
   return $form;
 }
 
