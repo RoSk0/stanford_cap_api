@@ -28,14 +28,25 @@ function stanford_cap_api_profiles_layout_get() {
 /**
  * Ensure that current profile layout corresponds to CAP API layout schema.
  */
-function stanford_cap_api_profiles_layout_check_layout() {
+function stanford_cap_api_profiles_layout_check_layout($batch = FALSE) {
+  if ($batch) {
+    $operations = array();
+  }
   ctools_include('export');
   $modified = variable_get('stanford_cap_api_profiles_layout_modified');
   $layout = stanford_cap_api_profiles_layout_get();
   if (!empty($layout['headings']) && $layout['lastModified'] != $modified) {
     $weight = 0;
     $mode = 'full';
-    stanford_cap_api_profiles_layout_reset($mode);
+    if ($batch) {
+      $operations[] = array(
+        'stanford_cap_api_profiles_layout_reset',
+        array($mode),
+      );
+    }
+    else {
+      stanford_cap_api_profiles_layout_reset($mode);
+    }
     foreach ($layout['headings'] as $heading) {
       // Creating filed_group for heading.
       $entity_type = 'node';
@@ -68,9 +79,15 @@ function stanford_cap_api_profiles_layout_check_layout() {
         $classes = _field_group_get_html_classes($field_group);
         $field_group->format_settings['instance_settings']['classes'] = implode(' ', $classes->optional);
         // Save and enable it in ctools.
-        ctools_export_crud_save('field_group', $field_group);
-        ctools_export_crud_enable('field_group', $field_group->identifier);
-        _stanford_cap_api_profiles_layout_log_group($field_group);
+        if ($batch) {
+          $operations[] = array(
+            '_stanford_cap_api_profiles_layout_batch_save_helper',
+            array($field_group),
+          );
+        }
+        else {
+          _stanford_cap_api_profiles_layout_batch_save_helper($field_group);
+        }
         $weight++;
       }
 
@@ -79,19 +96,34 @@ function stanford_cap_api_profiles_layout_check_layout() {
         $section_weight = 0;
         foreach ($heading['sections'] as $section) {
           if (!empty($section['displayFields'])) {
-            _stanford_cap_api_profiles_layout_sync_sections_fields($section, $section_weight, $children);
+            _stanford_cap_api_profiles_layout_sync_sections_fields($section, $section_weight, $children, $operations);
             // @todo: Leaving this for now.
             // $children[] = _stanford_cap_api_profiles_layout_sync_sections($section, $group_name, $section_weight);
             // $section_weight++;
           }
         }
       }
-      // Function field_group_group_save() doesn't update original object on
-      // save, so need to reload object to get it ID and avoid:
-      // Integrity constraint violation: Duplicate entry for key 'identifier'.
-      $field_group = field_group_load_field_group($group_name, $entity_type, $bundle, $mode);
-      $field_group->children = $children;
-      ctools_export_crud_save('field_group', $field_group);
+      if ($batch) {
+        $operations[] = array(
+          '_stanford_cap_api_profiles_layout_batch_update_helper',
+          array($group_name, $entity_type, $bundle, $mode, $children),
+        );
+      }
+      else {
+        _stanford_cap_api_profiles_layout_batch_update_helper($group_name, $entity_type, $bundle, $mode, $children);
+      }
+    }
+    if ($batch) {
+      $batch = array(
+        'title' => t('Importing CAP data'),
+        'operations' => $operations,
+        'finished' => '_stanford_cap_api_profiles_layout_batch_finished',
+        'progress_message' => t('Importing the layout of CAP profiles: @current of @total.'),
+      );
+      batch_set($batch);
+    }
+    else {
+      variable_set('stanford_cap_api_profiles_layout_synced', TRUE);
     }
     variable_set('stanford_cap_api_profiles_layout_modified', $layout['lastModified']);
   }
@@ -134,6 +166,25 @@ function stanford_cap_api_profiles_layout_form_stanford_cap_api_profiles_profile
     '#value' => t('Reset profiles layout'),
     '#submit' => array('_stanford_cap_api_profiles_layout_reset_wrapper'),
   );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adding submit handler to set batch for layout synchronization.
+ */
+function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_alter(&$form) {
+  if (!variable_get('stanford_cap_api_profiles_layout_synced', FALSE)) {
+    $form['#submit'][50] = 'stanford_cap_api_profiles_layout_settings_form_submit';
+    ksort($form['#submit']);
+  }
+}
+
+/**
+ * Submit handler for settings form.
+ */
+function stanford_cap_api_profiles_layout_settings_form_submit() {
+  stanford_cap_api_profiles_layout_check_layout(TRUE);
 }
 
 /**
@@ -253,7 +304,7 @@ function _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path) {
  * @param array $children
  *   Array of children of parent heading.
  */
-function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$section_weight, &$children) {
+function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$section_weight, &$children, &$operations = NULL) {
   $mode = 'full';
   foreach ($section['displayFields'] as $field_path) {
     $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path);
@@ -263,7 +314,15 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
         $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
         _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
         $field_instance['display'][$mode]['weight'] = $section_weight;
-        field_update_instance($field_instance);
+        if (isset($operations)) {
+          $operations[] = array(
+            'field_update_instance',
+            array($field_instance),
+          );
+        }
+        else {
+          field_update_instance($field_instance);
+        }
       }
       else {
         $parts = explode('.', $field_path);
@@ -273,7 +332,15 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
           $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
           _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
           $field_instance['display'][$mode]['weight'] = $section_weight;
-          field_update_instance($field_instance);
+          if (isset($operations)) {
+            $operations[] = array(
+              'field_update_instance',
+              array($field_instance),
+            );
+          }
+          else {
+            field_update_instance($field_instance);
+          }
           array_pop($parts);
         }
         $children[] = $field_info['field_name'];
@@ -337,4 +404,25 @@ function _stanford_cap_api_profiles_layout_drop_fc_display_settings() {
   foreach ($fields as $field) {
     variable_del('field_bundle_settings_field_collection_item__' . $field);
   }
+}
+
+function _stanford_cap_api_profiles_layout_batch_save_helper($field_group) {
+  ctools_include('export');
+  ctools_export_crud_save('field_group', $field_group);
+  ctools_export_crud_enable('field_group', $field_group->identifier);
+  _stanford_cap_api_profiles_layout_log_group($field_group);
+}
+
+function _stanford_cap_api_profiles_layout_batch_update_helper($group_name, $entity_type, $bundle, $mode, $children) {
+  ctools_include('export');
+  // Function field_group_group_save() doesn't update original object on
+  // save, so need to reload object to get it ID and avoid:
+  // Integrity constraint violation: Duplicate entry for key 'identifier'.
+  $field_group = field_group_load_field_group($group_name, $entity_type, $bundle, $mode);
+  $field_group->children = $children;
+  ctools_export_crud_save('field_group', $field_group);
+}
+
+function _stanford_cap_api_profiles_layout_batch_finished() {
+  variable_set('stanford_cap_api_profiles_layout_synced', TRUE);
 }
