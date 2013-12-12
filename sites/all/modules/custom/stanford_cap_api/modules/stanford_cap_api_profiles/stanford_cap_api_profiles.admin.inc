@@ -86,6 +86,8 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
     $form['synchronization']['advanced'] = array(
       '#type' => 'fieldset',
       '#title' => t('Advanced'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
     );
 
     $form['synchronization']['advanced']['description_wrapper'] = array(
