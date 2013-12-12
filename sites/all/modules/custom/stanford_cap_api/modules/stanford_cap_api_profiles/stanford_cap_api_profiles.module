@@ -853,6 +853,12 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
             $wrapper->{$drupal_field_name}->set($field_data);
           }
         }
+        elseif (is_array($field_data) && !empty($field_data['html']) && !empty($field_data['text']) && count($field_data) == 2) {
+          $wrapper->{$drupal_field_name}->set(array(
+            'value' => $field_data['html'],
+            'format' => 'full_html_for_cap_profiles',
+          ));
+        }
         elseif (is_array($field_data) && $field_info['cardinality'] == '-1') {
           foreach ($field_data as $f_data) {
             if (!is_string($f_data)) {
@@ -1058,8 +1064,12 @@ function _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $fie
       if (!empty($field_schema['properties'])) {
         $props = $field_schema['properties'];
         // This is not the real collection.
+        // Simple string.
+        if (variable_get('stanford_cap_api_import_fields_html', TRUE) && isset($props['html']) && isset($props['text']) && count($props) == 2) {
+          $info = _stanford_cap_api_profiles_gen_field_base_def_text_long($drupal_field_name, $props['html']);
+        }
         // Date field.
-        if (isset($props['value']) && isset($props['html']) && isset($props['text']) && count($props) == 3) {
+        elseif (isset($props['value']) && isset($props['html']) && isset($props['text']) && count($props) == 3) {
           $schema = $props['value'];
           if ($schema['type'] == 'string') {
             if (isset($schema['format']) && $schema['format'] == 'DATE_TIME') {

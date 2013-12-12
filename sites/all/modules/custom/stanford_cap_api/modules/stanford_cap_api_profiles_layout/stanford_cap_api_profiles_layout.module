@@ -150,6 +150,7 @@ function stanford_cap_api_profiles_layout_reset($display_mode = 'full') {
     field_update_instance($instance);
   }
   variable_del('stanford_cap_api_profiles_layout_modified');
+  variable_del('stanford_cap_api_profiles_layout_synced');
 }
 
 /**
@@ -192,6 +193,7 @@ function stanford_cap_api_profiles_layout_settings_form_submit() {
  */
 function _stanford_cap_api_profiles_layout_reset_wrapper() {
   stanford_cap_api_profiles_layout_reset();
+  drupal_set_message(t('Profiles layout was reset successfully.'));
 }
 
 /**
@@ -307,9 +309,9 @@ function _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path) {
 function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$section_weight, &$children, &$operations = NULL) {
   $mode = 'full';
   foreach ($section['displayFields'] as $field_path) {
-    $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path);
-    if (!empty($field_info)) {
-      if (strpos($field_path, '.') === FALSE) {
+    if (strpos($field_path, '.') === FALSE) {
+      $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path);
+      if (!empty($field_info)) {
         $children[] = $field_info['field_name'];
         $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
         _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
@@ -324,11 +326,13 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
           field_update_instance($field_instance);
         }
       }
-      else {
-        $parts = explode('.', $field_path);
-        $levels = count($parts);
-        for ($i = 0; $i < $levels; $i++) {
-          $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path(implode('.', $parts));
+    }
+    else {
+      $parts = explode('.', $field_path);
+      $levels = count($parts);
+      for ($i = 0; $i < $levels; $i++) {
+        $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path(implode('.', $parts));
+        if (!empty($field_info)) {
           $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
           _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
           $field_instance['display'][$mode]['weight'] = $section_weight;
@@ -341,12 +345,12 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
           else {
             field_update_instance($field_instance);
           }
-          array_pop($parts);
         }
-        $children[] = $field_info['field_name'];
+        array_pop($parts);
       }
-      $section_weight++;
+      $children[] = $field_info['field_name'];
     }
+    $section_weight++;
   }
 }
 
