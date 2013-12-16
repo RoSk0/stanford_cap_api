@@ -314,26 +314,7 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
       if (!empty($field_info)) {
         $children[] = $field_info['field_name'];
         $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
-        _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
-        $field_instance['display'][$mode]['weight'] = $section_weight;
-        if (isset($operations)) {
-          $operations[] = array(
-            'field_update_instance',
-            array($field_instance),
-          );
-        }
-        else {
-          field_update_instance($field_instance);
-        }
-      }
-    }
-    else {
-      $parts = explode('.', $field_path);
-      $levels = count($parts);
-      for ($i = 0; $i < $levels; $i++) {
-        $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path(implode('.', $parts));
-        if (!empty($field_info)) {
-          $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
+        if ($field_instance) {
           _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
           $field_instance['display'][$mode]['weight'] = $section_weight;
           if (isset($operations)) {
@@ -346,9 +327,34 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
             field_update_instance($field_instance);
           }
         }
+      }
+    }
+    else {
+      $parts = explode('.', $field_path);
+      $levels = count($parts);
+      for ($i = 0; $i < $levels; $i++) {
+        $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path(implode('.', $parts));
+        if (!empty($field_info)) {
+          $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
+          if ($field_instance) {
+            _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
+            $field_instance['display'][$mode]['weight'] = $section_weight;
+            if (isset($operations)) {
+              $operations[] = array(
+                'field_update_instance',
+                array($field_instance),
+              );
+            }
+            else {
+              field_update_instance($field_instance);
+            }
+          }
+        }
         array_pop($parts);
       }
-      $children[] = $field_info['field_name'];
+      if ($field_info) {
+        $children[] = $field_info['field_name'];
+      }
     }
     $section_weight++;
   }
@@ -399,7 +405,6 @@ function _stanford_cap_api_profiles_layout_log_group($field_group) {
   drupal_write_record('cap_api_groups', $field_group);
 }
 
-
 /**
  * Drops display mode settings for field collections.
  */
@@ -410,6 +415,12 @@ function _stanford_cap_api_profiles_layout_drop_fc_display_settings() {
   }
 }
 
+/**
+ * Helper to save field group.
+ *
+ * @param object $field_group
+ *   Field group object.
+ */
 function _stanford_cap_api_profiles_layout_batch_save_helper($field_group) {
   ctools_include('export');
   ctools_export_crud_save('field_group', $field_group);
@@ -417,6 +428,20 @@ function _stanford_cap_api_profiles_layout_batch_save_helper($field_group) {
   _stanford_cap_api_profiles_layout_log_group($field_group);
 }
 
+/**
+ * Helper to update field group children.
+ *
+ * @param string $group_name
+ *   Group name.
+ * @param string $entity_type
+ *   Entity type.
+ * @param string $bundle
+ *   Entity bundle.
+ * @param string $mode
+ *   Display mode.
+ * @param array $children
+ *   Array of field names used to be show as children of this field group.
+ */
 function _stanford_cap_api_profiles_layout_batch_update_helper($group_name, $entity_type, $bundle, $mode, $children) {
   ctools_include('export');
   // Function field_group_group_save() doesn't update original object on

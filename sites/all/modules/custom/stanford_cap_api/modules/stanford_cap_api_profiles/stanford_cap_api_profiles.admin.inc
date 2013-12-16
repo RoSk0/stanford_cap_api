@@ -445,9 +445,7 @@ function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state
     $batch = array(
       'title' => t('Importing profiles'),
       'operations' => $operations,
-      'progress_message' => t('Current: @current | Remaining:
-    @remaining | Total: @total | Percentage: @percentage | Estimate:
-    @estimate | Elapsed: @elapsed'),
+      'progress_message' => t('Current: @current | Remaining: @remaining | Total: @total | Estimate: @estimate | Elapsed: @elapsed'),
       'finished' => 'stanford_cap_api_profiles_import_result_finished',
     );
     batch_set($batch);
