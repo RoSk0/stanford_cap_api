@@ -35,34 +35,52 @@ function stanford_cap_api_credentials_form($form, &$form_state) {
 
   drupal_set_title(st('Stanford CAP API access credentials'));
 
-  $form['connection'] = array(
+  $form['auth'] = array(
     '#type' => 'fieldset',
-    '#title' => st('Connection information'),
+    '#title' => st('Authorization'),
   );
 
-  $form['connection']['description_wrapper'] = array(
+  $form['auth']['description_wrapper'] = array(
     '#type' => 'container',
   );
-  $description = 'Please enter the information you use to connect to the'
-    . ' CAP API. This will be used for each callback to the CAP API itself.'
-    . ' Default user name is %user, default password is %pass.';
-  $form['connection']['description_wrapper']['description'] = array(
-    '#markup' => st($description, array(
-      '%user' => 'go-global',
-      '%pass' => 'testsecret',
-    )),
+  $form['auth']['description_wrapper']['description'] = array(
+    '#markup' => st('Please enter your authentication information for the CAP API.'),
   );
 
-  $form['connection']['cap_username'] = array(
+  $form['auth']['stanford_cap_api_username'] = array(
     '#type' => 'textfield',
-    '#title' => st('Username:'),
-    '#default_value' => variable_get('cap_username', 'go-global'),
+    '#title' => st('Client ID:'),
+    '#default_value' => 'go-global',
+    '#required' => TRUE,
   );
 
-  $form['connection']['cap_password'] = array(
+  $form['auth']['stanford_cap_api_password'] = array(
     '#type' => 'password',
-    '#title' => st('Password:'),
-    '#attributes' => array('value' => 'testsecret'),
+    '#title' => st('Authz secret:'),
+  );
+
+  $form['auth']['advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => st('Advanced'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#description' => st('Advanced setting for CAP API and authentication URIs'),
+  );
+
+  $form['auth']['advanced']['stanford_cap_api_base_url'] = array(
+    '#type' => 'textfield',
+    '#title' => st('Endpoint'),
+    '#description' => st('CAP API endpoint URI, only useful when switching between development/production environment.'),
+    '#default_value' => 'https://cap.stanford.edu/cap-api',
+    '#required' => TRUE,
+  );
+
+  $form['auth']['advanced']['stanford_cap_api_auth_uri'] = array(
+    '#type' => 'textfield',
+    '#title' => st('Authentication URI'),
+    '#description' => st('CAP API authentication URI.'),
+    '#default_value' => 'https://authz.stanford.edu/oauth/token',
+    '#required' => TRUE,
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -78,18 +96,33 @@ function stanford_cap_api_credentials_form($form, &$form_state) {
  * Validation handler for CAP API credentials form.
  */
 function stanford_cap_api_credentials_form_validate($form, &$form_state) {
-  if (!empty($form_state['values']['cap_username']) && !empty($form_state['values']['cap_password'])) {
-    $auth_token = stanford_cap_api_auth($form_state['values']['cap_username'], $form_state['values']['cap_password']);
+  if (!empty($form_state['values']['stanford_cap_api_username']) && !empty($form_state['values']['stanford_cap_api_password'])) {
+    $username = $form_state['values']['stanford_cap_api_username'];
+    $password = $form_state['values']['stanford_cap_api_password'];
+    $auth_uri = $form_state['values']['stanford_cap_api_auth_uri'];
+    $auth_token = stanford_cap_api_auth($username, $password, $auth_uri);
     if (!$auth_token) {
-      $msg = "Error. Can't connect to Stanford CAP API."
-        . " Please check your username and password.";
-      form_set_error('cap_username', st($msg));
-      form_set_error('cap_password');
-    }
-    else {
-      variable_set('cap_access_token', $auth_token);
-      variable_set('cap_username', $form_state['values']['cap_username']);
-      variable_set('cap_password', $form_state['values']['cap_password']);
+      form_set_error('stanford_cap_api_username', st("Error. Can't connect to Stanford CAP API. Please check your username and password."));
+      form_set_error('stanford_cap_api_password');
     }
   }
+}
+
+/**
+ * Submit handler for settings form.
+ */
+function stanford_cap_api_credentials_form_submit($form, &$form_state) {
+  $config_vars = array(
+    'stanford_cap_api_username',
+    'stanford_cap_api_password',
+    'stanford_cap_api_base_url',
+    'stanford_cap_api_auth_uri',
+  );
+  $values = $form_state['values'];
+  foreach ($config_vars as $config_var) {
+    if (!empty($values[$config_var])) {
+      variable_set($config_var, $values[$config_var]);
+    }
+  }
+  drupal_set_message(st('Configuration saved.'));
 }

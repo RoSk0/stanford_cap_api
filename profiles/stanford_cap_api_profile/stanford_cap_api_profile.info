@@ -7,7 +7,7 @@ dependencies[] = strongarm
 dependencies[] = ctools
 dependencies[] = date
 dependencies[] = link
-dependencies[] = stanford_cap_api
+dependencies[] = stanford_cap_api_profiles_layout
 
 ; Standard profile dependencies.
 dependencies[] = block
