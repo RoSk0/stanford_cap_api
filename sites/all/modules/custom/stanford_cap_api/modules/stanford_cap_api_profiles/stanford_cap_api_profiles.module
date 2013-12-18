@@ -1183,6 +1183,7 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
  *   for batch mode.
  */
 function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '', &$operations = NULL) {
+  $field_weigth =& drupal_static(__FUNCTION__, 0);
   $drupal_field_name = _stanford_cap_api_profiles_get_field_name($f_name, $parent_field);
   $field_info = field_info_field($drupal_field_name);
   if (empty($field_info)) {
@@ -1207,6 +1208,9 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
   $parent_entity_bundle = empty($parent_field) ? 'cap_faculty_profile' : $drupal_parent_field;
   $field_instance = field_info_instance($parent_entity, $drupal_field_name, $parent_entity_bundle);
   if (empty($field_instance) && !empty($field_info)) {
+    if (!isset($f_schema['weight'])) {
+      $f_schema['weight'] = $field_weigth;
+    }
     $field_instance = _stanford_cap_api_profiles_generate_instance_info($field_info['type'], $drupal_field_name, $f_schema, $drupal_parent_field);
     if (!empty($field_instance)) {
       // We are in batch mode.
@@ -1230,7 +1234,12 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       watchdog('stanford_cap_api_profiles', $message, $vars, WATCHDOG_WARNING);
     }
   }
+  $field_weigth++;
   if ($field_info['type'] == 'field_collection') {
+    $subfield_weigth =& drupal_static(__FUNCTION__ . '_subfields', array());
+    if (!isset($subfield_weigth[$drupal_field_name])) {
+      $subfield_weigth[$drupal_field_name] = 0;
+    }
     $subfields = array();
     if ($f_schema['type'] == 'array' && $f_schema['items']['type'] == 'object') {
       $subfields = $f_schema['items']['properties'];
@@ -1240,9 +1249,13 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
     }
 
     foreach ($subfields as $subfield => $schema) {
+      if (!isset($schema['weight'])) {
+        $schema['weight'] = $subfield_weigth[$drupal_field_name];
+      }
       // We need this field to successfully apply profile layout.
       $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
       _stanford_cap_api_profiles_synchronize_schema_subfields($subfield, $schema, $drupal_field_name, $field_path, $operations);
+      $subfield_weigth[$drupal_field_name]++;
     }
   }
 }
@@ -1470,6 +1483,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_boolean($field_name, 
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'bundle' => $bundle,
     'description' => $description,
@@ -1481,6 +1495,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_boolean($field_name, 
         'display_label' => TRUE,
       ),
       'type' => 'options_onoff',
+      'weight' => $weight,
     ),
   );
 
@@ -1510,6 +1525,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_integer($field_name, 
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'label' => $label,
     'display' => array(
@@ -1529,6 +1545,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_integer($field_name, 
     'field_name' => $field_name,
     'entity_type' => $entity_type,
     'bundle' => $bundle,
+    'widget' => array('weight' => $weight),
   );
 
   if (!empty($schema['metadata'])) {
@@ -1557,6 +1574,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text($field_name, $sc
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'bundle' => $bundle,
     'default_value' => NULL,
@@ -1564,6 +1582,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text($field_name, $sc
     'entity_type' => $entity_type,
     'field_name' => $field_name,
     'label' => $label,
+    'widget' => array('weight' => $weight),
   );
 
   if (!empty($schema['metadata'])) {
@@ -1592,7 +1611,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
-
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'bundle' => $bundle,
     'description' => $description,
@@ -1602,6 +1621,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_text_long($field_name
     'settings' => array(
       'text_processing' => TRUE,
     ),
+    'widget' => array('weight' => $weight),
   );
 
   if (!empty($schema['metadata'])) {
@@ -1630,6 +1650,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_field_collection($fie
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'bundle' => $bundle,
     'description' => $description,
@@ -1653,6 +1674,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_field_collection($fie
     ),
     'widget' => array(
       'type' => 'field_collection_embed',
+      'weight' => $weight,
     ),
   );
 
@@ -1682,11 +1704,11 @@ function _stanford_cap_api_profiles_gen_field_instance_def_date($field_name, $sc
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
-
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'label' => $label,
     'widget' => array(
-      'weight' => '0',
+      'weight' => $weight,
       'type' => 'date_select',
       'module' => 'date',
       'active' => 1,
@@ -1738,7 +1760,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_taxonomy_term_referen
   $bundle = empty($parent_field) ? 'cap_faculty_profile' : $parent_field;
   $label = empty($schema['title']) ? '' : $schema['title'];
   $description = empty($schema['description']) ? '' : $schema['description'];
-
+  $weight = isset($schema['weight']) ? $schema['weight'] : 0;
   $instance = array(
     'bundle' => $bundle,
     'description' => $description,
@@ -1748,6 +1770,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_taxonomy_term_referen
     'widget' => array(
       'module' => 'hs_taxonomy',
       'type' => 'taxonomy_hs',
+      'weight' => $weight,
     ),
   );
 

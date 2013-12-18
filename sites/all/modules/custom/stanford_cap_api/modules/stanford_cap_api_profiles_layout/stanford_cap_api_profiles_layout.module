@@ -320,6 +320,7 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
         if ($field_instance) {
           _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
           $field_instance['display'][$mode]['weight'] = $section_weight;
+          $field_instance['widget']['weight'] = $section_weight;
           if (isset($operations)) {
             $operations[] = array(
               'field_update_instance',
@@ -342,6 +343,7 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
           if ($field_instance) {
             _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
             $field_instance['display'][$mode]['weight'] = $section_weight;
+            $field_instance['widget']['weight'] = $section_weight;
             if (isset($operations)) {
               $operations[] = array(
                 'field_update_instance',
