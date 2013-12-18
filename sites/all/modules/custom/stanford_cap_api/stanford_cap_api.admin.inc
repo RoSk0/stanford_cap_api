@@ -144,6 +144,7 @@ function stanford_cap_api_settings_form_submit($form, &$form_state) {
     }
   }
   drupal_set_message(t('Configuration saved.'));
+  variable_set('stanford_cap_api_configured', TRUE);
 }
 
 /**

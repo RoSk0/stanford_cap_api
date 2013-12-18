@@ -21,8 +21,7 @@ function stanford_cap_api_menu() {
     'file path' => drupal_get_path('module', 'system'),
   );
 
-  $cap_username = variable_get('stanford_cap_api_username');
-  if (empty($cap_username)) {
+  if (!variable_get('stanford_cap_api_configured')) {
     $items['admin/config/cap/config'] = array(
       'title' => 'CAP API Settings',
       'description' => 'Provides administrators ability to change CAP API access settings.',
