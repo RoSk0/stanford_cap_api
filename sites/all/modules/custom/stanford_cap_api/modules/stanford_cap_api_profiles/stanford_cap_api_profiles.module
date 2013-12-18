@@ -344,8 +344,13 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
   $nw->cap_sync_date->set(REQUEST_TIME);
   $nw->save();
   $profile_id = $profile['profileId'];
+  $bundled_fields = array(
+    'cap_profile_link',
+    'cap_sync_date',
+    'cap_profile_image',
+  );
   foreach ($node as $field_name => $field_data) {
-    if (is_array($field_data) && $field_name != 'cap_profile_link' && $field_name != 'cap_sync_date') {
+    if (is_array($field_data) && !in_array($field_name, $bundled_fields)) {
       $record = array(
         'profile_id' => $profile_id,
         'field_name' => $field_name,
