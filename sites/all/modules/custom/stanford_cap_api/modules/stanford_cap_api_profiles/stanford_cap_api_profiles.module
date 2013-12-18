@@ -667,6 +667,10 @@ function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
         }
       }
       if ($batch) {
+        $operations[] = array(
+          'variable_set',
+          array('stanford_cap_api_profiles_schema_synchronized', TRUE),
+        );
         $batch = array(
           'title' => t('Importing CAP data'),
           'operations' => $operations,
@@ -1809,7 +1813,6 @@ function _stanford_cap_api_profiles_sync_schema_batch_finished() {
   variable_del('stanford_cap_api_profiles_sync_schema_batch');
   drupal_set_message(t('Fields successfully synchronized.'));
   drupal_set_message(t('This operation took %time seconds.', array('%time' => $time)));
-  variable_set('stanford_cap_api_profiles_schema_synchronized', TRUE);
   menu_rebuild();
 }
 

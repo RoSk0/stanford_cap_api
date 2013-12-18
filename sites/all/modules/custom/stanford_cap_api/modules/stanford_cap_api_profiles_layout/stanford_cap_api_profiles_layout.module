@@ -29,103 +29,106 @@ function stanford_cap_api_profiles_layout_get() {
  * Ensure that current profile layout corresponds to CAP API layout schema.
  */
 function stanford_cap_api_profiles_layout_check_layout($batch = FALSE) {
-  if ($batch) {
-    $operations = array();
-  }
-  ctools_include('export');
-  $modified = variable_get('stanford_cap_api_profiles_layout_modified');
-  $layout = stanford_cap_api_profiles_layout_get();
-  if (!empty($layout['headings']) && $layout['lastModified'] != $modified) {
-    $weight = 0;
-    $mode = 'full';
+  // We shouldn't do anything with layout if fields were not synced.
+  if (variable_get('stanford_cap_api_profiles_schema_synchronized')) {
     if ($batch) {
-      $operations[] = array(
-        'stanford_cap_api_profiles_layout_reset',
-        array($mode),
-      );
+      $operations = array();
     }
-    else {
-      stanford_cap_api_profiles_layout_reset($mode);
-    }
-    foreach ($layout['headings'] as $heading) {
-      // Creating filed_group for heading.
-      $entity_type = 'node';
-      $bundle = 'cap_faculty_profile';
-      $group_name = _stanford_cap_api_profiles_get_field_name($heading['name']);
-      $label = $heading['name'];
-      $children = array();
-
-      $field_group = field_group_load_field_group($group_name, $entity_type, $bundle, $mode);
-      if (!$field_group) {
-        $field_group = (object) array(
-          'identifier' => $group_name . '|' . $entity_type . '|' . $bundle . '|' . $mode,
-          'group_name' => $group_name,
-          'entity_type' => $entity_type,
-          'bundle' => $bundle,
-          'mode' => $mode,
-          'children' => $children,
-          'parent_name' => '',
-          'weight' => $weight,
-          'label' => $label,
-          'format_type' => 'fieldset',
-          'format_settings' => array(
-            'formatter' => 'open',
-            'instance_settings' => array(
-              'description' => '',
-            ),
-          ),
-          'disabled' => FALSE,
-        );
-        $classes = _field_group_get_html_classes($field_group);
-        $field_group->format_settings['instance_settings']['classes'] = implode(' ', $classes->optional);
-        // Save and enable it in ctools.
-        if ($batch) {
-          $operations[] = array(
-            '_stanford_cap_api_profiles_layout_batch_save_helper',
-            array($field_group),
-          );
-        }
-        else {
-          _stanford_cap_api_profiles_layout_batch_save_helper($field_group);
-        }
-        $weight++;
-      }
-
-      // Creating field_group for sections.
-      if (!empty($heading['sections'])) {
-        $section_weight = 0;
-        foreach ($heading['sections'] as $section) {
-          if (!empty($section['displayFields'])) {
-            _stanford_cap_api_profiles_layout_sync_sections_fields($section, $section_weight, $children, $operations);
-            // @todo: Leaving this for now.
-            // $children[] = _stanford_cap_api_profiles_layout_sync_sections($section, $group_name, $section_weight);
-            // $section_weight++;
-          }
-        }
-      }
+    ctools_include('export');
+    $modified = variable_get('stanford_cap_api_profiles_layout_modified');
+    $layout = stanford_cap_api_profiles_layout_get();
+    if (!empty($layout['headings']) && $layout['lastModified'] != $modified) {
+      $weight = 0;
+      $mode = 'full';
       if ($batch) {
         $operations[] = array(
-          '_stanford_cap_api_profiles_layout_batch_update_helper',
-          array($group_name, $entity_type, $bundle, $mode, $children),
+          'stanford_cap_api_profiles_layout_reset',
+          array($mode),
         );
       }
       else {
-        _stanford_cap_api_profiles_layout_batch_update_helper($group_name, $entity_type, $bundle, $mode, $children);
+        stanford_cap_api_profiles_layout_reset($mode);
       }
+      foreach ($layout['headings'] as $heading) {
+        // Creating filed_group for heading.
+        $entity_type = 'node';
+        $bundle = 'cap_faculty_profile';
+        $group_name = _stanford_cap_api_profiles_get_field_name($heading['name']);
+        $label = $heading['name'];
+        $children = array();
+
+        $field_group = field_group_load_field_group($group_name, $entity_type, $bundle, $mode);
+        if (!$field_group) {
+          $field_group = (object) array(
+            'identifier' => $group_name . '|' . $entity_type . '|' . $bundle . '|' . $mode,
+            'group_name' => $group_name,
+            'entity_type' => $entity_type,
+            'bundle' => $bundle,
+            'mode' => $mode,
+            'children' => $children,
+            'parent_name' => '',
+            'weight' => $weight,
+            'label' => $label,
+            'format_type' => 'fieldset',
+            'format_settings' => array(
+              'formatter' => 'open',
+              'instance_settings' => array(
+                'description' => '',
+              ),
+            ),
+            'disabled' => FALSE,
+          );
+          $classes = _field_group_get_html_classes($field_group);
+          $field_group->format_settings['instance_settings']['classes'] = implode(' ', $classes->optional);
+          // Save and enable it in ctools.
+          if ($batch) {
+            $operations[] = array(
+              '_stanford_cap_api_profiles_layout_batch_save_helper',
+              array($field_group),
+            );
+          }
+          else {
+            _stanford_cap_api_profiles_layout_batch_save_helper($field_group);
+          }
+          $weight++;
+        }
+
+        // Creating field_group for sections.
+        if (!empty($heading['sections'])) {
+          $section_weight = 0;
+          foreach ($heading['sections'] as $section) {
+            if (!empty($section['displayFields'])) {
+              _stanford_cap_api_profiles_layout_sync_sections_fields($section, $section_weight, $children, $operations);
+              // @todo: Leaving this for now.
+              // $children[] = _stanford_cap_api_profiles_layout_sync_sections($section, $group_name, $section_weight);
+              // $section_weight++;
+            }
+          }
+        }
+        if ($batch) {
+          $operations[] = array(
+            '_stanford_cap_api_profiles_layout_batch_update_helper',
+            array($group_name, $entity_type, $bundle, $mode, $children),
+          );
+        }
+        else {
+          _stanford_cap_api_profiles_layout_batch_update_helper($group_name, $entity_type, $bundle, $mode, $children);
+        }
+      }
+      if ($batch) {
+        $batch = array(
+          'title' => t('Importing CAP data'),
+          'operations' => $operations,
+          'finished' => '_stanford_cap_api_profiles_layout_batch_finished',
+          'progress_message' => t('Importing the layout of CAP profiles: @current of @total.'),
+        );
+        batch_set($batch);
+      }
+      else {
+        variable_set('stanford_cap_api_profiles_layout_synced', TRUE);
+      }
+      variable_set('stanford_cap_api_profiles_layout_modified', $layout['lastModified']);
     }
-    if ($batch) {
-      $batch = array(
-        'title' => t('Importing CAP data'),
-        'operations' => $operations,
-        'finished' => '_stanford_cap_api_profiles_layout_batch_finished',
-        'progress_message' => t('Importing the layout of CAP profiles: @current of @total.'),
-      );
-      batch_set($batch);
-    }
-    else {
-      variable_set('stanford_cap_api_profiles_layout_synced', TRUE);
-    }
-    variable_set('stanford_cap_api_profiles_layout_modified', $layout['lastModified']);
   }
 }
 
