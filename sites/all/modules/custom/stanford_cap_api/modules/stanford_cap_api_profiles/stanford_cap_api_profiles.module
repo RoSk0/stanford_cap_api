@@ -36,17 +36,6 @@ function stanford_cap_api_profiles_menu() {
       'type' => MENU_CALLBACK,
     );
 
-    $items['admin/config/cap/config/profile_test'] = array(
-      'title' => 'Faculty Profile Structure Synchronization',
-      'description' => 'Faculty Profile Structure Synchronization',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('stanford_cap_api_profiles_profile_test'),
-      'access arguments' => array('administer cap api'),
-      'file' => 'stanford_cap_api_profiles.admin.inc',
-      'weight' => 11,
-      'type' => MENU_LOCAL_TASK,
-    );
-
     $items['admin/config/cap/config/manage'] = array(
       'title' => 'Manage profiles',
       'description' => 'Provides administrators ability to manage CAP profiles.',

@@ -453,32 +453,6 @@ function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state
 }
 
 /**
- * Form builder for import result page.
- */
-function stanford_cap_api_profiles_profile_test($form, &$form_state) {
-  $form['description'] = array(
-    '#type' => 'item',
-    '#prefix' => '<h3>',
-    '#suffix' => '</h3>',
-    '#markup' => t('Please use the options below to test the faculty profile structure synchronization.'),
-  );
-
-  $form['actions'] = array('#type' => 'actions');
-  $form['actions']['sync'] = array(
-    '#type' => 'submit',
-    '#value' => t('Synchronize fields in the faculty profile'),
-    '#submit' => array('_stanford_cap_api_profiles_sync_schema_batch'),
-  );
-  $form['actions']['reset'] = array(
-    '#type' => 'submit',
-    '#value' => t('Reset faculty profile content type'),
-    '#submit' => array('stanford_cap_api_profiles_reset'),
-  );
-
-  return $form;
-}
-
-/**
  * Remove all CAP profile fields from system.
  */
 function stanford_cap_api_profiles_reset() {
