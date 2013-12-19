@@ -608,7 +608,7 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['filters']['type']['table'] = 'node';
   $handler->display->display_options['filters']['type']['field'] = 'type';
   $handler->display->display_options['filters']['type']['value'] = array(
-    'cap_faculty_profile' => 'cap_faculty_profile',
+    'cap_stanford_profile' => 'cap_stanford_profile',
   );
 
   /* Display: Data export */
@@ -924,7 +924,7 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['filters']['type']['table'] = 'node';
   $handler->display->display_options['filters']['type']['field'] = 'type';
   $handler->display->display_options['filters']['type']['value'] = array(
-    'cap_faculty_profile' => 'cap_faculty_profile',
+    'cap_stanford_profile' => 'cap_stanford_profile',
   );
 
   /* Display: Data export */

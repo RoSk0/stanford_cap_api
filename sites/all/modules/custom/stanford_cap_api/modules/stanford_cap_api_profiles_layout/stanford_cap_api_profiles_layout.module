@@ -52,7 +52,7 @@ function stanford_cap_api_profiles_layout_check_layout($batch = FALSE) {
       foreach ($layout['headings'] as $heading) {
         // Creating filed_group for heading.
         $entity_type = 'node';
-        $bundle = 'cap_faculty_profile';
+        $bundle = 'cap_stanford_profile';
         $group_name = _stanford_cap_api_profiles_get_field_name($heading['name']);
         $label = $heading['name'];
         $children = array();
@@ -147,7 +147,7 @@ function stanford_cap_api_profiles_layout_reset($display_mode = 'full') {
   }
   db_delete('cap_api_groups')->execute();
   _stanford_cap_api_profiles_layout_drop_fc_display_settings();
-  $instances = field_info_instances('node', 'cap_faculty_profile');
+  $instances = field_info_instances('node', 'cap_stanford_profile');
   foreach ($instances as $instance) {
     unset($instance['display'][$display_mode]);
     field_update_instance($instance);
@@ -193,7 +193,7 @@ function _stanford_cap_api_profiles_layout_sync_sections($section, $heading_name
   $label = $section['name'];
   $parent = $heading_name;
   $mode = 'full';
-  $bundle = 'cap_faculty_profile';
+  $bundle = 'cap_stanford_profile';
   $entity_type = 'node';
   $group_name = _stanford_cap_api_profiles_get_field_name($section['name']);
   $children = array();

@@ -15,7 +15,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
   $query = new EntityFieldQuery();
   $count = $query
     ->entityCondition('entity_type', 'node')
-    ->entityCondition('bundle', 'cap_faculty_profile')
+    ->entityCondition('bundle', 'cap_stanford_profile')
     ->count()
     ->execute();
   $additional_vars = array(
@@ -475,7 +475,7 @@ function stanford_cap_api_profiles_reset() {
   db_delete('cap_api_fields')->execute();
   variable_del('stanford_cap_api_profiles_schema_synchronized');
   variable_del('stanford_cap_api_profiles_schema_hash');
-  drupal_set_message(t('Faculty profile content type has being resetted to default.'));
+  drupal_set_message(t('Stanford profile content type has being resetted to default.'));
 }
 
 /**
