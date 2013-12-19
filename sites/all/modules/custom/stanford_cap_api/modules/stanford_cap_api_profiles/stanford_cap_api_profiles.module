@@ -1047,13 +1047,19 @@ function _stanford_cap_api_profiles_sync_group_wrapper($group_type, $group_name)
  *   Array used in field_create_field().
  * @see field_create_field()
  */
-function _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $field_name, $field_schema) {
+function _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $field_name, $field_schema, $field_path) {
   $info = NULL;
   switch ($field_schema['type']) {
     case 'array':
       switch ($field_schema['items']['type']) {
         case 'string':
-          $info = _stanford_cap_api_profiles_gen_field_base_def_text_long($drupal_field_name, $field_schema, TRUE);
+          $clob_fields = variable_get('stanford_cap_api_profiles_text_fields_list');
+          if (in_array($field_path, $clob_fields)) {
+            $info = _stanford_cap_api_profiles_gen_field_base_def_text_long($drupal_field_name, $field_schema, TRUE);
+          }
+          else {
+            $info = _stanford_cap_api_profiles_gen_field_base_def_text($drupal_field_name, $field_schema, TRUE);
+          }
           break;
 
         case 'object':
@@ -1098,7 +1104,13 @@ function _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $fie
         $info = _stanford_cap_api_profiles_gen_field_base_def_taxonomy_term_reference($drupal_field_name, $field_schema);
       }
       else {
-        $info = _stanford_cap_api_profiles_gen_field_base_def_text_long($drupal_field_name, $field_schema);
+        $clob_fields = variable_get('stanford_cap_api_profiles_text_fields_list');
+        if (in_array($field_path, $clob_fields)) {
+          $info = _stanford_cap_api_profiles_gen_field_base_def_text_long($drupal_field_name, $field_schema);
+        }
+        else {
+          $info = _stanford_cap_api_profiles_gen_field_base_def_text($drupal_field_name, $field_schema);
+        }
       }
       break;
 
@@ -1190,10 +1202,11 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
  */
 function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '', &$operations = NULL) {
   $field_weigth =& drupal_static(__FUNCTION__, 0);
+  $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
   $drupal_field_name = _stanford_cap_api_profiles_get_field_name($f_name, $parent_field);
   $field_info = field_info_field($drupal_field_name);
   if (empty($field_info)) {
-    $field_info = _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $f_name, $f_schema);
+    $field_info = _stanford_cap_api_profiles_generate_field_info($drupal_field_name, $f_name, $f_schema, $field_path);
     // Do we know about this field type?
     if (!empty($field_info)) {
       // We are in batch mode.
@@ -1229,7 +1242,6 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       else {
         field_create_instance($field_instance);
       }
-      $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
       _stanford_cap_api_profiles_log_field_map($drupal_field_name, $field_path, $parent_entity, $parent_entity_bundle);
     }
     else {
@@ -1286,7 +1298,7 @@ function _stanford_cap_api_profiles_gen_field_base_def_text($field_name, $field_
     $max_length = (int) $field_schema['maxLength'];
   }
   else {
-    $max_length = 255;
+    $max_length = 512;
   }
 
   $info = array(
