@@ -149,8 +149,10 @@ function stanford_cap_api_profiles_layout_reset($display_mode = 'full') {
   _stanford_cap_api_profiles_layout_drop_fc_display_settings();
   $instances = field_info_instances('node', 'cap_stanford_profile');
   foreach ($instances as $instance) {
-    unset($instance['display'][$display_mode]);
-    field_update_instance($instance);
+    if ($instance['field_name'] != 'cap_profile_image') {
+      unset($instance['display'][$display_mode]);
+      field_update_instance($instance);
+    }
   }
   variable_del('stanford_cap_api_profiles_layout_modified');
   variable_del('stanford_cap_api_profiles_layout_synced');
