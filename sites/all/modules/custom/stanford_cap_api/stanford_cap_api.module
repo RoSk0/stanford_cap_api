@@ -173,11 +173,14 @@ function stanford_cap_api_auth($user = '', $pass = '', $auth_uri = '') {
  *   Endpoint string.
  * @param array $params
  *   Additional parameters for request.
+ * @param bool $raw
+ *   Indicates in which form data should be returned, case TRUE JSON will be
+ * returned, array otherwise.
  *
  * @return array
  *   Decoded JSON response or FALSE.
  */
-function stanford_cap_api_request($endpoint, $params = array()) {
+function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
   $api_base = variable_get('stanford_cap_api_base_url', 'https://cap.stanford.edu/cap-api');
 
   $access_token = stanford_cap_api_auth();
@@ -222,7 +225,12 @@ function stanford_cap_api_request($endpoint, $params = array()) {
     return FALSE;
   }
   else {
-    return $data;
+    if ($raw) {
+      return $response->data;
+    }
+    else {
+      return $data;
+    }
   }
 }
 
