@@ -245,7 +245,7 @@ function stanford_cap_api_profiles_profile_import($profile_id) {
  */
 function stanford_cap_api_profiles_get_profile($profile_id) {
   $cache =& drupal_static(__FUNCTION__, array());
-  if (!isset($cache[$profile_id])) {
+  if (empty($cache[$profile_id])) {
     $cache[$profile_id] = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
   }
 
@@ -342,6 +342,12 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
 
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
+  // Profile image handling.
+  $image_type = 'bigger';
+  $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
+  if (isset($fid)) {
+    $nw->cap_profile_image = array('fid' => $fid);
+  }
   $nw->save();
   $profile_id = $profile['profileId'];
   $bundled_fields = array(
@@ -391,6 +397,12 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   }
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
+  // Profile image handling.
+  $image_type = 'bigger';
+  $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
+  if (isset($fid)) {
+    $nw->cap_profile_image = array('fid' => $fid);
+  }
   $nw->save();
 }
 
@@ -1849,4 +1861,52 @@ function _stanford_cap_api_profiles_sync_schema_batch_finished() {
  */
 function _stanford_cap_api_profiles_sync_schema_batch() {
   stanford_cap_api_profiles_synchronize_schema(TRUE);
+}
+
+/**
+ * Helper to save profile image to file.
+ * @param string $field_name
+ *   Profile field name.
+ * @param array $field_data
+ *   Field data.
+ *
+ * @return int
+ *   New file ID or NULL in case of error.
+ */
+function _stanford_cap_api_profiles_save_image_file($field_name, $field_data) {
+  $ext = drupal_substr($field_data['contentType'], 6);
+  $request_url = $field_data['url'];
+  parse_str(parse_url($request_url, PHP_URL_QUERY), $query);
+  $profile_id = $query['facultyId'];
+
+  $response = drupal_http_request($request_url);
+  if (property_exists($response, 'error')) {
+    $error_msg = 'Failed to fetch profile image of field "%field_name" for profile "%profile_id". Error code is "%code", error message is "%msg", request string was "%request".';
+    $vars = array(
+      '%code' => $response->code,
+      '%msg' => $response->status_message,
+      '%request' => $request_url,
+      '%profile_id' => $profile_id,
+      '%field_name' => $field_name,
+    );
+    watchdog('stanford_cap_api_profiles', $error_msg, $vars, WATCHDOG_WARNING);
+
+    return NULL;
+  }
+  else {
+    $file_dir = 'cap_profile_images';
+    $path = 'public://'
+      . $file_dir
+      . '/profile_'
+      . $profile_id . '_' . $field_data['type'] . '.' . $ext;
+    $dir = drupal_dirname($path);
+    if (!is_dir($dir) && !mkdir($dir)) {
+      watchdog('stanford_cap_api_profiles', 'Failed to create directory %dir', array('%dir' => $dir), WATCHDOG_WARNING);
+
+      return NULL;
+    }
+    $file = file_save_data($response->data, $path, FILE_EXISTS_REPLACE);
+
+    return $file->fid;
+  }
 }
