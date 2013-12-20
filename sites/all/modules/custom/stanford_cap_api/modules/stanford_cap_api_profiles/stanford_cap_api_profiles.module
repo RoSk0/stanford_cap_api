@@ -332,10 +332,12 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   // Profile image handling.
-  $image_type = 'bigger';
-  $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
-  if (isset($fid)) {
-    $nw->cap_profile_image = array('fid' => $fid);
+  if (!empty($profile['profilePhotos'])) {
+    $image_type = 'bigger';
+    $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
+    if (isset($fid)) {
+      $nw->cap_profile_image = array('fid' => $fid);
+    }
   }
   $nw->save();
   $profile_id = $profile['profileId'];
