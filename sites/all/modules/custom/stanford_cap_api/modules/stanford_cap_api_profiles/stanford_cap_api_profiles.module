@@ -475,7 +475,7 @@ function stanford_cap_api_profiles_get_stored_profile_data($profile_id) {
  *
  * @see http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/
  */
-function stanford_cap_api_profiles_sync_org_members($org_code) {
+function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = NULL) {
   $count = 0;
   $params = array('orgCodes' => $org_code);
   // This request used to get count of profiles of this organization.
@@ -484,7 +484,15 @@ function stanford_cap_api_profiles_sync_org_members($org_code) {
     $count = $params['ps'] = $data['totalCount'];
     $data = stanford_cap_api_request('/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
-      stanford_cap_api_profiles_profile_import($profile['profileId']);
+      if (isset($operations)) {
+        $operations[] = array(
+          'stanford_cap_api_profiles_profile_import',
+          array($profile['profileId']),
+        );
+      }
+      else {
+        stanford_cap_api_profiles_profile_import($profile['profileId']);
+      }
     }
   }
 
@@ -500,7 +508,7 @@ function stanford_cap_api_profiles_sync_org_members($org_code) {
  * @return int
  *   Count of synced profiles.
  */
-function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id) {
+function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$operations = NULL) {
   $count = 0;
   $params = array('privGroups' => $workgroup_id);
   // This request used to get count of profiles of this organization.
@@ -509,7 +517,15 @@ function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id) {
     $count = $params['ps'] = $data['totalCount'];
     $data = stanford_cap_api_request('/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
-      stanford_cap_api_profiles_profile_import($profile['profileId']);
+      if (isset($operations)) {
+        $operations[] = array(
+          'stanford_cap_api_profiles_profile_import',
+          array($profile['profileId']),
+        );
+      }
+      else {
+        stanford_cap_api_profiles_profile_import($profile['profileId']);
+      }
     }
   }
 
@@ -1025,14 +1041,6 @@ function _stanford_cap_api_profiles_get_field_value_text($field_name, $field_dat
   else {
     return $field_data;
   }
-}
-
-/**
- * Wrapper for batch groups synchronization.
- */
-function _stanford_cap_api_profiles_sync_group_wrapper($group_type, $group_name) {
-  stanford_cap_api_profiles_sync_group_save($group_type, $group_name);
-  stanford_cap_api_profiles_sync_group_sync($group_type, $group_name);
 }
 
 /**
@@ -1912,4 +1920,11 @@ function _stanford_cap_api_profiles_save_image_file($field_name, $field_data) {
 
     return $file->fid;
   }
+}
+
+/**
+ * Helper for batch to store correct sync time.
+ */
+function _stanford_cap_api_profiles_sync_group_save_wrapper($type, $name, $count) {
+  stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME);
 }

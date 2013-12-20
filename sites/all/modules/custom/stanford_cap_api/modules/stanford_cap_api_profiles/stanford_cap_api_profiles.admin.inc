@@ -636,18 +636,30 @@ function stanford_cap_api_profiles_group_sync_form_submit($form, &$form_state) {
     foreach ($form_state['values']['groups_list'] as $group_type) {
       if (isset($form_state['values']['groups_to_save'][$group_type])) {
         $group_name = $form_state['values']['groups_to_save'][$group_type];
+        $count = 0;
         $operations[] = array(
-          '_stanford_cap_api_profiles_sync_group_wrapper',
-          array($group_type, $group_name),
+          'stanford_cap_api_profiles_sync_group_save',
+          array($group_type, $group_name, NULL, NULL),
+        );
+        switch ($group_type) {
+          case 'organization':
+            $count = stanford_cap_api_profiles_sync_org_members($group_name, $operations);
+            break;
+
+          case 'workgroup':
+            $count = stanford_cap_api_profiles_sync_workgroup_members($group_name, $operations);
+            break;
+        }
+        $operations[] = array(
+          '_stanford_cap_api_profiles_sync_group_save_wrapper',
+          array($group_type, $group_name, $count),
         );
       }
     }
     $batch = array(
-      'title' => t('Synchronizing profile groups'),
+      'title' => t('Synchronizing group profiles'),
       'operations' => $operations,
-      'progress_message' => t('Current: @current | Remaining:
-    @remaining | Total: @total | Percentage: @percentage | Estimate:
-    @estimate | Elapsed: @elapsed'),
+      'progress_message' => t('Current: @current | Remaining: @remaining | Total: @total | Estimate: @estimate | Elapsed: @elapsed'),
     );
     batch_set($batch);
   }
@@ -719,17 +731,29 @@ function stanford_cap_api_profiles_group_sync_now($id) {
     ->execute()
     ->fetchAssoc();
   $operations = array();
+  $count = 0;
   $operations[] = array(
-    '_stanford_cap_api_profiles_sync_group_wrapper',
-    array($group['type'], $group['name']),
+    'stanford_cap_api_profiles_sync_group_save',
+    array($group['type'], $group['name'], NULL, NULL),
+  );
+  switch ($group['type']) {
+    case 'organization':
+      $count = stanford_cap_api_profiles_sync_org_members($group['name'], $operations);
+      break;
+
+    case 'workgroup':
+      $count = stanford_cap_api_profiles_sync_workgroup_members($group['name'], $operations);
+      break;
+  }
+  $operations[] = array(
+    '_stanford_cap_api_profiles_sync_group_save_wrapper',
+    array($group['type'], $group['name'], $count),
   );
 
   $batch = array(
-    'title' => t('Synchronizing profile groups'),
+    'title' => t('Synchronizing group profiles'),
     'operations' => $operations,
-    'progress_message' => t('Current: @current | Remaining:
-    @remaining | Total: @total | Percentage: @percentage | Estimate:
-    @estimate | Elapsed: @elapsed'),
+    'progress_message' => t('Current: @current | Remaining: @remaining | Total: @total | Estimate: @estimate | Elapsed: @elapsed'),
   );
   batch_set($batch);
   batch_process('admin/config/cap/config/group');
