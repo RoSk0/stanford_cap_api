@@ -235,7 +235,7 @@ function stanford_cap_api_profiles_profile_import($profile_id) {
 function stanford_cap_api_profiles_get_profile($profile_id) {
   $cache =& drupal_static(__FUNCTION__, array());
   if (empty($cache[$profile_id])) {
-    $cache[$profile_id] = stanford_cap_api_request('/api/profiles/v1/' . $profile_id);
+    $cache[$profile_id] = stanford_cap_api_request('/profiles/v1/' . $profile_id);
   }
 
   return $cache[$profile_id];
@@ -479,10 +479,10 @@ function stanford_cap_api_profiles_sync_org_members($org_code) {
   $count = 0;
   $params = array('orgCodes' => $org_code);
   // This request used to get count of profiles of this organization.
-  $data = stanford_cap_api_request('/api/profiles/v1', $params);
+  $data = stanford_cap_api_request('/profiles/v1', $params);
   if ($data && $data['totalCount'] > 0) {
     $count = $params['ps'] = $data['totalCount'];
-    $data = stanford_cap_api_request('/api/profiles/v1', $params);
+    $data = stanford_cap_api_request('/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
       stanford_cap_api_profiles_profile_import($profile['profileId']);
     }
@@ -504,10 +504,10 @@ function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id) {
   $count = 0;
   $params = array('privGroups' => $workgroup_id);
   // This request used to get count of profiles of this organization.
-  $data = stanford_cap_api_request('/api/profiles/v1', $params);
+  $data = stanford_cap_api_request('/profiles/v1', $params);
   if ($data && $data['totalCount'] > 0) {
     $count = $params['ps'] = $data['totalCount'];
-    $data = stanford_cap_api_request('/api/profiles/v1', $params);
+    $data = stanford_cap_api_request('/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
       stanford_cap_api_profiles_profile_import($profile['profileId']);
     }
@@ -702,7 +702,7 @@ function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
  *   Profile type schema.
  */
 function stanford_cap_api_profiles_get_profile_schema() {
-  return stanford_cap_api_request('/api/cap/v1/schemas/profile');
+  return stanford_cap_api_request('/cap/v1/schemas/profile');
 }
 
 /**

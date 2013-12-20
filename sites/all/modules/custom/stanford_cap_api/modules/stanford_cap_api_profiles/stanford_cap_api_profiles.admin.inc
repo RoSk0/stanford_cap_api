@@ -274,7 +274,7 @@ function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
   }
 
   $_SESSION['search_params'] = $params;
-  $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $params);
+  $_SESSION['search_response'] = stanford_cap_api_request('/profiles/v1', $params);
 
   $form_state['redirect'] = 'admin/config/cap/config/import/result';
 }
@@ -328,7 +328,7 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
     $search_params = $_SESSION['search_params'];
     if ($page_num != 1) {
       $search_params['p'] = $page_num;
-      $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $search_params);
+      $_SESSION['search_response'] = stanford_cap_api_request('/profiles/v1', $search_params);
       $search_response = $_SESSION['search_response'];
     }
     else {
@@ -337,7 +337,7 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
       }
       else {
         $search_params['p'] = $page_num;
-        $_SESSION['search_response'] = stanford_cap_api_request('/api/profiles/v1', $search_params);
+        $_SESSION['search_response'] = stanford_cap_api_request('/profiles/v1', $search_params);
         $search_response = $_SESSION['search_response'];
       }
     }
@@ -669,7 +669,7 @@ function _stanford_cap_api_profiles_get_group_profiles_count($type, $name) {
   switch ($type) {
     case 'organization':
       $params = array('orgCodes' => $name);
-      $data = stanford_cap_api_request('/api/profiles/v1', $params);
+      $data = stanford_cap_api_request('/profiles/v1', $params);
       if ($data) {
         $count = $data['totalCount'];
       }
@@ -677,7 +677,7 @@ function _stanford_cap_api_profiles_get_group_profiles_count($type, $name) {
 
     case 'workgroup':
       $params = array('privGroups' => $name);
-      $data = stanford_cap_api_request('/api/profiles/v1', $params);
+      $data = stanford_cap_api_request('/profiles/v1', $params);
       if ($data) {
         $count = $data['totalCount'];
       }
@@ -744,7 +744,7 @@ function stanford_cap_api_profiles_group_sync_now($id) {
 function stanford_cap_api_profiles_user_autocomplete($str = '') {
   $matches = array();
   if ($str) {
-    $response = stanford_cap_api_request('/api/cap/v1/search/autocomplete', array('q' => $str));
+    $response = stanford_cap_api_request('/cap/v1/search/autocomplete', array('q' => $str));
     if (!empty($response['count'])) {
       foreach ($response['values'] as $match) {
         $matches[$match['name']] = $match['name'];

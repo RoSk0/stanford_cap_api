@@ -22,7 +22,7 @@ function stanford_cap_api_profiles_layout_cron() {
 function stanford_cap_api_profiles_layout_get() {
   $type = 'faculty';
 
-  return stanford_cap_api_request('/api/cap/v1/layouts/' . $type);
+  return stanford_cap_api_request('/cap/v1/layouts/' . $type);
 }
 
 /**

@@ -181,7 +181,7 @@ function stanford_cap_api_auth($user = '', $pass = '', $auth_uri = '') {
  *   Decoded JSON response or FALSE.
  */
 function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
-  $api_base = variable_get('stanford_cap_api_base_url', 'https://cap.stanford.edu/cap-api');
+  $api_base = variable_get('stanford_cap_api_base_url', 'https://api.stanford.edu');
 
   $access_token = stanford_cap_api_auth();
   // Unable to fetch an auth token.

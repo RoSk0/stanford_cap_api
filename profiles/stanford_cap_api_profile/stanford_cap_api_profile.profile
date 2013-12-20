@@ -71,7 +71,7 @@ function stanford_cap_api_credentials_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => st('Endpoint'),
     '#description' => st('CAP API endpoint URI, only useful when switching between development/production environment.'),
-    '#default_value' => 'https://cap.stanford.edu/cap-api',
+    '#default_value' => 'https://api.stanford.edu',
     '#required' => TRUE,
   );
 

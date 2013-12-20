@@ -54,7 +54,7 @@ function stanford_cap_api_orgs_import($batch = FALSE) {
  */
 function stanford_cap_api_orgs_get($top = 'AA00') {
   // Organizations endpoint.
-  $endpoint = '/api/cap/v1/orgs';
+  $endpoint = '/cap/v1/orgs';
   $params = array('orgCodes' => $top);
 
   return stanford_cap_api_request($endpoint, $params);
