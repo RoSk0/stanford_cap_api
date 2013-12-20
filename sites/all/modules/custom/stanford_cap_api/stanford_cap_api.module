@@ -245,7 +245,10 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
         $message .= 'Unknown error.';
         break;
     }
-    $message .= 'Request string was "%request".';
+    if (function_exists('json_last_error_msg')) {
+      $message .= ' Additional error info "' . json_last_error_msg() . '".';
+    }
+    $message .= ' Request string was "%request".';
     $vars = array('%request' => $request_url);
     watchdog('stanford_cap_api', $message, $vars, WATCHDOG_WARNING);
 
