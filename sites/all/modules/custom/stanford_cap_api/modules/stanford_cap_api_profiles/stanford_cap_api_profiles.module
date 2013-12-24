@@ -1795,6 +1795,7 @@ function _stanford_cap_api_profiles_gen_field_instance_def_taxonomy_term_referen
     'entity_type' => $entity_type,
     'field_name' => $field_name,
     'label' => $label,
+    // @todo: Fix widget settings.
     'widget' => array(
       'module' => 'hs_taxonomy',
       'type' => 'taxonomy_hs',
