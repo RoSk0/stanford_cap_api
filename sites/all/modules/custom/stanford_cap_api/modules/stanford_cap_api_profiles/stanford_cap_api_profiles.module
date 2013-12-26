@@ -109,16 +109,6 @@ function stanford_cap_api_profiles_permission() {
 }
 
 /**
- * Implements hook_preprocess_page().
- */
-function stanford_cap_api_profiles_preprocess_page(&$variables) {
-  // Include css files only on admin pages.
-  if (arg(0) == 'admin' && arg(1) == 'config' && arg(2) == 'cap') {
-    drupal_add_css(drupal_get_path('module', 'stanford_cap_api_profiles') . '/css/stanford_cap_api_profiles.css');
-  }
-}
-
-/**
  * Implements hook_menu_alter().
  */
 function stanford_cap_api_profiles_menu_alter(&$items) {
