@@ -336,6 +336,7 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
     'cap_sync_date',
     'cap_profile_image',
   );
+  // Storing profile field hashes to check if data was changed later.
   foreach ($node as $field_name => $field_data) {
     if (is_array($field_data) && !in_array($field_name, $bundled_fields)) {
       $record = array(
@@ -459,6 +460,9 @@ function stanford_cap_api_profiles_get_stored_profile_data($profile_id) {
  *
  * @param string $org_code
  *   CAP organization code.
+ * @param array $operations
+ *   Array to gather operations for batch processing, also used as indicator
+ *   for batch mode.
  *
  * @return int
  *   Count of synced profiles.
@@ -472,6 +476,7 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = NU
   $data = stanford_cap_api_request('/profiles/v1', $params);
   if ($data && $data['totalCount'] > 0) {
     $count = $params['ps'] = $data['totalCount'];
+    // Requesting all profiles of organization.
     $data = stanford_cap_api_request('/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
       if (isset($operations)) {
@@ -494,6 +499,9 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = NU
  *
  * @param string $workgroup_id
  *   CAP workgroup ID.
+ * @param array $operations
+ *   Array to gather operations for batch processing, also used as indicator
+ *  for batch mode.
  *
  * @return int
  *   Count of synced profiles.
@@ -505,6 +513,7 @@ function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$opera
   $data = stanford_cap_api_request('/profiles/v1', $params);
   if ($data && $data['totalCount'] > 0) {
     $count = $params['ps'] = $data['totalCount'];
+    // Requesting all profiles of organization.
     $data = stanford_cap_api_request('/profiles/v1', $params);
     foreach ($data['values'] as $profile) {
       if (isset($operations)) {
@@ -758,7 +767,7 @@ function _stanford_cap_api_profiles_get_cap_profile_url($profile) {
 }
 
 /**
- * Generate Drupal compliant field name.
+ * Generate Drupal compliant field name or retrieve it from DB.
  *
  * @param string $field_name
  *   CAP profile field name.
@@ -1002,6 +1011,8 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
 /**
  * Get field value for text field.
  *
+ * Truncate profile field length to maximum allowed for Drupal field.
+ *
  * @param string $field_name
  *   Field name.
  * @param array $field_data
@@ -1042,6 +1053,8 @@ function _stanford_cap_api_profiles_get_field_value_text($field_name, $field_dat
  *   Field name form CAP API.
  * @param array $field_schema
  *   Field schema form CAP API.
+ * @param string $field_path
+ *   Field path for layout.
  *
  * @return array
  *   Array used in field_create_field().
@@ -1203,6 +1216,7 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $field_name, $
 function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '', &$operations = NULL) {
   $field_weigth =& drupal_static(__FUNCTION__, 0);
   $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
+  // Generate Drupal compliant field name.
   $drupal_field_name = _stanford_cap_api_profiles_get_field_name($f_name, $parent_field);
   $field_info = field_info_field($drupal_field_name);
   if (empty($field_info)) {
@@ -1242,7 +1256,7 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       else {
         field_create_instance($field_instance);
       }
-      _stanford_cap_api_profiles_log_field_map($drupal_field_name, $field_path, $parent_entity, $parent_entity_bundle);
+      _stanford_cap_api_profiles_store_field_map($drupal_field_name, $field_path, $parent_entity, $parent_entity_bundle);
     }
     else {
       $message = 'Failed to create field instance. Field info: @field_info';
@@ -1259,6 +1273,7 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       $subfield_weigth[$drupal_field_name] = 0;
     }
     $subfields = array();
+    // Multivalue field colletion.
     if ($f_schema['type'] == 'array' && $f_schema['items']['type'] == 'object') {
       $subfields = $f_schema['items']['properties'];
     }
@@ -1827,7 +1842,7 @@ function _stanford_cap_api_profiles_log_longest_field_length($length) {
  * @param string $bundle
  *   Entity bundle.
  */
-function _stanford_cap_api_profiles_log_field_map($field_name, $field_path, $entity_type, $bundle) {
+function _stanford_cap_api_profiles_store_field_map($field_name, $field_path, $entity_type, $bundle) {
   $record = array(
     'field_name' => $field_name,
     'field_path' => $field_path,
@@ -1870,6 +1885,7 @@ function _stanford_cap_api_profiles_sync_schema_batch() {
 
 /**
  * Helper to save profile image to file.
+ *
  * @param string $field_name
  *   Profile field name.
  * @param array $field_data
