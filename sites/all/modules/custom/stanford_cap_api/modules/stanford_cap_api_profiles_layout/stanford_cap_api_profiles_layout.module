@@ -257,7 +257,8 @@ function _stanford_cap_api_profiles_layout_sync_sections($section, $heading_name
     // Save and enable it in ctools.
     ctools_export_crud_save('field_group', $field_group);
     ctools_export_crud_enable('field_group', $field_group->identifier);
-    _stanford_cap_api_profiles_layout_log_group($field_group);
+    // Save created field groups so we can remove them on reset.
+    drupal_write_record('cap_api_groups', $field_group);
   }
 
   return $group_name;
@@ -385,16 +386,6 @@ function _stanford_cap_api_profiles_layout_set_instance_display_settings(&$field
 }
 
 /**
- * Log field group.
- *
- * @param object $field_group
- *   Full field group object.
- */
-function _stanford_cap_api_profiles_layout_log_group($field_group) {
-  drupal_write_record('cap_api_groups', $field_group);
-}
-
-/**
  * Drops display mode settings for field collections.
  */
 function _stanford_cap_api_profiles_layout_drop_fc_display_settings() {
@@ -414,7 +405,8 @@ function _stanford_cap_api_profiles_layout_batch_save_helper($field_group) {
   ctools_include('export');
   ctools_export_crud_save('field_group', $field_group);
   ctools_export_crud_enable('field_group', $field_group->identifier);
-  _stanford_cap_api_profiles_layout_log_group($field_group);
+  // Save created field groups so we can remove them on reset.
+  drupal_write_record('cap_api_groups', $field_group);
 }
 
 /**
