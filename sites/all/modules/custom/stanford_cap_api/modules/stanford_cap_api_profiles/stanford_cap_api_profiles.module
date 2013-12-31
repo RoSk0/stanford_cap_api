@@ -1969,6 +1969,11 @@ function _stanford_cap_api_profiles_synchronize_field($field_path) {
         else {
           // Top level field.
           if (strpos($field_path, '.') === FALSE) {
+            // SUNET ID field should be included no matter what.
+            if ($field_path == 'uid') {
+              $return = TRUE;
+              break;
+            }
             // This field didn't listed directly, but maybe it's parent of other
             // field.
             foreach ($plain_layout as $layout_field_path) {
