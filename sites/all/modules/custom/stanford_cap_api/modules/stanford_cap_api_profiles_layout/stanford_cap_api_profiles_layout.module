@@ -32,6 +32,27 @@ function stanford_cap_api_profiles_layout_get() {
 }
 
 /**
+ * Returns layout without headings and section, plain array if fields.
+ */
+function stanford_cap_api_profiles_layout_get_plain() {
+  $plain =& drupal_static(__FUNCTION__, array());
+  if (empty($plain)) {
+    $layout = stanford_cap_api_profiles_layout_get();
+    foreach ($layout['headings'] as $heading) {
+      if (!empty($heading['sections'])) {
+        foreach ($heading['sections'] as $section) {
+          if (!empty($section['displayFields'])) {
+            $plain = array_merge($plain, $section['displayFields']);
+          }
+        }
+      }
+    }
+  }
+
+  return $plain;
+}
+
+/**
  * Ensure that current profile layout corresponds to CAP API layout schema.
  */
 function stanford_cap_api_profiles_layout_check_layout($batch = FALSE) {
@@ -185,6 +206,10 @@ function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_al
   if (!variable_get('stanford_cap_api_profiles_layout_synced', FALSE)) {
     $form['#submit'][50] = 'stanford_cap_api_profiles_layout_settings_form_submit';
     ksort($form['#submit']);
+  }
+  // Extending list of fields to synchronize.
+  if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
+    $form['synchronization']['stanford_cap_api_import_profile_fields']['#options']['import_layout'] = t('Import suggested display fields only. Includes minimal set of fields which have a display layout in CAP.');
   }
 }
 
