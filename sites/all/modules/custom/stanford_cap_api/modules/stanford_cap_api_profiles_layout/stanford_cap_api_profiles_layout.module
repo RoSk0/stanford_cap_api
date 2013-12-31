@@ -32,7 +32,11 @@ function stanford_cap_api_profiles_layout_get() {
 }
 
 /**
- * Returns layout without headings and section, plain array if fields.
+ * Returns layout without headings and section, plain array of fields.
+ *
+ * This array is used for synchronizing only fields listed in layout. Also this
+ * array contains "orgCode" fields to keep track to which organization profile
+ * belongs to.
  */
 function stanford_cap_api_profiles_layout_get_plain() {
   $plain =& drupal_static(__FUNCTION__, array());
@@ -46,6 +50,14 @@ function stanford_cap_api_profiles_layout_get_plain() {
           }
         }
       }
+    }
+    $orgcode_fields = array();
+    $schema = stanford_cap_api_profiles_get_profile_schema();
+    foreach ($schema['properties'] as $f_name => $f_schema) {
+      _stanford_cap_api_profiles_profiles_layout_get_orgcode_fields($f_name, $f_schema, $orgcode_fields);
+    }
+    if (!empty($orgcode_fields)) {
+      $plain = array_merge($plain, $orgcode_fields);
     }
   }
 
@@ -505,4 +517,24 @@ function _stanford_cap_api_profiles_layout_batch_update_helper($group_name, $ent
  */
 function _stanford_cap_api_profiles_layout_batch_finished() {
   variable_set('stanford_cap_api_profiles_layout_synced', TRUE);
+}
+
+/**
+ * Iterates over profile fields to find "orgCode" fields.
+ */
+function _stanford_cap_api_profiles_profiles_layout_get_orgcode_fields($f_name, $f_schema, &$orgcode_fields, $parent_field = '') {
+  $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
+  if ($f_name == 'orgCode') {
+    $orgcode_fields[] = $field_path;
+  }
+  $subfields = array();
+  if ($f_schema['type'] == 'array' && $f_schema['items']['type'] == 'object') {
+    $subfields = $f_schema['items']['properties'];
+  }
+  elseif ($f_schema['type'] == 'object' && !empty($f_schema['properties'])) {
+    $subfields = $f_schema['properties'];
+  }
+  foreach ($subfields as $subfield => $schema) {
+    _stanford_cap_api_profiles_profiles_layout_get_orgcode_fields($subfield, $schema, $orgcode_fields, $field_path);
+  }
 }
