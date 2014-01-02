@@ -171,7 +171,12 @@ function stanford_cap_api_orgs_form_stanford_cap_api_settings_form_alter(&$form,
  * Submit handler callback.
  */
 function stanford_cap_api_orgs_stanford_cap_api_settings_form_submit($form, $form_state) {
-  stanford_cap_api_orgs_import(TRUE);
+  if ($form_state['values']['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST) {
+    $form_state['rebuild'] = TRUE;
+  }
+  else {
+    stanford_cap_api_orgs_import(TRUE);
+  }
 }
 
 /**

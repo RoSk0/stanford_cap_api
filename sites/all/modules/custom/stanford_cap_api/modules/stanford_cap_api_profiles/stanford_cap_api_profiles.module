@@ -7,6 +7,8 @@
 include_once 'stanford_cap_api_profiles.features.inc';
 include_once 'stanford_cap_api_profiles.admin.inc';
 define('CAP_FIELDS_PREFIX', 'cap_');
+define('CAP_FIELDS_IMPORT_ALL', 'import_all');
+define('CAP_FIELDS_IMPORT_LIST', 'import_list');
 
 /**
  * Implements hook_menu().
@@ -718,6 +720,18 @@ function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
  */
 function stanford_cap_api_profiles_get_profile_schema() {
   return stanford_cap_api_request('/cap/v1/schemas/profile');
+}
+
+/**
+ * Implements hook_theme().
+ */
+function stanford_cap_api_profiles_theme() {
+  return array(
+    'stanford_cap_api_profiles_field_tree' => array(
+      'render element' => 'schema_tree',
+      'file' => 'stanford_cap_api_profiles.theme.inc',
+    ),
+  );
 }
 
 /**
@@ -1949,17 +1963,17 @@ function _stanford_cap_api_profiles_sync_group_save_wrapper($type, $name, $count
  */
 function _stanford_cap_api_profiles_synchronize_field($field_path) {
   $return = FALSE;
-  switch (variable_get('stanford_cap_api_import_profile_fields', 'import_all')) {
-    case 'import_all':
+  switch (variable_get('stanford_cap_api_import_profile_fields', CAP_FIELDS_IMPORT_ALL)) {
+    case CAP_FIELDS_IMPORT_ALL:
       $return = TRUE;
       break;
 
-    case 'import_list':
+    case CAP_FIELDS_IMPORT_LIST:
       // @todo: Implement field list handling.
       $return = TRUE;
       break;
 
-    case 'import_layout':
+    case CAP_FIELDS_IMPORT_LAYOUT:
       if (module_exists('stanford_cap_api_profiles_layout')) {
         $plain_layout = stanford_cap_api_profiles_layout_get_plain();
         // Don't forget about merge fields(html & label).

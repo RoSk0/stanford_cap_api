@@ -4,6 +4,7 @@
  * Code for the Stanford CAP API profiles layout feature.
  */
 
+define('CAP_FIELDS_IMPORT_LAYOUT', 'import_layout');
 include_once 'stanford_cap_api_profiles_layout.features.inc';
 
 /**
@@ -221,7 +222,7 @@ function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_al
   }
   // Extending list of fields to synchronize.
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
-    $form['synchronization']['stanford_cap_api_import_profile_fields']['#options']['import_layout'] = t('Import suggested display fields only. Includes minimal set of fields which have a display layout in CAP.');
+    $form['synchronization']['stanford_cap_api_import_profile_fields']['#options'][CAP_FIELDS_IMPORT_LAYOUT] = t('Import suggested display fields only. Includes minimal set of fields which have a display layout in CAP.');
   }
 }
 
@@ -230,8 +231,13 @@ function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_al
  *
  * Start layout sync process in batch mode.
  */
-function stanford_cap_api_profiles_layout_settings_form_submit() {
-  stanford_cap_api_profiles_layout_check_layout(TRUE);
+function stanford_cap_api_profiles_layout_settings_form_submit($form, &$form_state) {
+  if ($form_state['values']['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST) {
+    $form_state['rebuild'] = TRUE;
+  }
+  else {
+    stanford_cap_api_profiles_layout_check_layout(TRUE);
+  }
 }
 
 /**
