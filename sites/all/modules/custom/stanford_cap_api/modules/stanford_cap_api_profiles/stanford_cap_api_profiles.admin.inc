@@ -201,13 +201,16 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
  */
 function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
   $values =& $form_state['values'];
-
+  // Field schema not synced yet.
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
-    variable_set('stanford_cap_api_import_profile_fields', $values['stanford_cap_api_import_profile_fields']);
-    variable_set('stanford_cap_api_import_fields_html', $values['stanford_cap_api_import_fields_html']);
-    if ($values['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST && !isset($values['fields'])) {
-      $form_state['rebuild'] = TRUE;
+    if (isset($values['stanford_cap_api_import_profile_fields'])) {
+      variable_set('stanford_cap_api_import_profile_fields', $values['stanford_cap_api_import_profile_fields']);
+      variable_set('stanford_cap_api_import_fields_html', $values['stanford_cap_api_import_fields_html']);
+      if ($values['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST && !isset($values['fields'])) {
+        $form_state['rebuild'] = TRUE;
+      }
     }
+    // Submitted after rebuild.
     else {
       if (isset($values['fields'])) {
         _stanford_cap_api_profiles_store_sync_field_list($values['fields']);
@@ -909,20 +912,16 @@ function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $pa
 
 }
 
+/**
+ * Stores array of fields to be synchronized in variable.
+ *
+ * Adds a list of orgCode fields to provided list.
+ */
 function _stanford_cap_api_profiles_store_sync_field_list($fields) {
-  $subfields = array_filter($fields);
-  _stanford_cap_api_profiles_flatten_sync_field_list($field_list, $subfields);
-  variable_set('stanford_cap_api_profiles_sync_field_list', $field_list);
-}
-
-function _stanford_cap_api_profiles_flatten_sync_field_list(&$fields, $subfields = array()) {
-  $subfields = array_filter($subfields);
-  foreach ($subfields as $field) {
-    if (is_array($field)) {
-      _stanford_cap_api_profiles_flatten_sync_field_list($fields, $field);
-    }
-    else {
-      $fields[] = $field;
-    }
+  $field_list = array_filter($fields);
+  $orgcode_fields = stanford_cap_api_profiles_get_orgcode_fields();
+  if (!empty($orgcode_fields)) {
+    $field_list = array_merge($field_list, $orgcode_fields);
   }
+  variable_set('stanford_cap_api_profiles_sync_field_list', $field_list);
 }
