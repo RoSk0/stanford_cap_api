@@ -61,7 +61,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
  * Implements hook_form_FORM_ID_alter().
  */
 function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$form, &$form_state) {
-  $form['#attached']['css'][] = drupal_get_path('module', 'stanford_cap_api_profiles') . '/stanford_cap_api_profiles.css';
+  $form['#attached']['library'][] = array('stanford_cap_api_profiles', 'stanford_cap_api_profiles_fields');
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
     if (isset($form_state['values']) && isset($form_state['values']['stanford_cap_api_import_profile_fields']) && $form_state['values']['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST) {
       // Import of fields list was selected. Building fields list select form.

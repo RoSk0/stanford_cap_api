@@ -2068,3 +2068,20 @@ function _stanford_cap_api_profiles_get_orgcode_fields($f_name, $f_schema, &$org
     _stanford_cap_api_profiles_get_orgcode_fields($subfield, $schema, $orgcode_fields, $field_path);
   }
 }
+
+/**
+ * Implements hook_library().
+ */
+function stanford_cap_api_profiles_library() {
+  $libraries['stanford_cap_api_profiles_fields'] = array(
+    'version' => '1.0-beta',
+    'js' => array(
+      drupal_get_path('module', 'stanford_cap_api_profiles') . '/stanford_cap_api_profiles.js' => array(),
+    ),
+    'css' => array(
+      drupal_get_path('module', 'stanford_cap_api_profiles') . '/stanford_cap_api_profiles.css' => array(),
+    ),
+  );
+
+  return $libraries;
+}
