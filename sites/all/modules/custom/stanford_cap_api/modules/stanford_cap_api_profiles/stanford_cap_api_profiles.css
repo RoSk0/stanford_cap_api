@@ -1,0 +1,11 @@
+#fields li {
+  list-style: none;
+}
+
+#fields .level-2 {
+  margin-left: 25px;
+}
+
+#fields .level-3 {
+  margin-left: 50px;
+}

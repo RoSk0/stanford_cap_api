@@ -61,6 +61,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_details_form_alter(&$fo
  * Implements hook_form_FORM_ID_alter().
  */
 function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$form, &$form_state) {
+  $form['#attached']['css'][] = drupal_get_path('module', 'stanford_cap_api_profiles') . '/stanford_cap_api_profiles.css';
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
     if (isset($form_state['values']) && isset($form_state['values']['stanford_cap_api_import_profile_fields']) && $form_state['values']['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST) {
       // Import of fields list was selected. Building fields list select form.
@@ -881,13 +882,9 @@ function _stanford_cap_api_profiles_get_term_tid($str) {
  */
 function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $parent_field = '') {
 
-  $levels =& drupal_static(__FUNCTION__, array());
-  if (!isset($levels[$parent_field])) {
-    $levels[$parent_field] = 0;
-  }
-  // @todo: Figure out how to mark subfields.
   foreach ($fields as $f_name => $f_schema) {
     $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
+    $field_level = count(explode('.', $field_path));
     $parent_elem[$field_path] = array(
       '#type' => 'checkbox',
       '#title' => check_plain($f_schema['title']),
@@ -895,6 +892,7 @@ function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $pa
       '#return_value' => $field_path,
       '#attributes' => array(
         'parent' => $parent_field,
+        'class' => array('level-' . $field_level),
       ),
     );
 
