@@ -884,6 +884,10 @@ function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $pa
   $weight =& drupal_static(__FUNCTION__, -100);
 
   foreach ($fields as $f_name => $f_schema) {
+    // Skip field collection with empty properties.
+    if ($f_schema['type'] == 'object' && empty($f_schema['properties'])) {
+      continue;
+    }
     $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
     $field_level = count(explode('.', $field_path));
     $parent_elem[$field_path] = array(
@@ -896,6 +900,7 @@ function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $pa
         'class' => array('level-' . $field_level),
       ),
     );
+
     // Field collection field which will be merged to single string field.
     $merge_field = (variable_get('stanford_cap_api_import_fields_html', TRUE) && $f_schema['type'] == 'object' && !empty($f_schema['properties']) && isset($f_schema['properties']['html']) && isset($f_schema['properties']['text']) && count($f_schema['properties']));
     // Lets move simple fields upper in list.
