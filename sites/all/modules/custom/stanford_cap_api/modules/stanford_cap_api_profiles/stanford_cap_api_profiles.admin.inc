@@ -881,6 +881,7 @@ function _stanford_cap_api_profiles_get_term_tid($str) {
  * Creates FAPI checkboxes for fields.
  */
 function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $parent_field = '') {
+  $weight =& drupal_static(__FUNCTION__, -100);
 
   foreach ($fields as $f_name => $f_schema) {
     $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
@@ -895,13 +896,18 @@ function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $pa
         'class' => array('level-' . $field_level),
       ),
     );
+    // Field collection field which will be merged to single string field.
+    $merge_field = (variable_get('stanford_cap_api_import_fields_html', TRUE) && $f_schema['type'] == 'object' && !empty($f_schema['properties']) && isset($f_schema['properties']['html']) && isset($f_schema['properties']['text']) && count($f_schema['properties']));
+    // Lets move simple fields upper in list.
+    if (empty($parent_field)
+      && ($f_schema['type'] == 'string'
+      || ($f_schema['type'] == 'array' && $f_schema['items']['type'] == 'string')
+      || $merge_field)) {
+      $parent_elem[$field_path]['#weight'] = $weight;
+      $weight++;
+    }
     // We do not want to show subfields if field merging was selected.
-    if (variable_get('stanford_cap_api_import_fields_html', TRUE)
-      && $f_schema['type'] == 'object'
-      && !empty($f_schema['properties'])
-      && isset($f_schema['properties']['html'])
-      && isset($f_schema['properties']['text'])
-      && count($f_schema['properties']) == 2) {
+    if ($merge_field) {
       unset($f_schema['properties']);
     }
 
