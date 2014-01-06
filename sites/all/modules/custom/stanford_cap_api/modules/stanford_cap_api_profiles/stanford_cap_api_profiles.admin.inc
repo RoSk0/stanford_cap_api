@@ -895,6 +895,15 @@ function _stanford_cap_api_profiles_field_checkboxes($fields, &$parent_elem, $pa
         'class' => array('level-' . $field_level),
       ),
     );
+    // We do not want to show subfields if field merging was selected.
+    if (variable_get('stanford_cap_api_import_fields_html', TRUE)
+      && $f_schema['type'] == 'object'
+      && !empty($f_schema['properties'])
+      && isset($f_schema['properties']['html'])
+      && isset($f_schema['properties']['text'])
+      && count($f_schema['properties']) == 2) {
+      unset($f_schema['properties']);
+    }
 
     $subfields = array();
     if ($f_schema['type'] == 'array' && $f_schema['items']['type'] == 'object') {
