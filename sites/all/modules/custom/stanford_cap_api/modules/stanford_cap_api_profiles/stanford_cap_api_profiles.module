@@ -480,16 +480,21 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = NU
     $count = $params['ps'] = $data['totalCount'];
     // Requesting all profiles of organization.
     $data = stanford_cap_api_request('/profiles/v1', $params);
-    foreach ($data['values'] as $profile) {
-      if (isset($operations)) {
-        $operations[] = array(
-          'stanford_cap_api_profiles_profile_import',
-          array($profile['profileId']),
-        );
+    if (!empty($data['values']) && is_array($data['values'])) {
+      foreach ($data['values'] as $profile) {
+        if (isset($operations)) {
+          $operations[] = array(
+            'stanford_cap_api_profiles_profile_import',
+            array($profile['profileId']),
+          );
+        }
+        else {
+          stanford_cap_api_profiles_profile_import($profile['profileId']);
+        }
       }
-      else {
-        stanford_cap_api_profiles_profile_import($profile['profileId']);
-      }
+    }
+    else {
+      watchdog('stanford_cap_api_profiles', 'There was issue in retrieving data from CAP service for "@org_code" organization.', array('@org_code' => $org_code));
     }
   }
 
@@ -517,16 +522,21 @@ function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$opera
     $count = $params['ps'] = $data['totalCount'];
     // Requesting all profiles of organization.
     $data = stanford_cap_api_request('/profiles/v1', $params);
-    foreach ($data['values'] as $profile) {
-      if (isset($operations)) {
-        $operations[] = array(
-          'stanford_cap_api_profiles_profile_import',
-          array($profile['profileId']),
-        );
+    if (!empty($data['values']) && is_array($data['values'])) {
+      foreach ($data['values'] as $profile) {
+        if (isset($operations)) {
+          $operations[] = array(
+            'stanford_cap_api_profiles_profile_import',
+            array($profile['profileId']),
+          );
+        }
+        else {
+          stanford_cap_api_profiles_profile_import($profile['profileId']);
+        }
       }
-      else {
-        stanford_cap_api_profiles_profile_import($profile['profileId']);
-      }
+    }
+    else {
+      watchdog('stanford_cap_api_profiles', 'There was issue in retrieving data from CAP service for "@workgroup" workgroup.', array('@workgroup' => $workgroup_id));
     }
   }
 
