@@ -50,7 +50,6 @@ function stanford_cap_api_credentials_form($form, &$form_state) {
   $form['auth']['stanford_cap_api_username'] = array(
     '#type' => 'textfield',
     '#title' => st('Client ID:'),
-    '#default_value' => 'go-global',
     '#required' => TRUE,
   );
 
