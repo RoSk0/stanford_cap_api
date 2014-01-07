@@ -205,17 +205,20 @@ function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
   // Field schema not synced yet.
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
     if (isset($values['stanford_cap_api_import_profile_fields'])) {
+      // Initial form submit.
       variable_set('stanford_cap_api_import_profile_fields', $values['stanford_cap_api_import_profile_fields']);
       variable_set('stanford_cap_api_import_fields_html', $values['stanford_cap_api_import_fields_html']);
       if ($values['stanford_cap_api_import_profile_fields'] == CAP_FIELDS_IMPORT_LIST && !isset($values['fields'])) {
+        // We need to select fields to sync.
         $form_state['rebuild'] = TRUE;
+      }
+      else {
+        stanford_cap_api_profiles_synchronize_schema(TRUE);
       }
     }
     // Submitted after rebuild.
     else {
-      if (isset($values['fields'])) {
-        _stanford_cap_api_profiles_store_sync_field_list($values['fields']);
-      }
+      _stanford_cap_api_profiles_store_sync_field_list($values['fields']);
       stanford_cap_api_profiles_synchronize_schema(TRUE);
     }
   }
