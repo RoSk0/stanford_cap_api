@@ -907,6 +907,20 @@ function stanford_cap_api_export_views_default_views() {
   $handler->display->display_options['fields']['delta_3']['relationship'] = 'cap_researchprojects_value';
   $handler->display->display_options['fields']['delta_3']['label'] = 'Research project media delta';
   $handler->display->display_options['fields']['delta_3']['separator'] = '';
+  /* Field: Field collection item: location */
+  $handler->display->display_options['fields']['cap_location_1']['id'] = 'cap_location_1';
+  $handler->display->display_options['fields']['cap_location_1']['table'] = 'field_data_cap_location';
+  $handler->display->display_options['fields']['cap_location_1']['field'] = 'cap_location';
+  $handler->display->display_options['fields']['cap_location_1']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['cap_location_1']['group_rows'] = FALSE;
+  $handler->display->display_options['fields']['cap_location_1']['delta_offset'] = '0';
+  /* Field: Field collection item: location (cap_location:delta) */
+  $handler->display->display_options['fields']['delta_4']['id'] = 'delta_4';
+  $handler->display->display_options['fields']['delta_4']['table'] = 'field_data_cap_location';
+  $handler->display->display_options['fields']['delta_4']['field'] = 'delta';
+  $handler->display->display_options['fields']['delta_4']['relationship'] = 'cap_researchprojects_value';
+  $handler->display->display_options['fields']['delta_4']['label'] = 'location delta';
+  $handler->display->display_options['fields']['delta_4']['separator'] = '';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
