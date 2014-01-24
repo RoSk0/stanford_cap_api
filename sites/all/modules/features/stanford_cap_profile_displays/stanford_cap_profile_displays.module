@@ -1,0 +1,29 @@
+<?php
+/**
+ * @file
+ * Code for the Stanford CAP Profile Displays feature.
+ */
+
+include_once 'stanford_cap_profile_displays.features.inc';
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * Adds additional display modes to node.
+ */
+function stanford_cap_profile_displays_entity_info_alter(&$entity_info) {
+
+  $display_modes = array(
+    'profile_page' => array(
+      'label' => t('Profile Page'),
+      'custom settings' => TRUE,
+    ),
+    'profile_page_tabbed' => array(
+      'label' => t('Tabbed Profile Page'),
+      'custom settings' => TRUE,
+    ),
+  );
+
+  $entity_info['node']['view modes'] += $display_modes;
+  $entity_info['field_collection_item']['view modes'] += $display_modes;
+}
