@@ -53,15 +53,21 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->data = array(
     'label' => 'Academic and Contact Information',
     'weight' => '5',
-    'children' => array(),
-    'format_type' => 'fieldset',
+    'children' => array(
+      0 => 'cap_alternatecontact',
+      1 => 'cap_clinicalcontacts',
+      2 => 'cap_clinicalpractices',
+      3 => 'cap_profilephotos',
+      4 => 'cap_supervisors',
+    ),
+    'format_type' => 'htab',
     'format_settings' => array(
       'label' => 'Academic and Contact Information',
       'instance_settings' => array(
-        'classes' => 'group-cap-academic-contact-info field-group-fieldset',
+        'classes' => 'group-cap-academic-contact-info field-group-htab',
         'description' => '',
       ),
-      'formatter' => 'open',
+      'formatter' => 'closed',
     ),
   );
   $export['group_cap_academic_contact_info|node|cap_stanford_profile|profile_page_tabbed'] = $field_group;
@@ -120,15 +126,32 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->data = array(
     'label' => 'Bio',
     'weight' => '4',
-    'children' => array(),
-    'format_type' => 'fieldset',
+    'children' => array(
+      0 => 'cap_administrativeappointment',
+      1 => 'cap_bio',
+      2 => 'cap_clerkships',
+      3 => 'cap_clinicalcare',
+      4 => 'cap_clinicalfocus',
+      5 => 'cap_communityandinternational',
+      6 => 'cap_currentroleatstanford',
+      7 => 'cap_education',
+      8 => 'cap_honorsandawards',
+      9 => 'cap_internetlinks',
+      10 => 'cap_membershiporganizations',
+      11 => 'cap_patents',
+      12 => 'cap_personalinterests',
+      13 => 'cap_professionalorganizations',
+      14 => 'cap_servicework',
+      15 => 'cap_stanfordadvisors',
+    ),
+    'format_type' => 'htab',
     'format_settings' => array(
       'label' => 'Bio',
       'instance_settings' => array(
-        'classes' => 'group-cap-bio field-group-fieldset',
+        'classes' => 'group-cap-bio field-group-htab',
         'description' => '',
       ),
-      'formatter' => 'open',
+      'formatter' => 'closed',
     ),
   );
   $export['group_cap_bio|node|cap_stanford_profile|profile_page_tabbed'] = $field_group;
@@ -173,15 +196,18 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->data = array(
     'label' => 'Professional',
     'weight' => '8',
-    'children' => array(),
-    'format_type' => 'fieldset',
+    'children' => array(
+      0 => 'cap_professionalinterests',
+      1 => 'cap_workexperience',
+    ),
+    'format_type' => 'htab',
     'format_settings' => array(
       'label' => 'Professional',
       'instance_settings' => array(
-        'classes' => 'group-cap-professional field-group-fieldset',
+        'classes' => 'group-cap-professional field-group-htab',
         'description' => '',
       ),
-      'formatter' => 'open',
+      'formatter' => 'closed',
     ),
   );
   $export['group_cap_professional|node|cap_stanford_profile|profile_page_tabbed'] = $field_group;
@@ -204,7 +230,7 @@ function stanford_cap_profile_displays_field_group_info() {
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
-      'formatter' => 'collapsible',
+      'formatter' => 'open',
       'instance_settings' => array(
         'description' => '',
         'classes' => 'group-cap-publications field-group-fieldset',
@@ -225,13 +251,16 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->data = array(
     'label' => 'Publications',
     'weight' => '9',
-    'children' => array(),
-    'format_type' => 'fieldset',
+    'children' => array(
+      0 => 'cap_presentations',
+      1 => 'cap_publications',
+    ),
+    'format_type' => 'htab',
     'format_settings' => array(
-      'formatter' => 'collapsible',
+      'formatter' => 'closed',
       'instance_settings' => array(
         'description' => '',
-        'classes' => 'group-cap-publications field-group-fieldset',
+        'classes' => 'group-cap-publications field-group-htab',
       ),
     ),
   );
@@ -257,7 +286,7 @@ function stanford_cap_profile_displays_field_group_info() {
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
-      'formatter' => 'collapsible',
+      'formatter' => 'open',
       'instance_settings' => array(
         'description' => '',
         'classes' => 'group-cap-teaching field-group-fieldset',
@@ -278,13 +307,18 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->data = array(
     'label' => 'Teaching',
     'weight' => '7',
-    'children' => array(),
-    'format_type' => 'fieldset',
+    'children' => array(
+      0 => 'cap_advisees',
+      1 => 'cap_coursestaught',
+      2 => 'cap_graduateandfellowshipprog',
+      3 => 'cap_postdoctoraladvisees',
+    ),
+    'format_type' => 'htab',
     'format_settings' => array(
-      'formatter' => 'collapsible',
+      'formatter' => 'closed',
       'instance_settings' => array(
         'description' => '',
-        'classes' => 'group-cap-teaching field-group-fieldset',
+        'classes' => 'group-cap-teaching field-group-htab',
       ),
     ),
   );
@@ -335,15 +369,23 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->data = array(
     'label' => 'Research & Scholarship',
     'weight' => '6',
-    'children' => array(),
-    'format_type' => 'fieldset',
+    'children' => array(
+      0 => 'cap_clinicalinterests',
+      1 => 'cap_clinicaltrialsurl',
+      2 => 'cap_currentresearchinterests',
+      3 => 'cap_industryrelationships',
+      4 => 'cap_labaffiliations',
+      5 => 'cap_projects',
+      6 => 'cap_researchprojects',
+    ),
+    'format_type' => 'htyp',
     'format_settings' => array(
       'label' => 'Research & Scholarship',
       'instance_settings' => array(
-        'classes' => 'group-research-scholarship field-group-fieldset',
+        'classes' => 'group-research-scholarship field-group-htab',
         'description' => '',
       ),
-      'formatter' => 'open',
+      'formatter' => 'closed',
     ),
   );
   $export['group_research_scholarship|node|cap_stanford_profile|profile_page_tabbed'] = $field_group;

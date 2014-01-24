@@ -12,6 +12,7 @@ dependencies[] = number
 dependencies[] = options
 dependencies[] = stanford_cap_api_orgs
 dependencies[] = stanford_cap_api_profiles
+dependencies[] = strongarm
 dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = views
@@ -1173,5 +1174,4 @@ features_exclude[field_group][cap_professional_3|node|cap_stanford_profile|full]
 features_exclude[field_group][cap_publications_2|node|cap_stanford_profile|full] = cap_publications_2|node|cap_stanford_profile|full
 features_exclude[field_group][cap_research & scholarship|node|cap_stanford_profile|full] = cap_research & scholarship|node|cap_stanford_profile|full
 features_exclude[field_group][cap_teaching|node|cap_stanford_profile|full] = cap_teaching|node|cap_stanford_profile|full
-features_exclude[dependencies][strongarm] = strongarm
 no autodetect = 1
