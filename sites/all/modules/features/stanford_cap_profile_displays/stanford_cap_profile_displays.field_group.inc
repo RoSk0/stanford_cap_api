@@ -13,6 +13,36 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
   $field_group->api_version = 1;
+  $field_group->identifier = 'group_tabs|node|cap_stanford_profile|profile_page_tabbed';
+  $field_group->group_name = 'group_tabs';
+  $field_group->entity_type = 'node';
+  $field_group->bundle = 'cap_stanford_profile';
+  $field_group->mode = 'profile_page_tabbed';
+  $field_group->parent_name = '';
+  $field_group->data = array(
+    'label' => 'Tabs group',
+    'weight' => '4',
+    'children' => array(
+      0 => 'group_cap_academic_contact_info',
+      1 => 'group_cap_bio',
+      2 => 'group_research_scholarship',
+      3 => 'group_cap_teaching',
+      4 => 'group_cap_professional',
+      5 => 'group_cap_publications',
+    ),
+    'format_type' => 'htabs',
+    'format_settings' => array(
+      'formatter' => '',
+      'instance_settings' => array(
+        'classes' => 'group-tabs field-group-htabs',
+      ),
+    ),
+  );
+  $export['group_tabs|node|cap_stanford_profile|profile_page_tabbed'] = $field_group;
+
+  $field_group = new stdClass();
+  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
+  $field_group->api_version = 1;
   $field_group->identifier = 'group_cap_academic_contact_info|node|cap_stanford_profile|profile_page';
   $field_group->group_name = 'group_cap_academic_contact_info';
   $field_group->entity_type = 'node';
@@ -49,7 +79,7 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'cap_stanford_profile';
   $field_group->mode = 'profile_page_tabbed';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_tabs';
   $field_group->data = array(
     'label' => 'Academic and Contact Information',
     'weight' => '5',
@@ -64,6 +94,7 @@ function stanford_cap_profile_displays_field_group_info() {
     'format_settings' => array(
       'label' => 'Academic and Contact Information',
       'instance_settings' => array(
+        'id' => '',
         'classes' => 'group-cap-academic-contact-info field-group-htab',
         'description' => '',
       ),
@@ -122,7 +153,7 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'cap_stanford_profile';
   $field_group->mode = 'profile_page_tabbed';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_tabs';
   $field_group->data = array(
     'label' => 'Bio',
     'weight' => '4',
@@ -148,6 +179,7 @@ function stanford_cap_profile_displays_field_group_info() {
     'format_settings' => array(
       'label' => 'Bio',
       'instance_settings' => array(
+        'id' => '',
         'classes' => 'group-cap-bio field-group-htab',
         'description' => '',
       ),
@@ -192,7 +224,7 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'cap_stanford_profile';
   $field_group->mode = 'profile_page_tabbed';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_tabs';
   $field_group->data = array(
     'label' => 'Professional',
     'weight' => '8',
@@ -204,6 +236,7 @@ function stanford_cap_profile_displays_field_group_info() {
     'format_settings' => array(
       'label' => 'Professional',
       'instance_settings' => array(
+        'id' => '',
         'classes' => 'group-cap-professional field-group-htab',
         'description' => '',
       ),
@@ -247,7 +280,7 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'cap_stanford_profile';
   $field_group->mode = 'profile_page_tabbed';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_tabs';
   $field_group->data = array(
     'label' => 'Publications',
     'weight' => '9',
@@ -259,6 +292,7 @@ function stanford_cap_profile_displays_field_group_info() {
     'format_settings' => array(
       'formatter' => 'closed',
       'instance_settings' => array(
+        'id' => '',
         'description' => '',
         'classes' => 'group-cap-publications field-group-htab',
       ),
@@ -303,7 +337,7 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'cap_stanford_profile';
   $field_group->mode = 'profile_page_tabbed';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_tabs';
   $field_group->data = array(
     'label' => 'Teaching',
     'weight' => '7',
@@ -317,6 +351,7 @@ function stanford_cap_profile_displays_field_group_info() {
     'format_settings' => array(
       'formatter' => 'closed',
       'instance_settings' => array(
+        'id' => '',
         'description' => '',
         'classes' => 'group-cap-teaching field-group-htab',
       ),
@@ -365,7 +400,7 @@ function stanford_cap_profile_displays_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'cap_stanford_profile';
   $field_group->mode = 'profile_page_tabbed';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_tabs';
   $field_group->data = array(
     'label' => 'Research & Scholarship',
     'weight' => '6',
@@ -378,10 +413,11 @@ function stanford_cap_profile_displays_field_group_info() {
       5 => 'cap_projects',
       6 => 'cap_researchprojects',
     ),
-    'format_type' => 'htyp',
+    'format_type' => 'htab',
     'format_settings' => array(
       'label' => 'Research & Scholarship',
       'instance_settings' => array(
+        'id' => '',
         'classes' => 'group-research-scholarship field-group-htab',
         'description' => '',
       ),

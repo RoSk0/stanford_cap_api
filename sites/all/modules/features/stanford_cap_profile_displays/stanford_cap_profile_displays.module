@@ -27,3 +27,9 @@ function stanford_cap_profile_displays_entity_info_alter(&$entity_info) {
   $entity_info['node']['view modes'] += $display_modes;
   $entity_info['field_collection_item']['view modes'] += $display_modes;
 }
+
+function test() {
+  $instance = field_info_instance('node', 'cap_profile_image', 'cap_stanford_profile');
+  dpm(var_export($instance['display']['profile_page'], TRUE));
+
+}

@@ -1,0 +1,28 @@
+<?php
+/**
+ * @file
+ * Code for the Stanford CAP Profile Displays feature.
+ */
+
+/**
+ * Implements hook_enable().
+ *
+ * Configure "cap_profile_image" field instances to display in correct places on
+ * "Profile Page" and "Tabbed Profile Page" displays.
+ */
+function stanford_cap_profile_displays_enable() {
+  $display_settings = array (
+    'label' => 'hidden',
+    'type' => 'image',
+    'weight' => '2',
+    'settings' =>array (
+        'image_style' => '',
+        'image_link' => '',
+    ),
+    'module' => 'image',
+  );
+  $instance = field_info_instance('node', 'cap_profile_image', 'cap_stanford_profile');
+  $instance['display']['profile_page'] = $display_settings;
+  $instance['display']['profile_page_tabbed'] = $display_settings;
+  field_update_instance($instance);
+}
