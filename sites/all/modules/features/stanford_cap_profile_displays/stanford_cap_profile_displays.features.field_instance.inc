@@ -459,6 +459,53 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_advisor-cap_label_18'
+  $field_instances['field_collection_item-cap_advisor-cap_label_18'] = array(
+    'bundle' => 'cap_advisor',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted advisor',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_18',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 1,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_advisor-cap_position'
   $field_instances['field_collection_item-cap_advisor-cap_position'] = array(
     'bundle' => 'cap_advisor',
@@ -3116,6 +3163,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
         'weight' => 4,
       ),
       'profile_page_tabbed' => array(
+        'label' => 'above',
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
@@ -5817,6 +5865,51 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_disclosurestatement-cap_brief'
+  $field_instances['field_collection_item-cap_disclosurestatement-cap_brief'] = array(
+    'bundle' => 'cap_disclosurestatement',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_brief',
+    'label' => 'Brief',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 0,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_disclosurestatement-cap_full_3'
   $field_instances['field_collection_item-cap_disclosurestatement-cap_full_3'] = array(
     'bundle' => 'cap_disclosurestatement',
@@ -8276,6 +8369,53 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_links_2-cap_href_3'
+  $field_instances['field_collection_item-cap_links_2-cap_href_3'] = array(
+    'bundle' => 'cap_links_2',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Hypertext reference',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_href_3',
+    'label' => 'Href',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_links_2-cap_rel_3'
   $field_instances['field_collection_item-cap_links_2-cap_rel_3'] = array(
     'bundle' => 'cap_links_2',
@@ -9639,6 +9779,946 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_address_9'
+  $field_instances['field_collection_item-cap_location_5-cap_address_9'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_address_9',
+    'label' => 'Address',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_city_6'
+  $field_instances['field_collection_item-cap_location_5-cap_city_6'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_city_6',
+    'label' => 'City',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_country_5'
+  $field_instances['field_collection_item-cap_location_5-cap_country_5'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_country_5',
+    'label' => 'Country',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_id_5'
+  $field_instances['field_collection_item-cap_location_5-cap_id_5'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_id_5',
+    'label' => 'ID',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_label_38'
+  $field_instances['field_collection_item-cap_location_5-cap_label_38'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted location',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => -1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => -1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_38',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 4,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_latitude_3'
+  $field_instances['field_collection_item-cap_location_5-cap_latitude_3'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 5,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 5,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 5,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_latitude_3',
+    'label' => 'Latitude',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 5,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_longitude_3'
+  $field_instances['field_collection_item-cap_location_5-cap_longitude_3'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_longitude_3',
+    'label' => 'Longitude',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 6,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_name_11'
+  $field_instances['field_collection_item-cap_location_5-cap_name_11'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 7,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 7,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 7,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_name_11',
+    'label' => 'Name',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 7,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_state_6'
+  $field_instances['field_collection_item-cap_location_5-cap_state_6'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 8,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 8,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 8,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_state_6',
+    'label' => 'State',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 8,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_5-cap_zip_6'
+  $field_instances['field_collection_item-cap_location_5-cap_zip_6'] = array(
+    'bundle' => 'cap_location_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 9,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 9,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 9,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_zip_6',
+    'label' => 'Zip',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 9,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_address_10'
+  $field_instances['field_collection_item-cap_location_6-cap_address_10'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_address_10',
+    'label' => 'Address',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_city_7'
+  $field_instances['field_collection_item-cap_location_6-cap_city_7'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_city_7',
+    'label' => 'City',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_country_6'
+  $field_instances['field_collection_item-cap_location_6-cap_country_6'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 7,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 7,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_country_6',
+    'label' => 'Country',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_id_6'
+  $field_instances['field_collection_item-cap_location_6-cap_id_6'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_id_6',
+    'label' => 'ID',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_label_43'
+  $field_instances['field_collection_item-cap_location_6-cap_label_43'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted location',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_43',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 4,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_latitude_4'
+  $field_instances['field_collection_item-cap_location_6-cap_latitude_4'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 5,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 8,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 8,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_latitude_4',
+    'label' => 'Latitude',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 5,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_longitude_4'
+  $field_instances['field_collection_item-cap_location_6-cap_longitude_4'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 9,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 9,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_longitude_4',
+    'label' => 'Longitude',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 6,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_name_12'
+  $field_instances['field_collection_item-cap_location_6-cap_name_12'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 7,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_name_12',
+    'label' => 'Name',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 7,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_state_7'
+  $field_instances['field_collection_item-cap_location_6-cap_state_7'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 8,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 5,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 5,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_state_7',
+    'label' => 'State',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 8,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_location_6-cap_zip_7'
+  $field_instances['field_collection_item-cap_location_6-cap_zip_7'] = array(
+    'bundle' => 'cap_location_6',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 9,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_zip_7',
+    'label' => 'Zip',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 9,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_location_7-cap_address_11'
   $field_instances['field_collection_item-cap_location_7-cap_address_11'] = array(
     'bundle' => 'cap_location_7',
@@ -10579,6 +11659,193 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_longtitle-cap_academicinstitutedisplay'
+  $field_instances['field_collection_item-cap_longtitle-cap_academicinstitutedisplay'] = array(
+    'bundle' => 'cap_longtitle',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_academicinstitutedisplay',
+    'label' => 'Academic Institute Display Flag',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_longtitle-cap_bannerdisplay'
+  $field_instances['field_collection_item-cap_longtitle-cap_bannerdisplay'] = array(
+    'bundle' => 'cap_longtitle',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_bannerdisplay',
+    'label' => 'Banner Display Flag',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_longtitle-cap_label_20'
+  $field_instances['field_collection_item-cap_longtitle-cap_label_20'] = array(
+    'bundle' => 'cap_longtitle',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted title',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'full' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 13,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_20',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 13,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_longtitle-cap_organization_5'
+  $field_instances['field_collection_item-cap_longtitle-cap_organization_5'] = array(
+    'bundle' => 'cap_longtitle',
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+          'add' => '',
+          'delete' => '',
+          'description' => 1,
+          'edit' => '',
+          'view_mode' => 'full',
+        ),
+        'type' => 'field_collection_view',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_organization_5',
+    'label' => 'Organization',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'field_collection',
+      'settings' => array(),
+      'type' => 'field_collection_embed',
+      'weight' => 3,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_longtitle-cap_title_6'
   $field_instances['field_collection_item-cap_longtitle-cap_title_6'] = array(
     'bundle' => 'cap_longtitle',
@@ -10623,6 +11890,51 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'type' => 'text_textfield',
       'weight' => 4,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_longtitle-cap_type_8'
+  $field_instances['field_collection_item-cap_longtitle-cap_type_8'] = array(
+    'bundle' => 'cap_longtitle',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_type_8',
+    'label' => 'Type',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 5,
     ),
   );
 
@@ -10798,6 +12110,382 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
     'entity_type' => 'field_collection_item',
     'field_name' => 'cap_url_11',
+    'label' => 'URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_2-cap_contenttype_9'
+  $field_instances['field_collection_item-cap_media_2-cap_contenttype_9'] = array(
+    'bundle' => 'cap_media_2',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'MIME Content Type',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_contenttype_9',
+    'label' => 'Content Type',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_2-cap_label_39'
+  $field_instances['field_collection_item-cap_media_2-cap_label_39'] = array(
+    'bundle' => 'cap_media_2',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted media reference',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_39',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_2-cap_type_14'
+  $field_instances['field_collection_item-cap_media_2-cap_type_14'] = array(
+    'bundle' => 'cap_media_2',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Type of media',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_type_14',
+    'label' => 'Type',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_2-cap_url_15'
+  $field_instances['field_collection_item-cap_media_2-cap_url_15'] = array(
+    'bundle' => 'cap_media_2',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_url_15',
+    'label' => 'URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_3-cap_contenttype_10'
+  $field_instances['field_collection_item-cap_media_3-cap_contenttype_10'] = array(
+    'bundle' => 'cap_media_3',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'MIME Content Type',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_contenttype_10',
+    'label' => 'Content Type',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_3-cap_label_44'
+  $field_instances['field_collection_item-cap_media_3-cap_label_44'] = array(
+    'bundle' => 'cap_media_3',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted media reference',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_44',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_3-cap_type_16'
+  $field_instances['field_collection_item-cap_media_3-cap_type_16'] = array(
+    'bundle' => 'cap_media_3',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Type of media',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_type_16',
+    'label' => 'Type',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_media_3-cap_url_16'
+  $field_instances['field_collection_item-cap_media_3-cap_url_16'] = array(
+    'bundle' => 'cap_media_3',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_url_16',
     'label' => 'URL',
     'required' => FALSE,
     'settings' => array(
@@ -11020,6 +12708,321 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'type' => 'text_textarea',
       'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_15-cap_org_22'
+  $field_instances['field_collection_item-cap_organization_15-cap_org_22'] = array(
+    'bundle' => 'cap_organization_15',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_org_22',
+    'label' => 'Organization',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_15-cap_orgcode_3'
+  $field_instances['field_collection_item-cap_organization_15-cap_orgcode_3'] = array(
+    'bundle' => 'cap_organization_15',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_orgcode_3',
+    'label' => 'Org Code',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_15-cap_orgurl_3'
+  $field_instances['field_collection_item-cap_organization_15-cap_orgurl_3'] = array(
+    'bundle' => 'cap_organization_15',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_orgurl_3',
+    'label' => 'URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_5-cap_label_21'
+  $field_instances['field_collection_item-cap_organization_5-cap_label_21'] = array(
+    'bundle' => 'cap_organization_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted organization',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_21',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_5-cap_org_6'
+  $field_instances['field_collection_item-cap_organization_5-cap_org_6'] = array(
+    'bundle' => 'cap_organization_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_org_6',
+    'label' => 'Organization',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_5-cap_orgcode'
+  $field_instances['field_collection_item-cap_organization_5-cap_orgcode'] = array(
+    'bundle' => 'cap_organization_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_orgcode',
+    'label' => 'Org Code',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_organization_5-cap_orgurl'
+  $field_instances['field_collection_item-cap_organization_5-cap_orgurl'] = array(
+    'bundle' => 'cap_organization_5',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_orgurl',
+    'label' => 'URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
     ),
   );
 
@@ -13774,6 +15777,146 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_projecttype-cap_key_7'
+  $field_instances['field_collection_item-cap_projecttype-cap_key_7'] = array(
+    'bundle' => 'cap_projecttype',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Flag identifier',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_key_7',
+    'label' => 'Key',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_projecttype-cap_label_45'
+  $field_instances['field_collection_item-cap_projecttype-cap_label_45'] = array(
+    'bundle' => 'cap_projecttype',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted flag',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_45',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_projecttype-cap_value_6'
+  $field_instances['field_collection_item-cap_projecttype-cap_value_6'] = array(
+    'bundle' => 'cap_projecttype',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Value of flag',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_key',
+        'weight' => 2,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_key',
+        'weight' => 2,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_value_6',
+    'label' => 'Value',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 2,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_publications-cap_abstract'
   $field_instances['field_collection_item-cap_publications-cap_abstract'] = array(
     'bundle' => 'cap_publications',
@@ -14023,6 +16166,94 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_doiid'
+  $field_instances['field_collection_item-cap_publications-cap_doiid'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_doiid',
+    'label' => 'DOI',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 5,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_doiurl'
+  $field_instances['field_collection_item-cap_publications-cap_doiurl'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_doiurl',
+    'label' => 'DOI URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 6,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_publications-cap_featured'
   $field_instances['field_collection_item-cap_publications-cap_featured'] = array(
     'bundle' => 'cap_publications',
@@ -14186,6 +16417,145 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'type' => 'text_textarea',
       'weight' => 9,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_publicationid'
+  $field_instances['field_collection_item-cap_publications-cap_publicationid'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'number',
+        'settings' => array(
+          'decimal_separator' => '.',
+          'prefix_suffix' => 0,
+          'scale' => 0,
+          'thousand_separator' => '',
+        ),
+        'type' => 'hidden',
+        'weight' => 12,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_publicationid',
+    'label' => 'Publication ID',
+    'required' => FALSE,
+    'settings' => array(
+      'max' => '',
+      'min' => '',
+      'prefix' => '',
+      'suffix' => '',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'number',
+      'settings' => array(),
+      'type' => 'number',
+      'weight' => 12,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_pubmedid'
+  $field_instances['field_collection_item-cap_publications-cap_pubmedid'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 10,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_pubmedid',
+    'label' => 'PubMed ID',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 10,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_pubmedurl'
+  $field_instances['field_collection_item-cap_publications-cap_pubmedurl'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 11,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_pubmedurl',
+    'label' => 'PubMed URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 11,
     ),
   );
 
@@ -14374,6 +16744,94 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'type' => 'text_textfield',
       'weight' => 16,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_webofscienceid'
+  $field_instances['field_collection_item-cap_publications-cap_webofscienceid'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 17,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_webofscienceid',
+    'label' => 'Web of Science ID',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 17,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_publications-cap_webofscienceurl'
+  $field_instances['field_collection_item-cap_publications-cap_webofscienceurl'] = array(
+    'bundle' => 'cap_publications',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 18,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_webofscienceurl',
+    'label' => 'Web of Science URL',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 18,
     ),
   );
 
@@ -15013,6 +17471,462 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'type' => 'text_textfield',
       'weight' => 10,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_description_6'
+  $field_instances['field_collection_item-cap_servicework-cap_description_6'] = array(
+    'bundle' => 'cap_servicework',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_description_6',
+    'label' => 'Description',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_detail_8'
+  $field_instances['field_collection_item-cap_servicework-cap_detail_8'] = array(
+    'bundle' => 'cap_servicework',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted work experience summary',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'full' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 14,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 2,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_detail_8',
+    'label' => 'Detail',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 14,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_enddate_5'
+  $field_instances['field_collection_item-cap_servicework-cap_enddate_5'] = array(
+    'bundle' => 'cap_servicework',
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'date',
+        'settings' => array(
+          'format_type' => 'long',
+          'fromto' => 'both',
+          'multiple_from' => '',
+          'multiple_number' => '',
+          'multiple_to' => '',
+        ),
+        'type' => 'date_default',
+        'weight' => 2,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'date',
+        'settings' => array(
+          'format_type' => 'long',
+          'fromto' => 'both',
+          'multiple_from' => '',
+          'multiple_number' => '',
+          'multiple_to' => '',
+        ),
+        'type' => 'date_default',
+        'weight' => 7,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'date',
+        'settings' => array(
+          'format_type' => 'long',
+          'fromto' => 'both',
+          'multiple_from' => '',
+          'multiple_number' => '',
+          'multiple_to' => '',
+        ),
+        'type' => 'date_default',
+        'weight' => 7,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_enddate_5',
+    'label' => 'End Date',
+    'required' => FALSE,
+    'settings' => array(
+      'default_value' => 'blank',
+      'default_value2' => 'same',
+      'default_value_code' => '',
+      'default_value_code2' => '',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'date',
+      'settings' => array(
+        'increment' => 15,
+        'input_format' => 'm/d/Y - H:i:s',
+        'input_format_custom' => '',
+        'label_position' => 'above',
+        'text_parts' => array(),
+        'year_range' => '-3:+3',
+      ),
+      'type' => 'date_select',
+      'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_institution_3'
+  $field_instances['field_collection_item-cap_servicework-cap_institution_3'] = array(
+    'bundle' => 'cap_servicework',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_institution_3',
+    'label' => 'Institution',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_label_46'
+  $field_instances['field_collection_item-cap_servicework-cap_label_46'] = array(
+    'bundle' => 'cap_servicework',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Formatted work experience detail',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'full' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 13,
+      ),
+      'profile_page' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_label_46',
+    'label' => 'Label',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => TRUE,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 13,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_location_7'
+  $field_instances['field_collection_item-cap_servicework-cap_location_7'] = array(
+    'bundle' => 'cap_servicework',
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+          'add' => '',
+          'delete' => '',
+          'description' => 1,
+          'edit' => '',
+          'view_mode' => 'full',
+        ),
+        'type' => 'field_collection_view',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+          'add' => '',
+          'delete' => '',
+          'description' => 0,
+          'edit' => '',
+          'view_mode' => 'profile_page',
+        ),
+        'type' => 'field_collection_view',
+        'weight' => 5,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'field_collection',
+        'settings' => array(
+          'add' => '',
+          'delete' => '',
+          'description' => 0,
+          'edit' => '',
+          'view_mode' => 'profile_page_tabbed',
+        ),
+        'type' => 'field_collection_view',
+        'weight' => 5,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_location_7',
+    'label' => 'Location',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'field_collection',
+      'settings' => array(),
+      'type' => 'field_collection_embed',
+      'weight' => 5,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_startdate_5'
+  $field_instances['field_collection_item-cap_servicework-cap_startdate_5'] = array(
+    'bundle' => 'cap_servicework',
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'date',
+        'settings' => array(
+          'format_type' => 'long',
+          'fromto' => 'both',
+          'multiple_from' => '',
+          'multiple_number' => '',
+          'multiple_to' => '',
+        ),
+        'type' => 'date_default',
+        'weight' => 5,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'date',
+        'settings' => array(
+          'format_type' => 'long',
+          'fromto' => 'both',
+          'multiple_from' => '',
+          'multiple_number' => '',
+          'multiple_to' => '',
+        ),
+        'type' => 'date_default',
+        'weight' => 6,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'date',
+        'settings' => array(
+          'format_type' => 'long',
+          'fromto' => 'both',
+          'multiple_from' => '',
+          'multiple_number' => '',
+          'multiple_to' => '',
+        ),
+        'type' => 'date_default',
+        'weight' => 6,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_startdate_5',
+    'label' => 'Start Date',
+    'required' => FALSE,
+    'settings' => array(
+      'default_value' => 'blank',
+      'default_value2' => 'same',
+      'default_value_code' => '',
+      'default_value_code2' => '',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'date',
+      'settings' => array(
+        'increment' => 15,
+        'input_format' => 'm/d/Y - H:i:s',
+        'input_format_custom' => '',
+        'label_position' => 'above',
+        'text_parts' => array(),
+        'year_range' => '-3:+3',
+      ),
+      'type' => 'date_select',
+      'weight' => 6,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_servicework-cap_title_18'
+  $field_instances['field_collection_item-cap_servicework-cap_title_18'] = array(
+    'bundle' => 'cap_servicework',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 6,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_title_18',
+    'label' => 'Title',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 7,
     ),
   );
 
@@ -16427,6 +19341,94 @@ function stanford_cap_profile_displays_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'field_collection_item-cap_titles-cap_academicinstitutedisplay_3'
+  $field_instances['field_collection_item-cap_titles-cap_academicinstitutedisplay_3'] = array(
+    'bundle' => 'cap_titles',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 0,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_academicinstitutedisplay_3',
+    'label' => 'Academic Institute Display Flag',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_titles-cap_bannerdisplay_3'
+  $field_instances['field_collection_item-cap_titles-cap_bannerdisplay_3'] = array(
+    'bundle' => 'cap_titles',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 1,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_bannerdisplay_3',
+    'label' => 'Banner Display Flag',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 1,
+    ),
+  );
+
   // Exported field_instance: 'field_collection_item-cap_titles-cap_label_53'
   $field_instances['field_collection_item-cap_titles-cap_label_53'] = array(
     'bundle' => 'cap_titles',
@@ -16539,6 +19541,96 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       'settings' => array(),
       'type' => 'field_collection_embed',
       'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_titles-cap_title_22'
+  $field_instances['field_collection_item-cap_titles-cap_title_22'] = array(
+    'bundle' => 'cap_titles',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_title_22',
+    'label' => 'Title',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 4,
+    ),
+  );
+
+  // Exported field_instance: 'field_collection_item-cap_titles-cap_type_19'
+  $field_instances['field_collection_item-cap_titles-cap_type_19'] = array(
+    'bundle' => 'cap_titles',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'profile_page' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'profile_page_tabbed' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'field_collection_item',
+    'field_name' => 'cap_type_19',
+    'label' => 'Type',
+    'required' => FALSE,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 5,
     ),
   );
 
@@ -17295,86 +20387,6 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'type' => 'text_textarea',
       'weight' => 0,
-    ),
-  );
-
-  // Exported field_instance: 'node-cap_stanford_profile-cap_clerkships'
-  $field_instances['node-cap_stanford_profile-cap_clerkships'] = array(
-    'bundle' => 'cap_stanford_profile',
-    'deleted' => 0,
-    'description' => 'Clerkship information for prior quarters is automatically added to CAP profiles',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'field_collection',
-        'settings' => array(
-          'add' => '',
-          'delete' => '',
-          'description' => 1,
-          'edit' => '',
-          'view_mode' => 'full',
-        ),
-        'type' => 'field_collection_view',
-        'weight' => 1,
-      ),
-      'full' => array(
-        'label' => 'above',
-        'module' => 'field_collection',
-        'settings' => array(
-          'add' => '',
-          'delete' => '',
-          'description' => TRUE,
-          'edit' => '',
-          'view_mode' => 'full',
-        ),
-        'type' => 'field_collection_view',
-        'weight' => 9,
-      ),
-      'profile_page' => array(
-        'label' => 'above',
-        'module' => 'field_collection',
-        'settings' => array(
-          'add' => '',
-          'delete' => '',
-          'description' => 0,
-          'edit' => '',
-          'view_mode' => 'profile_page',
-        ),
-        'type' => 'field_collection_view',
-        'weight' => 10,
-      ),
-      'profile_page_tabbed' => array(
-        'label' => 'above',
-        'module' => 'field_collection',
-        'settings' => array(
-          'add' => '',
-          'delete' => '',
-          'description' => 0,
-          'edit' => '',
-          'view_mode' => 'profile_page_tabbed',
-        ),
-        'type' => 'field_collection_view',
-        'weight' => 10,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'cap_clerkships',
-    'label' => 'Clerkships',
-    'required' => FALSE,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'module' => 'field_collection',
-      'settings' => array(),
-      'type' => 'field_collection_embed',
-      'weight' => 9,
     ),
   );
 
@@ -19904,19 +22916,14 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Abstract');
   t('Academic Institute Display Flag');
   t('Academic Long Title');
-  t('Academic Short Title');
   t('Academic Year');
   t('Activity');
-  t('Additional search index keywords');
   t('Address');
   t('Address 2');
   t('Administrative Appointments');
   t('Advisees');
-  t('Affiliation Flags');
   t('Alias');
-  t('Aliases used to create a friendly profile URLs');
   t('Alternate Contact');
-  t('Alternate profile maintainers');
   t('Appointment Description');
   t('Appointment End Year');
   t('Appointment Start Year');
@@ -19927,12 +22934,9 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Bio');
   t('Brief');
   t('CAP Citation');
-  t('California Physician License Number');
   t('Catalog Number');
   t('Chicago Citation');
   t('City');
-  t('Clerkship information for prior quarters is automatically added to CAP profiles');
-  t('Clerkships');
   t('Clinical Focus');
   t('Clinical Interests');
   t('Clinical Offices');
@@ -19960,8 +22964,6 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Detail');
   t('Details');
   t('Disclosure Statement');
-  t('Display Name');
-  t('Documents');
   t('Education');
   t('Email');
   t('End Date');
@@ -19975,7 +22977,6 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('First Published Date');
   t('Flag identifier');
   t('Flags');
-  t('Flags indicating the affilition types associated with the profile');
   t('Formatted administrative appointment label');
   t('Formatted advisor');
   t('Formatted clerkship');
@@ -20023,17 +23024,14 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Internet Links');
   t('Inventor');
   t('Key');
-  t('Keywords');
   t('Lab Advisor');
   t('Lab Affiliations');
   t('Label');
   t('Last Name');
   t('Latitude');
   t('Leadership positions or appointments at Stanford and elsewhere.');
-  t('Link');
   t('Link relationship');
   t('Link to additional information');
-  t('Link to clinic in the clinic directory');
   t('Link to program website');
   t('Links');
   t('List of clinical terms');
@@ -20044,7 +23042,6 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Media');
   t('Membership Organizations');
   t('Name');
-  t('Names associated with the profile');
   t('Number');
   t('Office Name');
   t('Ongoing Project');
@@ -20059,31 +23056,19 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Physical location of this place');
   t('Physician Care Narrative');
   t('Physician clinical practice locations');
-  t('Populations');
   t('Populations Served');
   t('Position');
   t('Postdoctoral Advisees');
   t('Presentations');
   t('Presented To');
-  t('Primary');
-  t('Primary Contact');
-  t('Primary Profile Alias');
-  t('Primary alias for friendly profile URL');
   t('Principal Investigator');
   t('Professional Interests');
   t('Professional Organizations');
-  t('Profile Alias');
-  t('Profile Aliases');
   t('Profile ID');
-  t('Profile Maintainers');
-  t('Profile Names');
   t('Profile Photos');
-  t('Profile Tags');
   t('Profile URL');
-  t('Profile URL friendly alias (e.g. https://profiles.stanford.edu/john-doe)');
   t('Profile URL of the advisee if applicable');
   t('Profile photos in various sizes and aspect ratios');
-  t('Profiles with similar publications');
   t('Program Type');
   t('Program type (e.g. Fellowship Program, Phd Program, Masters Program');
   t('Project Title');
@@ -20099,15 +23084,11 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Research project detail');
   t('Research project summary');
   t('Role');
-  t('SUNetID');
   t('Service, Volunteer, and Community Work');
   t('Short');
   t('Short description of research interests (500 bytes)');
-  t('Similar Profiles');
   t('Specific Location');
   t('Stanford Advisors');
-  t('Stanford Hospital Clinics');
-  t('Stanford University Network Identifier');
   t('Start Date');
   t('Start Year');
   t('State');
@@ -20115,27 +23096,20 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Subject');
   t('Subject Code');
   t('Supervisors');
-  t('Tag types associated with the profile');
   t('Terms');
   t('Terse');
   t('Terse description of research interests (80 bytes)');
-  t('The display name that will appear at the top of the profile');
-  t('The populations that a profile is a member of');
   t('Title');
   t('Titles');
   t('Topic/Emphasis');
   t('True if student involvement is available');
   t('True if this is an ongoing project');
-  t('True if this is the primary alias, non-primary aliases will redirect to the primary.');
   t('Type');
   t('Type of activity (e.g. Research, Service, Education, Policy Advocacy)');
   t('Type of media');
-  t('Type of similarity');
   t('URL');
   t('URL used to retrieve clinical trials associated with the profile');
   t('Unique identifier');
-  t('Unique profile identifier');
-  t('University ID');
   t('Value');
   t('Value of flag');
   t('Visibility');
