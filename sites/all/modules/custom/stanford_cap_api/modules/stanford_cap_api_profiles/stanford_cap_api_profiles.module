@@ -366,15 +366,21 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
     $drupal_field_name = _stanford_cap_api_profiles_get_field_name($field_name, '', TRUE);
     $props_info = $nw->getPropertyInfo();
     if (isset($props_info[$drupal_field_name])) {
-      $hash = db_select('cap_api_field_hashes', 'hashes')
-        ->condition('profile_id', $profile_id)
-        ->condition('field_name', $drupal_field_name)
-        ->fields('hashes', array('hash'))
-        ->execute()
-        ->fetchField();
-      if ($hash == serialize($node->{$drupal_field_name})) {
-        // Field data didn't changed till import, this means we can update it.
-        $nw->{$drupal_field_name}->set(NULL);
+      if (isset($node->{$drupal_field_name})) {
+        $hash = db_select('cap_api_field_hashes', 'hashes')
+          ->condition('profile_id', $profile_id)
+          ->condition('field_name', $drupal_field_name)
+          ->fields('hashes', array('hash'))
+          ->execute()
+          ->fetchField();
+        if ($hash == serialize($node->{$drupal_field_name})) {
+          // Field data didn't changed till import, this means we can update it.
+          $nw->{$drupal_field_name}->set(NULL);
+          _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
+        }
+      }
+      else {
+        // We know about this field, but it had no data before.
         _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
       }
     }
