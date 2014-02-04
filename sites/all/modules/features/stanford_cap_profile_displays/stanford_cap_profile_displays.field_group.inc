@@ -26,8 +26,7 @@ function stanford_cap_profile_displays_field_group_info() {
       0 => 'cap_alternatecontact',
       1 => 'cap_clinicalcontacts',
       2 => 'cap_clinicalpractices',
-      3 => 'cap_profilephotos',
-      4 => 'cap_supervisors',
+      3 => 'cap_supervisors',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -57,8 +56,7 @@ function stanford_cap_profile_displays_field_group_info() {
       0 => 'cap_alternatecontact',
       1 => 'cap_clinicalcontacts',
       2 => 'cap_clinicalpractices',
-      3 => 'cap_profilephotos',
-      4 => 'cap_supervisors',
+      3 => 'cap_supervisors',
     ),
     'format_type' => 'htab',
     'format_settings' => array(
@@ -411,10 +409,10 @@ function stanford_cap_profile_displays_field_group_info() {
     'children' => array(
       0 => 'group_cap_academic_contact_info',
       1 => 'group_cap_bio',
-      2 => 'group_research_scholarship',
-      3 => 'group_cap_teaching',
-      4 => 'group_cap_professional',
-      5 => 'group_cap_publications',
+      2 => 'group_cap_professional',
+      3 => 'group_cap_publications',
+      4 => 'group_cap_teaching',
+      5 => 'group_research_scholarship',
     ),
     'format_type' => 'htabs',
     'format_settings' => array(
