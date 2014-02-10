@@ -2922,7 +2922,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -2930,12 +2930,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 10,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -2943,7 +2943,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 10,
       ),
     ),
@@ -3077,7 +3077,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -3085,12 +3085,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -3098,7 +3098,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
     ),
@@ -3519,7 +3519,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -3527,12 +3527,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 10,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -3540,7 +3540,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 10,
       ),
     ),
@@ -3674,7 +3674,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -3682,12 +3682,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -3695,7 +3695,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
     ),
@@ -4116,7 +4116,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -4124,12 +4124,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 10,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -4137,7 +4137,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 10,
       ),
     ),
@@ -4271,7 +4271,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -4279,12 +4279,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -4292,7 +4292,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
     ),
@@ -5449,7 +5449,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -5457,12 +5457,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -5470,7 +5470,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
     ),
@@ -5523,7 +5523,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -5531,12 +5531,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -5544,7 +5544,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
     ),
@@ -7444,7 +7444,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -7452,12 +7452,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 4,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -7465,7 +7465,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 4,
       ),
     ),
@@ -7868,7 +7868,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => 'Add',
           'delete' => 'Delete',
@@ -7876,12 +7876,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => 'Edit',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => 'Add',
           'delete' => 'Delete',
@@ -7889,7 +7889,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => 'Edit',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
     ),
@@ -12284,7 +12284,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -12292,12 +12292,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -12305,7 +12305,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
     ),
@@ -14548,7 +14548,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -14556,12 +14556,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -14569,7 +14569,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
     ),
@@ -14609,7 +14609,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -14617,12 +14617,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -14630,7 +14630,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
     ),
@@ -14683,7 +14683,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -14691,12 +14691,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -14704,7 +14704,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 0,
       ),
     ),
@@ -18720,7 +18720,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'hidden',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -18728,12 +18728,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'hidden',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -18741,7 +18741,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
     ),
@@ -19290,7 +19290,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19298,12 +19298,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 5,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19311,7 +19311,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 5,
       ),
       'teaser' => array(
@@ -19370,7 +19370,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19378,12 +19378,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19391,7 +19391,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'teaser' => array(
@@ -19450,7 +19450,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19458,12 +19458,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19471,7 +19471,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'teaser' => array(
@@ -19650,7 +19650,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19658,12 +19658,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19671,7 +19671,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'teaser' => array(
@@ -19790,7 +19790,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19798,12 +19798,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19811,7 +19811,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'teaser' => array(
@@ -19870,7 +19870,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19878,12 +19878,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -19891,7 +19891,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'teaser' => array(
@@ -20010,7 +20010,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20018,12 +20018,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 12,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20031,7 +20031,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 12,
       ),
       'teaser' => array(
@@ -20090,7 +20090,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20098,12 +20098,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20111,7 +20111,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'teaser' => array(
@@ -20170,7 +20170,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20178,12 +20178,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20191,7 +20191,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'teaser' => array(
@@ -20310,7 +20310,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20318,12 +20318,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20331,7 +20331,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 9,
       ),
       'teaser' => array(
@@ -20390,7 +20390,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20398,12 +20398,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 4,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20411,7 +20411,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 4,
       ),
       'teaser' => array(
@@ -20470,7 +20470,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20478,12 +20478,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 6,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20491,7 +20491,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 6,
       ),
       'teaser' => array(
@@ -20550,7 +20550,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20558,12 +20558,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 4,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20571,7 +20571,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 4,
       ),
       'teaser' => array(
@@ -20630,7 +20630,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20638,12 +20638,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 16,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20651,7 +20651,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 16,
       ),
       'teaser' => array(
@@ -20710,7 +20710,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20718,12 +20718,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 7,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20731,7 +20731,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 7,
       ),
       'teaser' => array(
@@ -20790,7 +20790,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'hidden',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20798,12 +20798,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'profile_page_tabbed' => array(
         'label' => 'hidden',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20811,7 +20811,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'teaser' => array(
@@ -20870,7 +20870,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20878,12 +20878,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 8,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20891,7 +20891,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 8,
       ),
       'teaser' => array(
@@ -20950,7 +20950,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20958,12 +20958,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 14,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -20971,7 +20971,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 14,
       ),
       'teaser' => array(
@@ -21090,7 +21090,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21098,12 +21098,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21111,7 +21111,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'teaser' => array(
@@ -21170,7 +21170,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21178,12 +21178,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21191,7 +21191,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'teaser' => array(
@@ -21310,7 +21310,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21318,12 +21318,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 7,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21331,7 +21331,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 7,
       ),
       'teaser' => array(
@@ -21456,7 +21456,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21464,12 +21464,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 6,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21477,7 +21477,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 6,
       ),
       'teaser' => array(
@@ -21536,7 +21536,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21544,12 +21544,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21557,7 +21557,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 1,
       ),
       'teaser' => array(
@@ -21616,7 +21616,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21624,12 +21624,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 5,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21637,7 +21637,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 5,
       ),
       'teaser' => array(
@@ -21696,7 +21696,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21704,12 +21704,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 13,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21717,7 +21717,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 13,
       ),
       'teaser' => array(
@@ -21776,7 +21776,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21784,12 +21784,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 11,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21797,7 +21797,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 11,
       ),
       'teaser' => array(
@@ -21856,7 +21856,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21864,12 +21864,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 5,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21877,7 +21877,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 5,
       ),
       'teaser' => array(
@@ -21936,7 +21936,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'hidden',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21944,12 +21944,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'profile_page_tabbed' => array(
         'label' => 'hidden',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -21957,7 +21957,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 3,
       ),
       'teaser' => array(
@@ -22016,7 +22016,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
       ),
       'profile_page' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -22024,12 +22024,12 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'profile_page_tabbed' => array(
         'label' => 'above',
-        'module' => 'field_collection',
+        'module' => 'stanford_cap_profile_displays',
         'settings' => array(
           'add' => '',
           'delete' => '',
@@ -22037,7 +22037,7 @@ function stanford_cap_profile_displays_field_default_field_instances() {
           'edit' => '',
           'view_mode' => 'profile_page_tabbed',
         ),
-        'type' => 'field_collection_view',
+        'type' => 'cap_field_collection_view',
         'weight' => 2,
       ),
       'teaser' => array(
