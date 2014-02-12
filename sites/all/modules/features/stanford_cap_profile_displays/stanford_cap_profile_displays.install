@@ -16,7 +16,7 @@ function stanford_cap_profile_displays_enable() {
     'type' => 'image',
     'weight' => '2',
     'settings' =>array (
-        'image_style' => '',
+        'image_style' => 'stanford_profile_image',
         'image_link' => '',
     ),
     'module' => 'image',

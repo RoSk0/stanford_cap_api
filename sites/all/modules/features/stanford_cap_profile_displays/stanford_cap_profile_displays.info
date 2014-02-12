@@ -469,6 +469,7 @@ features[field_instance][] = node-cap_stanford_profile-cap_stanfordadvisors
 features[field_instance][] = node-cap_stanford_profile-cap_supervisors
 features[field_instance][] = node-cap_stanford_profile-cap_titles
 features[field_instance][] = node-cap_stanford_profile-cap_workexperience
+features[image][] = stanford_profile_image
 features[variable][] = field_bundle_settings_field_collection_item__cap_administrativeappointment
 features[variable][] = field_bundle_settings_field_collection_item__cap_advisees
 features[variable][] = field_bundle_settings_field_collection_item__cap_advisor

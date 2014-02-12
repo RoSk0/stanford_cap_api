@@ -22271,6 +22271,15 @@ function stanford_cap_profile_displays_field_default_field_instances() {
   t('Year');
   t('Year Issued');
   t('Zip');
+  t('big');
+  t('contentType');
+  t('height');
+  t('placeholder');
+  t('small');
+  t('square');
+  t('type');
+  t('url');
+  t('width');
 
   return $field_instances;
 }
