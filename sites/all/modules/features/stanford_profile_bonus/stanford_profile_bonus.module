@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Stanford Profile Bonus feature.
+ */
+
+include_once 'stanford_profile_bonus.features.inc';
