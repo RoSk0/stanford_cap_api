@@ -174,7 +174,7 @@ function stanford_cap_api_profiles_profile_import($profile_id) {
   $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
   if (empty($etag) && !empty($stored_metadata['etag'])) {
     // Profile is synced, but deleted from CAP.
-    $action = variable_get('cap_stanford_cap_api_profile_orphaned_action', 'unpublish');
+    $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
     switch ($action) {
       case 'unpublish':
         $nid = db_select('cap_api_profiles', 'p')

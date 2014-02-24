@@ -185,10 +185,10 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
       'nothing' => t('Do nothing. The profile will simply continue to exist on the website.'),
       'remove' => t('Remove it from the site.'),
     );
-    $form['orphaned']['stanford_cap_api_profile_orphaned_action'] = array(
+    $form['orphaned']['stanford_cap_api_profiles_orphaned_action'] = array(
       '#type' => 'radios',
       '#title' => t('When a profile is removed from the CAP API:'),
-      '#default_value' => variable_get('cap_stanford_cap_api_profile_orphaned_action', 'unpublish'),
+      '#default_value' => variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish'),
       '#options' => $options,
     );
   }
@@ -225,7 +225,7 @@ function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
   else {
     variable_set('stanford_cap_api_profile_custom_fields', $values['stanford_cap_api_profile_custom_fields']);
     variable_set('stanford_cap_api_profile_allow_edit', $values['stanford_cap_api_profile_allow_edit']);
-    variable_set('cap_stanford_cap_api_profile_orphaned_action', $values['stanford_cap_api_profile_orphaned_action']);
+    variable_set('stanford_cap_api_profiles_orphaned_action', $values['stanford_cap_api_profiles_orphaned_action']);
     variable_set('stanford_cap_api_profile_update', $values['stanford_cap_api_profile_update']);
   }
 }
