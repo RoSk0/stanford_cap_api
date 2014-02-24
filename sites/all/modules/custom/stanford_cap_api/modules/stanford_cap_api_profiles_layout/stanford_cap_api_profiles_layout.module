@@ -262,7 +262,7 @@ function _stanford_cap_api_profiles_layout_sync_sections($section, $heading_name
   // All fields for current display mode are currently hidden. Lets show those
   // listed in displayFields array.
   foreach ($section['displayFields'] as $field_path) {
-    $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path);
+    $field_info = _stanford_cap_api_profiles_get_field_info_by_path($field_path);
     // Check if this field exist.
     if (!empty($field_info)) {
       // Whole field collection.
@@ -280,7 +280,7 @@ function _stanford_cap_api_profiles_layout_sync_sections($section, $heading_name
         $levels = count($parts);
         // Iterate over field collection and it subfields.
         for ($i = 0; $i < $levels; $i++) {
-          $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path(implode('.', $parts));
+          $field_info = _stanford_cap_api_profiles_get_field_info_by_path(implode('.', $parts));
           $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
           _stanford_cap_api_profiles_layout_set_instance_display_settings($field_instance, $mode);
           array_pop($parts);
@@ -329,23 +329,6 @@ function _stanford_cap_api_profiles_layout_sync_sections($section, $heading_name
 }
 
 /**
- * Helper to get stored field info by field path from layout schema.
- *
- * @param string $field_path
- *   Field path from layout schema.
- *
- * @return array
- *   Stored field info.
- */
-function _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path) {
-  return db_select('cap_api_fields_map', 'm')
-    ->fields('m')
-    ->condition('field_path', $field_path)
-    ->execute()
-    ->fetchAssoc();
-}
-
-/**
  * Synchronize layout of heading section fields.
  *
  * Unlike _stanford_cap_api_profiles_layout_sync_sections() doesn't create
@@ -367,7 +350,7 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
   foreach ($section['displayFields'] as $field_path) {
     // Whole field collection.
     if (strpos($field_path, '.') === FALSE) {
-      $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path($field_path);
+      $field_info = _stanford_cap_api_profiles_get_field_info_by_path($field_path);
       // Check if this field exist.
       if (!empty($field_info)) {
         // Adding this field collection to children of field group.
@@ -400,7 +383,7 @@ function _stanford_cap_api_profiles_layout_sync_sections_fields($section, &$sect
       $levels = count($parts);
       // Iterate over field collection and it subfields.
       for ($i = 0; $i < $levels; $i++) {
-        $field_info = _stanford_cap_api_profiles_layout_get_field_name_by_path(implode('.', $parts));
+        $field_info = _stanford_cap_api_profiles_get_field_info_by_path(implode('.', $parts));
         if (!empty($field_info)) {
           $field_instance = field_info_instance($field_info['entity_type'], $field_info['field_name'], $field_info['bundle']);
           if ($field_instance) {

@@ -320,17 +320,7 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
   foreach ($profile as $field_name => $field_data) {
     _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
   }
-
-  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
-  $nw->cap_sync_date->set(REQUEST_TIME);
-  // Profile image handling.
-  if (!empty($profile['profilePhotos'])) {
-    $image_type = 'bigger';
-    $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
-    if (isset($fid)) {
-      $nw->cap_profile_image = array('fid' => $fid);
-    }
-  }
+  _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
   $nw->save();
   $profile_id = $profile['profileId'];
   $bundled_fields = array(
@@ -347,6 +337,36 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
         'hash' => $field_data,
       );
       drupal_write_record('cap_api_field_hashes', $record);
+    }
+  }
+}
+
+/**
+ * Set basic profile fields value.
+ *
+ * @param object $nw
+ *   Node wrapper object.
+ * @param array $profile
+ *   CAP profile.
+ */
+function _stanford_cap_api_profiles_fill_basic_fields(&$nw, $profile) {
+  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
+  $nw->cap_sync_date->set(REQUEST_TIME);
+  // Organization relation handling.
+  $org_tid = _stanford_cap_api_profiles_get_orantization_tid($nw, 'short');
+  if (!$org_tid) {
+    // Lets try long title;
+    $org_tid = _stanford_cap_api_profiles_get_orantization_tid($nw, 'long');
+  }
+  if ($org_tid) {
+    $nw->field_cap_profile_organization = $org_tid;
+  }
+  // Profile image handling.
+  if (!empty($profile['profilePhotos'])) {
+    $image_type = 'bigger';
+    $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
+    if (isset($fid)) {
+      $nw->cap_profile_image = array('fid' => $fid);
     }
   }
 }
@@ -385,14 +405,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
       }
     }
   }
-  $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
-  $nw->cap_sync_date->set(REQUEST_TIME);
-  // Profile image handling.
-  $image_type = 'bigger';
-  $fid = _stanford_cap_api_profiles_save_image_file($image_type, $profile['profilePhotos'][$image_type]);
-  if (isset($fid)) {
-    $nw->cap_profile_image = array('fid' => $fid);
-  }
+  _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
   $nw->save();
 }
 
@@ -830,6 +843,23 @@ function _stanford_cap_api_profiles_get_field_name($field_name, $parent = '', $f
   }
 
   return $drupal_field_name;
+}
+
+/**
+ * Helper to get stored field info by field path.
+ *
+ * @param string $field_path
+ *   Field path from layout schema.
+ *
+ * @return array
+ *   Stored field info.
+ */
+function _stanford_cap_api_profiles_get_field_info_by_path($field_path) {
+  return db_select('cap_api_fields_map', 'm')
+    ->fields('m')
+    ->condition('field_path', $field_path)
+    ->execute()
+    ->fetchAssoc();
 }
 
 /**
@@ -2116,4 +2146,48 @@ function stanford_cap_api_profiles_library() {
   );
 
   return $libraries;
+}
+
+/**
+ * Figure out organization term id from title field.
+ *
+ * @param object $nw
+ *   Node wrapper object.
+ *
+ * @param string $title_type
+ *   From which title field organization should be taken.
+ *   Available options are 'short' and 'long'.
+ *
+ * @return int
+ *   Organization taxonomy term ID.
+ */
+function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'short') {
+  $tid = NULL;
+  switch ($title_type) {
+    case 'short':
+      $node_field = 'cap_shorttitle';
+      $field_path = 'shortTitle.organization.orgCode';
+      break;
+
+    case 'long':
+      $node_field = 'cap_longtitle';
+      $field_path = 'longTitle.organization.orgCode';
+      break;
+
+    default:
+      return;
+  }
+  $field_info = _stanford_cap_api_profiles_get_field_info_by_path($field_path);
+  $title = $nw->{$node_field}->value();
+  if ($title) {
+    $org = $nw->{$node_field}->{$field_info['bundle']}->value();
+    if ($org) {
+      $term = $nw->{$node_field}->{$field_info['bundle']}->{$field_info['field_name']}->value();
+      if ($term) {
+        $tid = $nw->{$node_field}->{$field_info['bundle']}->{$field_info['field_name']}->tid->value();
+      }
+    }
+  }
+
+  return $tid;
 }
