@@ -407,6 +407,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   }
   _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
   $nw->save();
+  // @todo Store updated fields hashes.
 }
 
 /**
