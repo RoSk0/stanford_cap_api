@@ -170,6 +170,7 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
       '#title' => t('CAP Profiles can be updated regularly to ensure you have the latest content available for the site:'),
       '#default_value' => variable_get('stanford_cap_api_profile_update', 'nightly'),
       '#options' => array(
+        // @todo Replace with named constants.
         'viewing' => t('When viewing the profile.'),
         'nightly' => t('Nightly.'),
       ),
