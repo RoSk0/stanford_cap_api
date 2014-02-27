@@ -1992,6 +1992,7 @@ function _stanford_cap_api_profiles_save_image_file($field_name, $field_data) {
     return NULL;
   }
   else {
+    // @todo Add check is file exists and size is same, other way we will multiple DB file entries every sync.
     $file_dir = 'cap_profile_images';
     $path = 'public://'
       . $file_dir
