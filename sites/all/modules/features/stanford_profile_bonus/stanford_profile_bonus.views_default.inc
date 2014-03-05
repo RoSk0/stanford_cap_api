@@ -241,7 +241,7 @@ function stanford_profile_bonus_views_default_views() {
   $view->name = 'stanford_publications';
   $view->description = '';
   $view->tag = 'default';
-  $view->base_table = 'node';
+  $view->base_table = 'field_collection_item';
   $view->human_name = 'Stanford publications';
   $view->core = 7;
   $view->api_version = '3.0';
@@ -251,65 +251,33 @@ function stanford_profile_bonus_views_default_views() {
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Stanford publications';
   $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['type'] = 'none';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['exposed_form']['options']['reset_button'] = TRUE;
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '25';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: Content: Nid */
-  $handler->display->display_options['fields']['nid']['id'] = 'nid';
-  $handler->display->display_options['fields']['nid']['table'] = 'node';
-  $handler->display->display_options['fields']['nid']['field'] = 'nid';
-  $handler->display->display_options['fields']['nid']['label'] = '';
-  $handler->display->display_options['fields']['nid']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['nid']['element_label_colon'] = FALSE;
-  /* Field: Content: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
-  /* Sort criterion: Content: Post date */
-  $handler->display->display_options['sorts']['created']['id'] = 'created';
-  $handler->display->display_options['sorts']['created']['table'] = 'node';
-  $handler->display->display_options['sorts']['created']['field'] = 'created';
-  $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-  /* Filter criterion: Content: Published */
-  $handler->display->display_options['filters']['status']['id'] = 'status';
-  $handler->display->display_options['filters']['status']['table'] = 'node';
-  $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['value'] = 1;
-  $handler->display->display_options['filters']['status']['group'] = 1;
-  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-  /* Filter criterion: Content: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'cap_stanford_profile' => 'cap_stanford_profile',
-  );
-  /* Filter criterion: Content: Title */
-  $handler->display->display_options['filters']['title']['id'] = 'title';
-  $handler->display->display_options['filters']['title']['table'] = 'node';
-  $handler->display->display_options['filters']['title']['field'] = 'title';
-  $handler->display->display_options['filters']['title']['operator'] = 'contains';
-  $handler->display->display_options['filters']['title']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
-  $handler->display->display_options['filters']['title']['expose']['label'] = 'Name';
-  $handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
-  $handler->display->display_options['filters']['title']['expose']['identifier'] = 'title';
-  $handler->display->display_options['filters']['title']['expose']['remember_roles'] = array(
-    2 => '2',
-    1 => 0,
-    3 => 0,
-  );
+  /* Relationship: Field collection item: Entity with the Publications (cap_publications) */
+  $handler->display->display_options['relationships']['cap_publications_node']['id'] = 'cap_publications_node';
+  $handler->display->display_options['relationships']['cap_publications_node']['table'] = 'field_collection_item';
+  $handler->display->display_options['relationships']['cap_publications_node']['field'] = 'cap_publications_node';
+  /* Field: Field collection item: CAP Citation */
+  $handler->display->display_options['fields']['cap_capcitation']['id'] = 'cap_capcitation';
+  $handler->display->display_options['fields']['cap_capcitation']['table'] = 'field_data_cap_capcitation';
+  $handler->display->display_options['fields']['cap_capcitation']['field'] = 'cap_capcitation';
+  $handler->display->display_options['fields']['cap_capcitation']['label'] = '';
+  $handler->display->display_options['fields']['cap_capcitation']['element_label_colon'] = FALSE;
   /* Filter criterion: Content: CAP profile organization (field_cap_profile_organization) */
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['id'] = 'field_cap_profile_organization_tid';
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['table'] = 'field_data_field_cap_profile_organization';
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['field'] = 'field_cap_profile_organization_tid';
+  $handler->display->display_options['filters']['field_cap_profile_organization_tid']['relationship'] = 'cap_publications_node';
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['value'] = '';
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['exposed'] = TRUE;
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['expose']['operator_id'] = 'field_cap_profile_organization_tid_op';
@@ -322,6 +290,26 @@ function stanford_profile_bonus_views_default_views() {
     3 => 0,
   );
   $handler->display->display_options['filters']['field_cap_profile_organization_tid']['vocabulary'] = 'stanford_org_code_hierarchy';
+  /* Filter criterion: Content: Title */
+  $handler->display->display_options['filters']['title']['id'] = 'title';
+  $handler->display->display_options['filters']['title']['table'] = 'node';
+  $handler->display->display_options['filters']['title']['field'] = 'title';
+  $handler->display->display_options['filters']['title']['relationship'] = 'cap_publications_node';
+  $handler->display->display_options['filters']['title']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
+  $handler->display->display_options['filters']['title']['expose']['label'] = 'Name';
+  $handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
+  $handler->display->display_options['filters']['title']['expose']['identifier'] = 'title';
+  $handler->display->display_options['filters']['title']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+  );
+  /* Filter criterion: Field collection item: CAP Citation (cap_capcitation) */
+  $handler->display->display_options['filters']['cap_capcitation_value']['id'] = 'cap_capcitation_value';
+  $handler->display->display_options['filters']['cap_capcitation_value']['table'] = 'field_data_cap_capcitation';
+  $handler->display->display_options['filters']['cap_capcitation_value']['field'] = 'cap_capcitation_value';
+  $handler->display->display_options['filters']['cap_capcitation_value']['operator'] = 'not empty';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');

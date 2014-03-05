@@ -28,6 +28,9 @@ function stanford_profile_bonus_form_views_exposed_form_alter(&$form, &$form_sta
     );
     array_unshift($form['#submit'], 'stanford_profile_bonus_form_views_exposed_form_submit');
   }
+  elseif ($form['#id'] == 'views-exposed-form-stanford-publications-page') {
+    $form['title']['#autocomplete_path'] = 'stanford-publications-name-autocomplete';
+  }
 }
 
 /**
@@ -59,4 +62,41 @@ function stanford_profile_bonus_form_views_exposed_form_submit($form, &$form_sta
         break;
     }
   }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function stanford_profile_bonus_menu() {
+  $items = array(
+    'stanford-publications-name-autocomplete' => array(
+      'title' => 'Autocomplete callback',
+      'description' => 'Autocomplete callback for Stanford publications view "Name" filter',
+      'page callback' => 'stanford_profile_bonus_name_autocomplete',
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    ),
+  );
+
+  return $items;
+}
+
+/**
+ * Name autocomplete callback.
+ */
+function stanford_profile_bonus_name_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = db_select('node', 'n')
+      ->fields('n', array('title'))
+      ->condition('type', 'cap_stanford_profile')
+      ->condition('title', db_like($string) . '%', 'LIKE')
+      ->range(0, 10)
+      ->execute();
+    foreach ($result as $node) {
+      $matches[$node->title] = check_plain($node->title);
+    }
+  }
+
+  drupal_json_output($matches);
 }
