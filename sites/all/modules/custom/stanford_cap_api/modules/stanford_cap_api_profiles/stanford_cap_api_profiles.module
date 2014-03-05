@@ -1492,6 +1492,12 @@ function _stanford_cap_api_profiles_gen_field_base_def_boolean($field_name, $fie
     'cardinality' => $cardinality,
     'field_name' => $field_name,
     'type' => 'list_boolean',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => t('No'),
+        1 => t('Yes'),
+      ),
+    ),
   );
 }
 
@@ -2198,4 +2204,23 @@ function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'sho
   }
 
   return $tid;
+}
+
+function test() {
+  stanford_cap_api_profiles_synchronize_schema();
+//  $new_fields = array(
+//    'affiliations.capFaculty',
+//    'affiliations.capMdStudent',
+//    'affiliations.capMsStudent',
+//    'affiliations.capPhdStudent',
+//    'affiliations.capPostdoc',
+//    'affiliations.capStaff',
+//    'affiliations.physician',
+//  );
+//  $list = variable_get('stanford_cap_api_profiles_sync_field_list');
+//  foreach ($new_fields as $new_field) {
+//    array_unshift($list, $new_field);
+//  }
+//
+//  variable_set('stanford_cap_api_profiles_sync_field_list', $list);
 }
