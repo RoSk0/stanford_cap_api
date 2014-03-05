@@ -1,10 +1,10 @@
 name = Stanford Profile Bonus
 core = 7.x
 package = Stanford
+dependencies[] = ctools
 dependencies[] = views
 features[ctools][] = views:views_default:3.0
 features[features_api][] = api:2
 features[views_view][] = stanford_profiles
 features[views_view][] = stanford_publications
-features_exclude[dependencies][ctools] = ctools
 project path = sites/all/modules/features

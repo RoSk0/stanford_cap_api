@@ -5,3 +5,58 @@
  */
 
 include_once 'stanford_profile_bonus.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds new exposed filter to stanford_profiles view and submit handler.
+ */
+function stanford_profile_bonus_form_views_exposed_form_alter(&$form, &$form_state) {
+  if ($form['#id'] == 'views-exposed-form-stanford-profiles-page') {
+    $form['affiliation_type'] = array(
+      '#title' => t('Type'),
+      '#type' => 'select',
+      '#options' => array(
+        'any' => t('- Any -'),
+        'staff' => t('Staff'),
+        'physician' => t('Physician'),
+        'postdoc' => t('Postdoc'),
+        'faculty' => t('Faculty'),
+        'student' => t('Student'),
+      ),
+      '#weight' => -100,
+    );
+    array_unshift($form['#submit'], 'stanford_profile_bonus_form_views_exposed_form_submit');
+  }
+}
+
+/**
+ * Submit handler for profile type filter.
+ */
+function stanford_profile_bonus_form_views_exposed_form_submit($form, &$form_state) {
+  if (isset($form_state['values']) && isset($form_state['values']['affiliation_type'])) {
+    switch ($form_state['values']['affiliation_type']) {
+      case 'staff':
+        $form_state['values']['cap_capstaff_value'] = 1;
+        break;
+
+      case 'physician':
+        $form_state['values']['cap_physician_value'] = 1;
+        break;
+
+      case 'postdoc':
+        $form_state['values']['cap_cappostdoc_value'] = 1;
+        break;
+
+      case 'faculty':
+        $form_state['values']['cap_capfaculty_value'] = 1;
+        break;
+
+      case 'student':
+        $form_state['values']['cap_capmdstudent_value'] = 1;
+        $form_state['values']['cap_capmsstudent_value'] = 1;
+        $form_state['values']['cap_capphdstudent_value'] = 1;
+        break;
+    }
+  }
+}
