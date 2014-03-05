@@ -13,6 +13,21 @@ include_once 'stanford_profile_bonus.features.inc';
  */
 function stanford_profile_bonus_form_views_exposed_form_alter(&$form, &$form_state) {
   if ($form['#id'] == 'views-exposed-form-stanford-profiles-page') {
+    // Lets hide exposed filters for affiliation field collection fields and
+    // replace them with one.
+    $filters = array(
+      'cap_capfaculty_value',
+      'cap_physician_value',
+      'cap_capstaff_value',
+      'cap_cappostdoc_value',
+      'cap_capmsstudent_value',
+      'cap_capphdstudent_value',
+      'cap_capmdstudent_value',
+    );
+    foreach ($filters as $filter) {
+      $form[$filter]['#access'] = FALSE;
+    }
+    // Adding filter.
     $form['affiliation_type'] = array(
       '#title' => t('Type'),
       '#type' => 'select',
@@ -24,7 +39,15 @@ function stanford_profile_bonus_form_views_exposed_form_alter(&$form, &$form_sta
         'faculty' => t('Faculty'),
         'student' => t('Student'),
       ),
+      '#defulat_value' => 'any',
       '#weight' => -100,
+    );
+    // Pretending tru view exposed filter.
+    $form['#info']['affiliation_type']= array(
+      'operator' => 'affiliation_type_op',
+      'value' => 'affiliation_type',
+      'label' => '',
+      'description' => '',
     );
     array_unshift($form['#submit'], 'stanford_profile_bonus_form_views_exposed_form_submit');
   }
