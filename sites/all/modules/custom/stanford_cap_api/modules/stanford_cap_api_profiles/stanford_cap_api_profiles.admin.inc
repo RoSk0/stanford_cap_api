@@ -520,6 +520,8 @@ function stanford_cap_api_profiles_reset() {
   }
   batch_set(array('operations' => $operations));
   db_delete('cap_api_fields')->execute();
+  db_delete('cap_api_field_hashes')->execute();
+  db_delete('cap_api_fields_map')->execute();
   variable_del('stanford_cap_api_profiles_schema_synchronized');
   variable_del('stanford_cap_api_profiles_schema_hash');
   drupal_set_message(t('Stanford profile content type has being resetted to default.'));
