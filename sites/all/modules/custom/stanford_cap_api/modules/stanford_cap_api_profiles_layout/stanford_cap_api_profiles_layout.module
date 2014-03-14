@@ -210,7 +210,7 @@ function stanford_cap_api_profiles_layout_reset($display_mode = 'full') {
  *
  * Adding submit handler to set batch for layout synchronization.
  */
-function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_alter(&$form) {
+function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_alter(&$form, &$form_state) {
   // Need to  start layout sync process only if it's not synced yet.
   if (!variable_get('stanford_cap_api_profiles_layout_synced', FALSE)) {
     $form['#submit'][50] = 'stanford_cap_api_profiles_layout_settings_form_submit';
@@ -218,6 +218,7 @@ function stanford_cap_api_profiles_layout_form_stanford_cap_api_settings_form_al
   }
   // Extending list of fields to synchronize.
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
+    $form['synchronization']['stanford_cap_api_import_profile_fields']['#default_value'] = CAP_FIELDS_IMPORT_LAYOUT;
     $form['synchronization']['stanford_cap_api_import_profile_fields']['#options'][CAP_FIELDS_IMPORT_LAYOUT] = t('Import suggested display fields only. Includes minimal set of fields which have a display layout in CAP.');
   }
 }
