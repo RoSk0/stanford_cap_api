@@ -39,16 +39,6 @@ function stanford_cap_api_profiles_menu() {
       'type' => MENU_CALLBACK,
     );
 
-    $items['admin/config/cap/config/manage'] = array(
-      'title' => 'Manage profiles',
-      'description' => 'Provides administrators ability to manage CAP profiles.',
-      'page callback' => 'stanford_cap_api_profiles_manage',
-      'access arguments' => array('administer cap api'),
-      'weight' => 0,
-      'file' => 'stanford_cap_api_profiles.admin.inc',
-      'type' => MENU_LOCAL_TASK,
-    );
-
     $items['admin/config/cap/config/group'] = array(
       'title' => 'Group import',
       'description' => 'Provides administrators ability to synchronize groups of CAP profiles.',
@@ -2213,18 +2203,4 @@ function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'sho
   }
 
   return $tid;
-}
-
-function test() {
-
-  $count = 16;
-
-  if ($count > CAP_PROFILES_PER_REQUEST) {
-    $requests_count = (int) ceil($count / CAP_PROFILES_PER_REQUEST);
-
-  }
-  else {
-    $requests_count = 1;
-  }
-  dpm($requests_count);
 }

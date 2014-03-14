@@ -235,6 +235,7 @@ function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
  * Form builder for import page.
  */
 function stanford_cap_api_profiles_import_form($form, &$form_state) {
+  drupal_set_title(t('Profile import'));
 
   $form['description'] = array(
     '#type' => 'item',
@@ -352,6 +353,7 @@ function _stanford_cap_api_profiles_prepare_list_str($str) {
  * Form builder for import result page.
  */
 function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
+  drupal_set_title(t('Profile search results'));
 
   if (!empty($_SESSION['search_response']) && !empty($_SESSION['search_response']['values'])) {
     $form['description_wrapper'] = array(
@@ -528,16 +530,10 @@ function stanford_cap_api_profiles_reset() {
 }
 
 /**
- * Manage profiles page callback.
- */
-function stanford_cap_api_profiles_manage() {
-  return views_embed_view('cap_api_manage_profiles');
-}
-
-/**
  * Groups synchronization from builder.
  */
 function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
+  drupal_set_title(t('Group import'));
 
   $form['description'] = array(
     '#type' => 'item',
