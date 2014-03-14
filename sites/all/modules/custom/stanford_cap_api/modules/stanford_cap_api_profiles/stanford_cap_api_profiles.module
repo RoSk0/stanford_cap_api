@@ -514,7 +514,7 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = NU
       }
     }
     else {
-      watchdog('stanford_cap_api_profiles', 'There was issue in retrieving data from CAP service for "@org_code" organization.', array('@org_code' => $org_code));
+      watchdog('stanford_cap_api_profiles', 'There was an issue while retrieving data from CAP service for "@org_code" organization.', array('@org_code' => $org_code));
     }
   }
 
@@ -556,7 +556,7 @@ function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$opera
       }
     }
     else {
-      watchdog('stanford_cap_api_profiles', 'There was issue in retrieving data from CAP service for "@workgroup" workgroup.', array('@workgroup' => $workgroup_id));
+      watchdog('stanford_cap_api_profiles', 'There was an issue while retrieving data from CAP service for "@workgroup" workgroup.', array('@workgroup' => $workgroup_id));
     }
   }
 
@@ -2204,23 +2204,4 @@ function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'sho
   }
 
   return $tid;
-}
-
-function test() {
-  stanford_cap_api_profiles_synchronize_schema();
-//  $new_fields = array(
-//    'affiliations.capFaculty',
-//    'affiliations.capMdStudent',
-//    'affiliations.capMsStudent',
-//    'affiliations.capPhdStudent',
-//    'affiliations.capPostdoc',
-//    'affiliations.capStaff',
-//    'affiliations.physician',
-//  );
-//  $list = variable_get('stanford_cap_api_profiles_sync_field_list');
-//  foreach ($new_fields as $new_field) {
-//    array_unshift($list, $new_field);
-//  }
-//
-//  variable_set('stanford_cap_api_profiles_sync_field_list', $list);
 }
