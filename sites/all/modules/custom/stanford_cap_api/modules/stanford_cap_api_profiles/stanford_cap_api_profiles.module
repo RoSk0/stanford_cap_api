@@ -1066,7 +1066,9 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
         break;
     }
   }
-  else {
+  elseif (variable_get('stanford_cap_api_import_profile_fields', CAP_FIELDS_IMPORT_ALL) == CAP_FIELDS_IMPORT_ALL) {
+    // Let's log an issue when we want to import all fields, but this field
+    // doesn't exists in Drupal.
     $message = 'Field "@field" was in profile, but were not defined in schema. Field data: @data';
     $vars = array(
       '@field' => $field_name,
