@@ -2204,3 +2204,14 @@ function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'sho
 
   return $tid;
 }
+
+/**
+ * Implements hook_views_default_views_alter().
+ *
+ * Disables 'Manage profiles' view if profiles schema not synchronized yet.
+ */
+function stanford_cap_api_profiles_views_default_views_alter(&$views) {
+  if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE) && isset($views['cap_api_manage_profiles'])) {
+    $views['cap_api_manage_profiles']->disabled = TRUE;
+  }
+}
