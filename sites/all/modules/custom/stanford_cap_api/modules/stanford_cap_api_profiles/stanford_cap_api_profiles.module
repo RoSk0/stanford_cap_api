@@ -307,27 +307,53 @@ function stanford_cap_api_profiles_synchronize_data($profile) {
  */
 function stanford_cap_api_profiles_node_fields_import($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
-
   foreach ($profile as $field_name => $field_data) {
     _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
   }
   _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
   $nw->save();
-  $profile_id = $profile['profileId'];
+  _stanford_cap_api_profiles_store_node_field_hashes($profile['profileId'], $node, $nw);
+}
+
+/**
+ * Stores profile node field hashes in DB.
+ *
+ * We storing serialized raw field values for most fields and
+ * entity/revision IDs  array for field colletions because raw()
+ * metadata wrapper method returns full field collection object.
+ * Doesn't use any hashing because we need to deal not only with strings.
+ *
+ * @param int $profile_id
+ * @param object $node
+ * @param object $nw
+ */
+function _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, $nw) {
   $bundled_fields = array(
     'cap_profile_link',
     'cap_sync_date',
     'cap_profile_image',
   );
   // Storing profile field hashes to check if data was changed later.
-  foreach ($node as $field_name => $field_data) {
-    if (is_array($field_data) && !in_array($field_name, $bundled_fields)) {
-      $record = array(
+  $props_info = $nw->getPropertyInfo();
+  $fields = field_info_instances('node', 'cap_stanford_profile');
+  foreach ($fields as $field_name => $field_instance) {
+    if (!in_array($field_name, $bundled_fields)) {
+      // Using raw values for all fields, but field_collections, they
+      // return full field_collection object as raw.
+      if ($props_info[$field_name]['type'] == 'field_collection_item') {
+        $hash = $node->{$field_name};
+      }
+      else {
+        $hash = $nw->{$field_name}->raw();
+      }
+      $key = array(
         'profile_id' => $profile_id,
         'field_name' => $field_name,
-        'hash' => $field_data,
       );
-      drupal_write_record('cap_api_field_hashes', $record);
+      $record = $key + array(
+        'hash' => serialize($hash),
+      );
+      db_merge('cap_api_field_hashes')->key($key)->fields($record)->execute();
     }
   }
 }
@@ -372,19 +398,27 @@ function _stanford_cap_api_profiles_fill_basic_fields(&$nw, $profile) {
  */
 function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
+  $props_info = $nw->getPropertyInfo();
   $profile_id = $profile['profileId'];
   foreach ($profile as $field_name => $field_data) {
     $drupal_field_name = _stanford_cap_api_profiles_get_field_name($field_name, '', TRUE);
-    $props_info = $nw->getPropertyInfo();
     if (isset($props_info[$drupal_field_name])) {
       if (isset($node->{$drupal_field_name})) {
-        $hash = db_select('cap_api_field_hashes', 'hashes')
+        $stored_hash = db_select('cap_api_field_hashes', 'hashes')
           ->condition('profile_id', $profile_id)
           ->condition('field_name', $drupal_field_name)
           ->fields('hashes', array('hash'))
           ->execute()
           ->fetchField();
-        if ($hash == serialize($node->{$drupal_field_name})) {
+        // Using raw values for all fields, but field_collections, they
+        // return full field_collection object as raw.
+        if ($props_info[$drupal_field_name]['type'] == 'field_collection_item') {
+          $hash = serialize($node->{$drupal_field_name});
+        }
+        else {
+          $hash = serialize($nw->{$drupal_field_name}->raw());
+        }
+        if ($stored_hash == $hash) {
           // Field data didn't changed till import, this means we can update it.
           $nw->{$drupal_field_name}->set(NULL);
           _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
@@ -398,7 +432,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   }
   _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
   $nw->save();
-  // @todo Store updated fields hashes.
+  _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, $nw);
 }
 
 /**
