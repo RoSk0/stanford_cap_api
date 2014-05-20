@@ -516,9 +516,9 @@ function stanford_cap_api_profiles_get_stored_profile_data($profile_id) {
  *
  * @see http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/
  */
-function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = array(), $sync_childs = 0) {
+function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = array(), $sync_children = 0) {
   $params = array('orgCodes' => $org_code);
-  if (!empty($sync_childs)) {
+  if (!empty($sync_children)) {
     $params['includeChildren'] = TRUE;
   }
 
@@ -608,10 +608,10 @@ function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$opera
  *   Quantity of profiles associated with this group.
  * @param int $lastsynced
  *   Last synchronization timestamp.
- * @param int $sync_childs
+ * @param int $sync_children
  *   Flag indicating to import all the profiles in organization and any of its children.
  */
-function stanford_cap_api_profiles_sync_group_save($type, $name, $count = 0, $lastsynced = NULL, $sync_childs = 0) {
+function stanford_cap_api_profiles_sync_group_save($type, $name, $count = 0, $lastsynced = NULL, $sync_children = 0) {
   $record = array('name' => $name, 'type' => $type);
   if (isset($count)) {
     $record['count'] = $count;
@@ -619,8 +619,8 @@ function stanford_cap_api_profiles_sync_group_save($type, $name, $count = 0, $la
   if (isset($lastsynced)) {
     $record['lastsynced'] = $lastsynced;
   }
-  if (isset($sync_childs)) {
-    $record['sync_childs'] = $sync_childs;
+  if (isset($sync_children)) {
+    $record['sync_children'] = $sync_children;
   }
   db_merge('cap_api_sync_groups')
     ->key(array('name' => $name, 'type' => $type))
@@ -636,11 +636,11 @@ function stanford_cap_api_profiles_sync_group_save($type, $name, $count = 0, $la
  * @param string $name
  *   Group name.
  */
-function stanford_cap_api_profiles_sync_group_sync($type, $name, $sync_childs = 0) {
+function stanford_cap_api_profiles_sync_group_sync($type, $name, $sync_children = 0) {
   switch ($type) {
     case 'organization':
-      $count = stanford_cap_api_profiles_sync_org_members($name, $ops = array(), $sync_childs);
-      stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME, $sync_childs);
+      $count = stanford_cap_api_profiles_sync_org_members($name, $ops = array(), $sync_children);
+      stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME, $sync_children);
       break;
 
     case 'workgroup':
@@ -669,7 +669,7 @@ function stanford_cap_api_profiles_sync_group_cron() {
     ->execute()
     ->fetchAll();
   foreach ($groups as $group) {
-    stanford_cap_api_profiles_sync_group_sync($group->type, $group->name, $group->sync_childs);
+    stanford_cap_api_profiles_sync_group_sync($group->type, $group->name, $group->sync_children);
   }
 }
 
@@ -2066,8 +2066,8 @@ function _stanford_cap_api_profiles_save_image_file($field_name, $field_data) {
 /**
  * Helper for batch to store correct sync time.
  */
-function _stanford_cap_api_profiles_sync_group_save_wrapper($type, $name, $count, $sync_childs = 0) {
-  stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME, $sync_childs);
+function _stanford_cap_api_profiles_sync_group_save_wrapper($type, $name, $count, $sync_children = 0) {
+  stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME, $sync_children);
 }
 
 /**
