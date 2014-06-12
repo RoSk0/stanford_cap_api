@@ -266,7 +266,6 @@ function stanford_cap_api_profiles_import_form($form, &$form_state) {
   $form['organization_include_child'] = array(
     '#type' => 'checkbox',
     '#title' => t('Include child organizations'),
-    '#disabled' => TRUE,
     '#default_value' => '',
     '#description' => t('Enable it to retrieve all the members from child organizations.'),
   );
@@ -314,6 +313,9 @@ function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
     $term_wrapper = entity_metadata_wrapper('taxonomy_term', _stanford_cap_api_profiles_get_term_tid($values['organization']));
     $org_codes = $term_wrapper->field_org_codes->value();
     $params['orgCodes'] = implode(',', $org_codes);
+    if (!empty($values['organization_include_child'])) {
+      $params['includeChildren'] = TRUE;
+    } 
   }
   if (!empty($values['workgroup'])) {
     $params['privGroups'] = _stanford_cap_api_profiles_prepare_list_str($values['workgroup']);
