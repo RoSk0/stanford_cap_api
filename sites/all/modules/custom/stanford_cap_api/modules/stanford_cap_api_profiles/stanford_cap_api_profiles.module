@@ -161,47 +161,59 @@ function stanford_cap_api_profiles_cron() {
  *   Profile ID.
  */
 function stanford_cap_api_profiles_profile_import($profile_id) {
-  $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
-  $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
-  if (empty($etag) && !empty($stored_metadata['etag'])) {
-    // Profile is synced, but deleted from CAP.
-    $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
-    switch ($action) {
-      case 'unpublish':
-        $nid = db_select('cap_api_profiles', 'p')
-          ->condition('profile_id', $profile_id)
-          ->fields('p', array('nid'))
-          ->execute()
-          ->fetchField();
-        $node = node_load($nid);
-        $node->status = NODE_NOT_PUBLISHED;
-        node_save($node);
-        db_delete('cap_api_profiles')
-          ->condition('nid', $nid)
-          ->execute();
-        break;
+  try {
+    $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
+    $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
+    if (empty($etag) && !empty($stored_metadata['etag'])) {
+      // Profile is synced, but deleted from CAP.
+      $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
+      switch ($action) {
+        case 'unpublish':
+          $nid = db_select('cap_api_profiles', 'p')
+            ->condition('profile_id', $profile_id)
+            ->fields('p', array('nid'))
+            ->execute()
+            ->fetchField();
+          $node = node_load($nid);
+          $node->status = NODE_NOT_PUBLISHED;
+          node_save($node);
+          db_delete('cap_api_profiles')
+            ->condition('nid', $nid)
+            ->execute();
+          break;
 
-      case 'remove':
-        $nid = db_select('cap_api_profiles', 'p')
-          ->condition('profile_id', $profile_id)
-          ->fields('p', array('nid'))
-          ->execute()
-          ->fetchField();
-        node_delete($nid);
-        break;
-    }
-  }
-  elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
-    // Do nothing, we have synced flag off.
-  }
-  elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
-    // Profile not stored or updated.
-    $profile = stanford_cap_api_profiles_get_profile($profile_id);
-    if ($profile) {
-      if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
-        stanford_cap_api_profiles_synchronize_schema();
+        case 'remove':
+          $nid = db_select('cap_api_profiles', 'p')
+            ->condition('profile_id', $profile_id)
+            ->fields('p', array('nid'))
+            ->execute()
+            ->fetchField();
+          node_delete($nid);
+          break;
       }
-      stanford_cap_api_profiles_synchronize_data($profile);
+    }
+    elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
+      // Do nothing, we have synced flag off.
+    }
+    elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
+      // Profile not stored or updated.
+      $profile = stanford_cap_api_profiles_get_profile($profile_id);
+      if ($profile) {
+        if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
+          stanford_cap_api_profiles_synchronize_schema();
+        }
+        stanford_cap_api_profiles_synchronize_data($profile);
+      }
+    }
+  
+  } catch (Exception $e) {
+    $callstack = $e->getTrace();
+    $menu_handler_call_step = $callstack[count($callstack) - 2];
+    if ($menu_handler_call_step['args'][0] == 'system_batch_page') {
+      watchdog('stanford_cap_api_profiles', 'Exception while profile @profile_id import. '.$e->getMessage(), array('@profile_id' => $profile['profileId']), WATCHDOG_ERROR);
+    }
+    else {
+      throw new Exception('Exception while profile '. $profile['profileId'] .' import. '.$e->getMessage(), NULL, $e);
     }
   }
 }
@@ -307,11 +319,17 @@ function stanford_cap_api_profiles_synchronize_data($profile) {
  */
 function stanford_cap_api_profiles_node_fields_import($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
-  foreach ($profile as $field_name => $field_data) {
-    _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
+  try {
+    foreach ($profile as $field_name => $field_data) {
+      _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
+    }
+    _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
+    $nw->save();
+  } catch (EntityMetadataWrapperException $e) {
+    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(), 
+      array('@profile_id' => $profile['profileId'], '@id' => $nw->getIdentifier(), '@entity_type' => $nw->type())));
   }
-  _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
-  $nw->save();
+
   _stanford_cap_api_profiles_store_node_field_hashes($profile['profileId'], $node, $nw);
 }
 
@@ -366,7 +384,7 @@ function _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, 
  * @param array $profile
  *   CAP profile.
  */
-function _stanford_cap_api_profiles_fill_basic_fields(&$nw, $profile) {
+function _stanford_cap_api_profiles_fill_basic_fields(EntityDrupalWrapper &$nw, $profile) {
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(REQUEST_TIME);
   // Organization relation handling.
@@ -430,8 +448,18 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
       }
     }
   }
-  _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
-  $nw->save();
+  
+  try {
+    _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
+    $nw->save();
+  } catch (EntityMetadataWrapperException $e) {
+    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(), 
+      array('@profile_id' => $profile['profileId'], '@id' => $nw->getIdentifier(), '@entity_type' => $nw->type())));
+    
+    
+    
+  }
+  
   _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, $nw);
 }
 
