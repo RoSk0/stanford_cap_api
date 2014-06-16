@@ -205,7 +205,7 @@ function stanford_cap_api_profiles_profile_import($profile_id) {
         stanford_cap_api_profiles_synchronize_data($profile);
       }
     }
-  
+
   } catch (Exception $e) {
     $callstack = $e->getTrace();
     $menu_handler_call_step = $callstack[count($callstack) - 2];
@@ -326,7 +326,7 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
     _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
     $nw->save();
   } catch (EntityMetadataWrapperException $e) {
-    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(), 
+    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(),
       array('@profile_id' => $profile['profileId'], '@id' => $nw->getIdentifier(), '@entity_type' => $nw->type())));
   }
 
@@ -448,18 +448,18 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
       }
     }
   }
-  
+
   try {
     _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
     $nw->save();
   } catch (EntityMetadataWrapperException $e) {
-    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(), 
+    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(),
       array('@profile_id' => $profile['profileId'], '@id' => $nw->getIdentifier(), '@entity_type' => $nw->type())));
-    
-    
-    
+
+
+
   }
-  
+
   _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, $nw);
 }
 

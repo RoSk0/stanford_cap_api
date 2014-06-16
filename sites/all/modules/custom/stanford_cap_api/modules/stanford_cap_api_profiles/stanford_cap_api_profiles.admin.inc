@@ -315,7 +315,7 @@ function stanford_cap_api_profiles_import_form_submit($form, &$form_state) {
     $params['orgCodes'] = implode(',', $org_codes);
     if (!empty($values['organization_include_child'])) {
       $params['includeChildren'] = TRUE;
-    } 
+    }
   }
   if (!empty($values['workgroup'])) {
     $params['privGroups'] = _stanford_cap_api_profiles_prepare_list_str($values['workgroup']);
