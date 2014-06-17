@@ -161,6 +161,7 @@ function stanford_cap_api_profiles_cron() {
  *   Profile ID.
  */
 function stanford_cap_api_profiles_profile_import($profile_id) {
+  // We need to enclose whole function code to try/catch as it may be called by batch and it's crash will crash the whole batch.
   try {
     $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
     $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
@@ -210,10 +211,10 @@ function stanford_cap_api_profiles_profile_import($profile_id) {
     $callstack = $e->getTrace();
     $menu_handler_call_step = $callstack[count($callstack) - 2];
     if ($menu_handler_call_step['args'][0] == 'system_batch_page') {
-      watchdog('stanford_cap_api_profiles', 'Exception while profile @profile_id import. '.$e->getMessage(), array('@profile_id' => $profile['profileId']), WATCHDOG_ERROR);
+      watchdog('stanford_cap_api_profiles', 'Exception while profile @profile_id import. '.$e->getMessage(), array('@profile_id' => $profile_id), WATCHDOG_ERROR);
     }
     else {
-      throw new Exception('Exception while profile '. $profile['profileId'] .' import. '.$e->getMessage(), NULL, $e);
+      throw new Exception('Exception while profile '. $profile_id .' import. '.$e->getMessage(), NULL, $e);
     }
   }
 }
