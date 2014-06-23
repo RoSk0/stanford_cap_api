@@ -557,7 +557,8 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
       $sync_link = l(t('Sync now'), 'admin/config/cap/config/group/' . $group->id . '/sync');
       $rows[] = array(
         check_plain($group->name),
-        t('%count profiles', array('%count' => $group->count)),
+        t('%count profiles !include_child', 
+          array('%count' => $group->count, '!include_child' => ($group->sync_children) ? '(includes child orgs)' : '')),
         $group->lastsynced ? format_date($group->lastsynced, 'long') : t('Never'),
         $delete_link . ' | ' . $sync_link,
       );
