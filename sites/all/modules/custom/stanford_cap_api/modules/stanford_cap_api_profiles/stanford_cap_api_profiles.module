@@ -6,6 +6,7 @@
 
 include_once 'stanford_cap_api_profiles.features.inc';
 include_once 'stanford_cap_api_profiles.admin.inc';
+include_once 'stanford_cap_api_profiles.batch.inc';
 define('CAP_FIELDS_PREFIX', 'cap_');
 define('CAP_FIELDS_IMPORT_ALL', 'import_all');
 define('CAP_FIELDS_IMPORT_LIST', 'import_list');
@@ -157,64 +158,55 @@ function stanford_cap_api_profiles_cron() {
 /**
  * Import CAP profile.
  *
- * @param int $profile_id
+ * @param int $profile_id OR array $profile
  *   Profile ID.
  */
-function stanford_cap_api_profiles_profile_import($profile_id) {
-  // We need to enclose whole function code to try/catch as it may be called by batch and it's crash will crash the whole batch.
-  try {
-    $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
-    $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
-    if (empty($etag) && !empty($stored_metadata['etag'])) {
-      // Profile is synced, but deleted from CAP.
-      $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
-      switch ($action) {
-        case 'unpublish':
-          $nid = db_select('cap_api_profiles', 'p')
-            ->condition('profile_id', $profile_id)
-            ->fields('p', array('nid'))
-            ->execute()
-            ->fetchField();
-          $node = node_load($nid);
-          $node->status = NODE_NOT_PUBLISHED;
-          node_save($node);
-          db_delete('cap_api_profiles')
-            ->condition('nid', $nid)
-            ->execute();
-          break;
+function stanford_cap_api_profiles_profile_import($profile) {
+  $profile_id = (is_int($profile)) ? $profile : $profile['profileId'];
 
-        case 'remove':
-          $nid = db_select('cap_api_profiles', 'p')
-            ->condition('profile_id', $profile_id)
-            ->fields('p', array('nid'))
-            ->execute()
-            ->fetchField();
-          node_delete($nid);
-          break;
-      }
+  $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
+  $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
+  if (empty($etag) && !empty($stored_metadata['etag'])) {
+    // Profile is synced, but deleted from CAP.
+    $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
+    switch ($action) {
+      case 'unpublish':
+        $nid = db_select('cap_api_profiles', 'p')
+          ->condition('profile_id', $profile_id)
+          ->fields('p', array('nid'))
+          ->execute()
+          ->fetchField();
+        $node = node_load($nid);
+        $node->status = NODE_NOT_PUBLISHED;
+        node_save($node);
+        db_delete('cap_api_profiles')
+          ->condition('nid', $nid)
+          ->execute();
+        break;
+
+      case 'remove':
+        $nid = db_select('cap_api_profiles', 'p')
+          ->condition('profile_id', $profile_id)
+          ->fields('p', array('nid'))
+          ->execute()
+          ->fetchField();
+        node_delete($nid);
+        break;
     }
-    elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
-      // Do nothing, we have synced flag off.
-    }
-    elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
-      // Profile not stored or updated.
+  }
+  elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
+    // Do nothing, we have synced flag off.
+  }
+  elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
+    // Profile not stored or updated.
+    if (!is_array($profile)) {
       $profile = stanford_cap_api_profiles_get_profile($profile_id);
-      if ($profile) {
-        if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
-          stanford_cap_api_profiles_synchronize_schema();
-        }
-        stanford_cap_api_profiles_synchronize_data($profile);
+    }
+    if ($profile) {
+      if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
+        stanford_cap_api_profiles_synchronize_schema();
       }
-    }
-
-  } catch (Exception $e) {
-    $callstack = $e->getTrace();
-    $menu_handler_call_step = $callstack[count($callstack) - 2];
-    if ($menu_handler_call_step['args'][0] == 'system_batch_page') {
-      watchdog('stanford_cap_api_profiles', 'Exception while profile @profile_id import. '.$e->getMessage(), array('@profile_id' => $profile_id), WATCHDOG_ERROR);
-    }
-    else {
-      throw new Exception('Exception while profile '. $profile_id .' import. '.$e->getMessage(), NULL, $e);
+      stanford_cap_api_profiles_synchronize_data($profile);
     }
   }
 }

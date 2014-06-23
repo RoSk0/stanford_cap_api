@@ -481,7 +481,6 @@ function stanford_cap_api_profiles_import_result_form($form, &$form_state) {
  * Submit handler for import result form.
  */
 function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state) {
-
   if (empty($form_state['values']['profiles'])) {
     drupal_set_message(t('Nothing to import. Profiles list is empty.'));
   }
@@ -489,23 +488,9 @@ function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state
     if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
       stanford_cap_api_profiles_synchronize_schema(TRUE);
     }
-    $profiles = $form_state['values']['profiles'];
-    $operations = array();
-    foreach ($profiles as $profile) {
-      if ($profile != 0) {
-        $operations[] = array(
-          'stanford_cap_api_profiles_profile_import',
-          array($profile),
-        );
-      }
-    }
-
-    $batch = array(
-      'title' => t('Importing profiles'),
-      'operations' => $operations,
-      'progress_message' => t('Current: @current | Remaining: @remaining | Total: @total | Estimate: @estimate | Elapsed: @elapsed'),
-      'finished' => 'stanford_cap_api_profiles_import_result_finished',
-    );
+    $profile_ids = $form_state['values']['profiles'];
+    $batch = stanford_cap_api_profiles_import_batch($profile_ids);
+    $batch['finished'] = 'stanford_cap_api_profiles_import_result_finished';
     batch_set($batch);
   }
 }
@@ -706,37 +691,17 @@ function stanford_cap_api_profiles_group_sync_form_submit($form, &$form_state) {
     $form_state['rebuild'] = TRUE;
   }
   if (isset($form_state['values']['groups_list'])) {
-    $operations = array();
     foreach ($form_state['values']['groups_list'] as $group_type) {
-      if (isset($form_state['values']['groups_to_save'][$group_type])) {
-        $group_name = $form_state['values']['groups_to_save'][$group_type];
-        $count = 0;
-        $include_children = $form_state['values']['groups_to_save']['organization_include_children'];
-        $operations[] = array(
-          'stanford_cap_api_profiles_sync_group_save',
-          array($group_type, $group_name, NULL, NULL, $include_children),
+      if (isset($form_state['values']['groups_to_save'][$group_type])) { 
+        $group = array(
+          'name' => $form_state['values']['groups_to_save'][$group_type],
+          'type' => $group_type,
+          'sync_children' => $form_state['values']['groups_to_save']['organization_include_children'],
         );
-        switch ($group_type) {
-          case 'organization':
-            $count = stanford_cap_api_profiles_sync_org_members($group_name, $operations, $include_children);
-            break;
-
-          case 'workgroup':
-            $count = stanford_cap_api_profiles_sync_workgroup_members($group_name, $operations);
-            break;
-        }
-        $operations[] = array(
-          '_stanford_cap_api_profiles_sync_group_save_wrapper',
-          array($group_type, $group_name, $count, $include_children),
-        );
+        $batch = stanford_cap_api_profiles_groups_import_batch($group);
+        batch_set($batch); 
       }
     }
-    $batch = array(
-      'title' => t('Synchronizing group profiles'),
-      'operations' => $operations,
-      'progress_message' => t('Current: @current | Remaining: @remaining | Total: @total | Estimate: @estimate | Elapsed: @elapsed'),
-    );
-    batch_set($batch);
   }
 }
 
@@ -807,31 +772,8 @@ function stanford_cap_api_profiles_group_sync_now($id) {
     ->fields('groups')
     ->execute()
     ->fetchAssoc();
-  $operations = array();
-  $count = 0;
-  $operations[] = array(
-    'stanford_cap_api_profiles_sync_group_save',
-    array($group['type'], $group['name'], NULL, NULL, $group['sync_children']),
-  );
-  switch ($group['type']) {
-    case 'organization':
-      $count = stanford_cap_api_profiles_sync_org_members($group['name'], $operations, $group['sync_children']);
-      break;
-
-    case 'workgroup':
-      $count = stanford_cap_api_profiles_sync_workgroup_members($group['name'], $operations);
-      break;
-  }
-  $operations[] = array(
-    '_stanford_cap_api_profiles_sync_group_save_wrapper',
-    array($group['type'], $group['name'], $count, $group['sync_children']),
-  );
-
-  $batch = array(
-    'title' => t('Synchronizing group profiles'),
-    'operations' => $operations,
-    'progress_message' => t('Current: @current | Remaining: @remaining | Total: @total | Estimate: @estimate | Elapsed: @elapsed'),
-  );
+  
+  $batch = stanford_cap_api_profiles_groups_import_batch($group);
   batch_set($batch);
   batch_process('admin/config/cap/config/group');
 }
