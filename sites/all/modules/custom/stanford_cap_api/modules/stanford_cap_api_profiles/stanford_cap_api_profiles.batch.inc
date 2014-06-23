@@ -64,6 +64,7 @@ function stanford_cap_api_profiles_groups_import_batch_start($request_params, $g
     $context['results']['currentRequest'] = 1;    
     $context['results']['profilesCountToImport'] = count($data['values']);
     $context['results']['profilesToImport'] = $data['values'];
+    $context['results']['profilesTotalCount'] = $data['totalCount'];
     
     $context['message'] = t('@count profiles queued for import.', array('@count' => count($context['results']['profilesToImport'])));
   }
@@ -93,7 +94,8 @@ function stanford_cap_api_profiles_groups_import_batch_data_request(&$context) {
   if (!empty($data['values']) && is_array($data['values'])) {
     $context['results']['profilesCountToImport'] += count($data['values']);
     variable_set(__FUNCTION__.'__'.time().mt_rand(), $data['values']);
-    $context['message'] = t('@count profiles queued for import.', array('@count' => $context['results']['profilesCountToImport']));
+    $context['message'] = t('@count profiles queued for import of @total.', 
+      array('@count' => $context['results']['profilesCountToImport'], '@total' => $context['results']['profilesTotalCount']));
   }
   else {
     $context['results']['errors'] = TRUE;
@@ -113,8 +115,8 @@ function stanford_cap_api_profiles_groups_import_batch_data_request(&$context) {
  * Pop profile from import queue and import it.
  */
 function stanford_cap_api_profiles_groups_import_batch_data_import(&$context) {
-  $context['message'] = t('@count profiles left to be processed.', 
-    array('@count' => $context['results']['profilesCountToImport'] - $context['results']['profilesProcessed']));
+  $context['message'] = t('@count profiles processed of @total.', 
+    array('@count' => $context['results']['profilesProcessed'], '@total' => $context['results']['profilesCountToImport']));
 
   if (empty($context['results']['profilesToImport'])) {
     $result = db_query('SELECT name, value from {variable} WHERE name LIKE \'stanford_cap_api_profiles_groups_import_batch_data_request__%\' LIMIT 0 , 1');
