@@ -805,11 +805,14 @@ function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
 /**
  * Get schema for profile type.
  *
+ * @param bool $raw
+ *   Marks that schema must be returned as JSON string.
+ *
  * @return array
  *   Profile type schema.
  */
-function stanford_cap_api_profiles_get_profile_schema() {
-  return stanford_cap_api_request('/cap/v1/schemas/profile');
+function stanford_cap_api_profiles_get_profile_schema($raw = FALSE) {
+  return stanford_cap_api_request('/cap/v1/schemas/profile', NULL, $raw);
 }
 
 /**
