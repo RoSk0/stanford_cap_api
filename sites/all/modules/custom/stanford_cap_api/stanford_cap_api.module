@@ -200,7 +200,7 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
     'external' => TRUE,
   ));
 
-  $response = drupal_http_request($request_url);
+  $response = drupal_http_request($request_url, array('timeout' => 120));
   // Error could be here as well.
   if (property_exists($response, 'error')) {
     $error_msg = 'Failed to fetch data from CAP API service. Error code is'
