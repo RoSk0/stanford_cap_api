@@ -191,6 +191,10 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
 
   $params['access_token'] = $access_token;
 
+  if (strpos($endpoint, '/') !== 0) {
+    $endpoint = '/' . $endpoint;
+  }
+
   $request_url = url($api_base . $endpoint, array(
     'query' => $params,
     'external' => TRUE,
