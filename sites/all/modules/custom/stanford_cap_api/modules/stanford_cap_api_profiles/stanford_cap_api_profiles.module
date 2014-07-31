@@ -158,11 +158,11 @@ function stanford_cap_api_profiles_cron() {
 /**
  * Import CAP profile.
  *
- * @param int $profile_id OR array $profile
- *   Profile ID.
+ * @param int|array $profile
+ *   Profile ID or profile data array.
  */
 function stanford_cap_api_profiles_profile_import($profile) {
-  $profile_id = (is_int($profile)) ? $profile : $profile['profileId'];
+  $profile_id = (is_array($profile)) ? $profile['profileId'] : $profile;
 
   $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
   $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
