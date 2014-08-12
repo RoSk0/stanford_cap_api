@@ -215,7 +215,7 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
     return FALSE;
   }
 
-  // Log bad API authentication.
+  // Convert JSON response to an array.
   $data = json_decode($response->data, TRUE);
   if (empty($data)) {
     // JSON from response cannot be decoded.
@@ -254,22 +254,24 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
     }
     $message .= ' Request string was "%request".';
     $vars = array('%request' => $request_url);
-    watchdog('stanford_cap_api', $message, $vars, WATCHDOG_WARNING);
+    watchdog('stanford_cap_api', $message, $vars, WATCHDOG_ERROR);
 
     return FALSE;
   }
   else {
+    // CAP API handled error.
     if (array_key_exists('error', $data)) {
       $error_msg = 'Error found in CAP API response. Error message is "%msg", response data was "%data".';
       $vars = array(
         '%msg' => $data['error_description'],
         '%data' => print_r($data, TRUE),
       );
-      watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
+      watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_ERROR);
 
       return FALSE;
     }
     else {
+      // Success.
       if ($raw) {
         return $response->data;
       }
