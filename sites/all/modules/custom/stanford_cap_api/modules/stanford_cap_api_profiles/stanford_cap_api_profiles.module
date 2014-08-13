@@ -951,12 +951,6 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
   if (isset($props_info[$drupal_field_name])) {
     $field_info = field_info_field($drupal_field_name);
     switch ($field_info['type']) {
-      case 'link':
-        if (is_string($field_data)) {
-          $wrapper->{$drupal_field_name}->set(array('url' => $field_data));
-        }
-        break;
-
       case 'date':
         if (is_string($field_data)) {
           $wrapper->{$drupal_field_name}->set(strtotime($field_data));
@@ -1086,44 +1080,6 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
           }
         }
         break;
-
-      case 'image':
-        $ext = drupal_substr($field_data['contentType'], 6);
-        // @todo Remove before release.
-        $request_url = str_replace('cap-irt-dev', 'med', $field_data['url']);
-        parse_str(parse_url($field_data['url'], PHP_URL_QUERY), $query);
-        $profile_id = $query['facultyId'];
-
-        $response = drupal_http_request($request_url);
-        if (property_exists($response, 'error')) {
-          $error_msg = 'Failed to fetch profile image of field %field_name for profile'
-            . ' %profile_id . Error code is'
-            . ' %code, error message is "%msg", request string was "%request".';
-          $vars = array(
-            '%code' => $response->code,
-            '%msg' => $response->status_message,
-            '%request' => $request_url,
-            '%profile_id' => $profile_id,
-            '%field_name' => $field_name,
-          );
-          watchdog('stanford_cap_api_profiles', $error_msg, $vars, WATCHDOG_WARNING);
-
-          break;
-        }
-        $path = 'public://'
-          . variable_get('cap_profile_photos', 'profile_photos')
-          . '/profile_'
-          . $profile_id . '_' . $field_data['type'] . '.' . $ext;
-        $dir = drupal_dirname($path);
-        if (!is_dir($dir) && !mkdir($dir)) {
-          watchdog('stanford_cap_api_profiles', 'Failed to create directory %dir', array('%dir' => $dir), WATCHDOG_WARNING);
-
-          break;
-        }
-        $file = file_save_data($response->data, $path, FILE_EXISTS_REPLACE);
-        $wrapper->{$drupal_field_name}->set(array('fid' => $file->fid));
-
-        break;
     }
   }
   elseif (variable_get('stanford_cap_api_import_profile_fields', CAP_FIELDS_IMPORT_ALL) == CAP_FIELDS_IMPORT_ALL) {
@@ -1175,7 +1131,7 @@ function _stanford_cap_api_profiles_get_field_value_text($field_name, $field_dat
 }
 
 /**
- * Generate field info based in field schema.
+ * Generate field info based on field schema.
  *
  * @param string $drupal_field_name
  *   Generated Drupal field name.
@@ -2073,7 +2029,6 @@ function _stanford_cap_api_profiles_save_image_file($field_name, $field_data) {
     return NULL;
   }
   else {
-    // @todo Add check is file exists and size is same, other way we will multiple DB file entries every sync.
     $file_dir = 'cap_profile_images';
     $path = 'public://'
       . $file_dir
