@@ -12,7 +12,7 @@
  * Show and write import results to db.
  */
 function stanford_cap_api_profiles_groups_import_batch_finished($success, $results, $operations) {
-  db_query('DELETE FROM {variable} WHERE name LIKE \'stanford_cap_api_profiles_groups_import_batch_data_request__%\'');
+  db_query('DELETE FROM {cap_api_import_cache} WHERE importer = :importer', array(':importer' => 'stanford_cap_api_profiles_groups_import_batch_data_request'));
   
   if ($success) {
     $group = $results['group'];
@@ -93,7 +93,8 @@ function stanford_cap_api_profiles_groups_import_batch_data_request(&$context) {
   $data = stanford_cap_api_request('/profiles/v1', $request_params);
   if (!empty($data['values']) && is_array($data['values'])) {
     $context['results']['profilesCountToImport'] += count($data['values']);
-    variable_set(__FUNCTION__.'__'.time().mt_rand(), $data['values']);
+    $record = array('importer' => 'stanford_cap_api_profiles_groups_import_batch_data_request', 'data' => $data['values']);
+    drupal_write_record('cap_api_import_cache', $record);
     $context['message'] = t('@count profiles queued for import of @total.', 
       array('@count' => $context['results']['profilesCountToImport'], '@total' => $context['results']['profilesTotalCount']));
   }
@@ -119,11 +120,11 @@ function stanford_cap_api_profiles_groups_import_batch_data_import(&$context) {
     array('@count' => $context['results']['profilesProcessed'], '@total' => $context['results']['profilesCountToImport']));
 
   if (empty($context['results']['profilesToImport'])) {
-    $result = db_query('SELECT name, value from {variable} WHERE name LIKE \'stanford_cap_api_profiles_groups_import_batch_data_request__%\' LIMIT 0 , 1');
+    $result = db_query('SELECT cid, data from {cap_api_import_cache} WHERE importer = :importer LIMIT 0 , 1', array(':importer' => 'stanford_cap_api_profiles_groups_import_batch_data_request'));
     $record = $result->fetchObject();
     if (!empty($record)) {
-      $profiles = unserialize($record->value);
-      variable_del($record->name);
+      $profiles = (is_array($record->data)) ? $record->data : unserialize($record->data);
+      db_query('DELETE FROM {cap_api_import_cache} WHERE cid = :cid', array(':cid' => $record->cid));
       $context['results']['profilesToImport'] = $profiles;
     } else {
       $context['message'] = 'Import complite';

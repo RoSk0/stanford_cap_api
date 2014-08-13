@@ -183,6 +183,61 @@ function stanford_cap_api_profiles_schema() {
     'primary key' => array('id', 'profile_id'),
   );
 
+  $schema['cap_api_field_hashes'] = array(
+    'description' => 'Stores field name which was overridden by user input and wont be synchronized while synchronizing CAP profiles with CAP server.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'profile_id' => array(
+        'description' => 'Profile ID.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'field_name' => array(
+        'description' => 'Field name.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'hash' => array(
+        'type' => 'blob',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of the field data to be used as hash string.',
+      ),
+    ),
+    'primary key' => array('id', 'profile_id'),
+  );
+
+  $schema['cap_api_import_cache'] = array(
+    'description' => 'Stores downloaded data during batch or queued import before it\'s beed imported.',
+    'fields' => array(
+      'cid' => array(
+        'description' => 'Record ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'importer' => array(
+        'description' => 'Importer using the record.',
+        'type' => 'varchar',
+        'length' => 128,
+      ),
+      'data' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'serialize' => TRUE,
+        'description' => 'Cached data.',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('cid'),
+  );
+
   return $schema;
 }
 
@@ -216,4 +271,14 @@ function stanford_cap_api_profiles_update_7001() {
       'default' => 0,
     )
   );
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add cap_api_import_cache table for stanford_cap_api_profiles module.
+ */
+function stanford_cap_api_profiles_update_7002() {
+  db_create_table('cap_api_import_cache', drupal_get_schema_unprocessed('stanford_cap_api_profiles', 'cap_api_import_cache'));
+  return 'Add cap_api_import_cache table for stanford_cap_api_profiles module.';
 }
