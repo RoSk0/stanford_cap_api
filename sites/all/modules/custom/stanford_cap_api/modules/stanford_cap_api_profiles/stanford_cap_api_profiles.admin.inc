@@ -170,7 +170,6 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
       '#title' => t('CAP Profiles can be updated regularly to ensure you have the latest content available for the site:'),
       '#default_value' => variable_get('stanford_cap_api_profile_update', 'nightly'),
       '#options' => array(
-        // @todo Replace with named constants.
         'viewing' => t('When viewing the profile.'),
         'nightly' => t('Nightly.'),
       ),
@@ -557,7 +556,7 @@ function stanford_cap_api_profiles_group_sync_form($form, &$form_state) {
       $sync_link = l(t('Sync now'), 'admin/config/cap/config/group/' . $group->id . '/sync');
       $rows[] = array(
         check_plain($group->name),
-        t('%count profiles !include_child', 
+        t('%count profiles !include_child',
           array('%count' => $group->count, '!include_child' => ($group->sync_children) ? '(includes child orgs)' : '')),
         $group->lastsynced ? format_date($group->lastsynced, 'long') : t('Never'),
         $delete_link . ' | ' . $sync_link,
@@ -693,14 +692,14 @@ function stanford_cap_api_profiles_group_sync_form_submit($form, &$form_state) {
   }
   if (isset($form_state['values']['groups_list'])) {
     foreach ($form_state['values']['groups_list'] as $group_type) {
-      if (isset($form_state['values']['groups_to_save'][$group_type])) { 
+      if (isset($form_state['values']['groups_to_save'][$group_type])) {
         $group = array(
           'name' => $form_state['values']['groups_to_save'][$group_type],
           'type' => $group_type,
           'sync_children' => $form_state['values']['groups_to_save']['organization_include_children'],
         );
         $batch = stanford_cap_api_profiles_groups_import_batch($group);
-        batch_set($batch); 
+        batch_set($batch);
       }
     }
   }
@@ -773,7 +772,7 @@ function stanford_cap_api_profiles_group_sync_now($id) {
     ->fields('groups')
     ->execute()
     ->fetchAssoc();
-  
+
   $batch = stanford_cap_api_profiles_groups_import_batch($group);
   batch_set($batch);
   batch_process('admin/config/cap/config/group');
