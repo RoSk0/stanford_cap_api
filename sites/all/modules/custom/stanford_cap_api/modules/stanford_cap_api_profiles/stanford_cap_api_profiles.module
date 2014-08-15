@@ -1309,7 +1309,7 @@ function _stanford_cap_api_profiles_generate_instance_info($type, $drupal_field_
  *   for batch mode.
  */
 function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_schema, $drupal_parent_field = '', $parent_field = '', &$operations = NULL) {
-  $field_weigth =& drupal_static(__FUNCTION__, 0);
+  $field_weight =& drupal_static(__FUNCTION__, 0);
   $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
   $cap_field_info = _stanford_cap_api_profiles_get_field_info_by_path($field_path);
   if (empty($cap_field_info['field_name'])) {
@@ -1343,7 +1343,7 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
   $field_instance = field_info_instance($parent_entity, $drupal_field_name, $parent_entity_bundle);
   if (empty($field_instance) && !empty($field_info)) {
     if (!isset($f_schema['weight'])) {
-      $f_schema['weight'] = $field_weigth;
+      $f_schema['weight'] = $field_weight;
     }
     $field_instance = _stanford_cap_api_profiles_generate_instance_info($field_info['type'], $drupal_field_name, $f_name, $f_schema, $drupal_parent_field);
     if (!empty($field_instance)) {
@@ -1367,11 +1367,11 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
       watchdog('stanford_cap_api_profiles', $message, $vars, WATCHDOG_WARNING);
     }
   }
-  $field_weigth++;
+  $field_weight++;
   if ($field_info['type'] == 'field_collection') {
-    $subfield_weigth =& drupal_static(__FUNCTION__ . '_subfields', array());
-    if (!isset($subfield_weigth[$drupal_field_name])) {
-      $subfield_weigth[$drupal_field_name] = 0;
+    $subfield_weight =& drupal_static(__FUNCTION__ . '_subfields', array());
+    if (!isset($subfield_weight[$drupal_field_name])) {
+      $subfield_weight[$drupal_field_name] = 0;
     }
     $subfields = array();
     // Multivalue field colletion.
@@ -1384,12 +1384,12 @@ function _stanford_cap_api_profiles_synchronize_schema_subfields($f_name, $f_sch
 
     foreach ($subfields as $subfield => $schema) {
       if (!isset($schema['weight'])) {
-        $schema['weight'] = $subfield_weigth[$drupal_field_name];
+        $schema['weight'] = $subfield_weight[$drupal_field_name];
       }
       // We need this field to successfully apply profile layout.
       $field_path = empty($parent_field) ? $f_name : $parent_field . '.' . $f_name;
       _stanford_cap_api_profiles_synchronize_schema_subfields($subfield, $schema, $drupal_field_name, $field_path, $operations);
-      $subfield_weigth[$drupal_field_name]++;
+      $subfield_weight[$drupal_field_name]++;
     }
   }
 }
