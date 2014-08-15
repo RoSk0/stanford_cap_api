@@ -981,12 +981,15 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
               $values[] = _stanford_cap_api_profiles_get_field_value_text($field_name, $f_data, $field_info);
             }
             else {
-              $error_msg = 'Field name: @field_name. Expecting string , got: @data.';
+              $error_msg = 'Field name: @field_name. Expecting string , got: @data. Additional info: entity ID - @eid, entity type - @type, entity bundle - @bundle.';
               $vars = array(
                 '@field_name' => $field_name,
-                '@data' => print_r($field_data, TRUE),
+                '@data' => is_null($f_data) ? 'NULL' : print_r($f_data, TRUE),
+                '@eid' => $wrapper->getIdentifier(),
+                '@type' => $wrapper->type(),
+                '@bundle' => $wrapper->getBundle(),
               );
-              watchdog('stanford_cap_api_profiles', $error_msg, $vars, WATCHDOG_WARNING);
+              watchdog('stanford_cap_api_profiles', $error_msg, $vars, WATCHDOG_ERROR);
             }
           }
           $wrapper->{$drupal_field_name}->set($values);
