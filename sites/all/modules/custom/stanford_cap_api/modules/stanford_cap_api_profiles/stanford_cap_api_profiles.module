@@ -216,17 +216,21 @@ function stanford_cap_api_profiles_profile_import($profile) {
  *
  * @param string $profile_id
  *   Profile ID.
+ * @param bool $raw
+ *   Indicates in which form data should be returned, case TRUE JSON will be
+ * returned, array otherwise.
  *
  * @return array|FALSE
  *   Profile or FALSE.
  */
-function stanford_cap_api_profiles_get_profile($profile_id) {
+function stanford_cap_api_profiles_get_profile($profile_id, $raw = FALSE) {
   $cache =& drupal_static(__FUNCTION__, array());
-  if (empty($cache[$profile_id])) {
-    $cache[$profile_id] = stanford_cap_api_request('/profiles/v1/' . $profile_id);
+  $type = $raw ? 'json' : 'php';
+  if (empty($cache[$profile_id]) || empty($cache[$profile_id][$type])) {
+    $cache[$profile_id][$type] = stanford_cap_api_request('/profiles/v1/' . $profile_id, NULL, $raw);
   }
 
-  return $cache[$profile_id];
+  return $cache[$profile_id][$type];
 }
 
 /**
