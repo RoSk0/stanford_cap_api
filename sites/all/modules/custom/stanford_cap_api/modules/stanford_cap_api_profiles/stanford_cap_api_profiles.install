@@ -198,7 +198,8 @@ function stanford_cap_api_profiles_schema() {
         'length' => 128,
       ),
       'data' => array(
-        'type' => 'blob',
+        'type' => 'text',
+        'size' => 'big',
         'description' => 'Raw JSON response from CAP.',
         'not null' => TRUE,
       ),
@@ -260,7 +261,8 @@ function stanford_cap_api_profiles_update_7003() {
   $table = 'cap_api_import_cache';
   $field = 'data';
   $schema = array(
-    'type' => 'blob',
+    'type' => 'text',
+    'size' => 'big',
     'description' => 'Raw JSON response from CAP.',
     'not null' => TRUE,
   );
