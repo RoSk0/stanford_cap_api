@@ -112,12 +112,13 @@ function stanford_cap_api_profiles_groups_import_batch_data_request(&$context) {
 
   $request_params = $context['results']['request_params'];
   $request_params['p'] = ++$context['results']['currentRequest'];
-  $data = stanford_cap_api_request('/profiles/v1', $request_params);
-  if (!empty($data['values']) && is_array($data['values'])) {
-    $context['results']['profilesCountToImport'] += count($data['values']);
+  $data = stanford_cap_api_request('/profiles/v1', $request_params, TRUE);
+  $metadata = json_decode($data, TRUE);
+  if (!empty($metadata['values']) && is_array($metadata['values'])) {
+    $context['results']['profilesCountToImport'] += count($metadata['values']);
     $record = array(
       'importer' => 'stanford_cap_api_profiles_groups_import_batch_data_request',
-      'data' => $data['values'],
+      'data' => $data,
     );
     drupal_write_record('cap_api_import_cache', $record);
     $context['message'] = t(
@@ -161,9 +162,23 @@ function stanford_cap_api_profiles_groups_import_batch_data_import(&$context) {
     );
     $record = $result->fetchObject();
     if (!empty($record)) {
-      $profiles = (is_array($record->data)) ? $record->data : unserialize($record->data);
-      db_query('DELETE FROM {cap_api_import_cache} WHERE cid = :cid', array(':cid' => $record->cid));
-      $context['results']['profilesToImport'] = $profiles;
+      $data = json_decode($record->data, TRUE);
+      if (is_array($data)) {
+        db_query('DELETE FROM {cap_api_import_cache} WHERE cid = :cid', array(':cid' => $record->cid));
+        $context['results']['profilesToImport'] = $data['values'];
+      }
+      else {
+        $context['results']['errors'] = TRUE;
+        watchdog(
+          'stanford_cap_api_profiles batch',
+          'Error restoring CAP data from local cache. Cache ID: @cid.',
+          array('@cid' => $record->cid),
+          WATCHDOG_ERROR
+        );
+        // Default quantity of profiles returned by CAP.
+        $context['results']['profilesImportFailed'] += 10;
+      }
+
     }
     else {
       $context['message'] = 'Import complite';

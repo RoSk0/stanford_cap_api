@@ -198,10 +198,8 @@ function stanford_cap_api_profiles_schema() {
         'length' => 128,
       ),
       'data' => array(
-        'type' => 'text',
-        'size' => 'big',
-        'serialize' => TRUE,
-        'description' => 'Cached data.',
+        'type' => 'blob',
+        'description' => 'Raw JSON response from CAP.',
         'not null' => TRUE,
       ),
     ),
@@ -251,4 +249,21 @@ function stanford_cap_api_profiles_update_7001() {
 function stanford_cap_api_profiles_update_7002() {
   db_create_table('cap_api_import_cache', drupal_get_schema_unprocessed('stanford_cap_api_profiles', 'cap_api_import_cache'));
   return 'Add cap_api_import_cache table for stanford_cap_api_profiles module.';
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Update field 'data' schema.
+ */
+function stanford_cap_api_profiles_update_7003() {
+  $table = 'cap_api_import_cache';
+  $field = 'data';
+  $schema = array(
+    'type' => 'blob',
+    'description' => 'Raw JSON response from CAP.',
+    'not null' => TRUE,
+  );
+
+  db_change_field($table, $field, $field, $schema);
 }
