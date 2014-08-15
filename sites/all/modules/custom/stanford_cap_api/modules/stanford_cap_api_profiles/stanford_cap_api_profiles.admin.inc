@@ -496,30 +496,78 @@ function stanford_cap_api_profiles_import_result_form_submit($form, &$form_state
 
 /**
  * Remove all CAP profile fields from system.
+ *
+ * @param bool $batch
+ *   Set this if run with devel.
  */
-function stanford_cap_api_profiles_reset() {
+function stanford_cap_api_profiles_reset($batch = FALSE) {
   $fields = db_select('cap_api_fields', 'f')->fields('f', array('field_name'))
     ->execute()->fetchCol();
-  $operations = array();
-  foreach ($fields as $field) {
-    if (field_read_field($field)) {
-      $operations[] = array(
-        'field_delete_field',
-        array($field),
-      );
-      $operations[] = array(
-        'field_purge_batch',
-        array(1),
-      );
+
+  if ($batch) {
+    $operations = array();
+    foreach ($fields as $field) {
+      if (field_read_field($field)) {
+        $operations[] = array(
+          'field_delete_field',
+          array($field),
+        );
+        $operations[] = array(
+          'field_purge_batch',
+          array(1),
+        );
+      }
+    }
+    batch_set(array('operations' => $operations));
+  }
+  else {
+    foreach ($fields as $field) {
+      field_delete_field($field);
+      field_purge_batch(1);
     }
   }
-  batch_set(array('operations' => $operations));
+
   db_delete('cap_api_fields')->execute();
   db_delete('cap_api_field_hashes')->execute();
   db_delete('cap_api_fields_map')->execute();
   variable_del('stanford_cap_api_profiles_schema_synchronized');
   variable_del('stanford_cap_api_profiles_schema_hash');
   drupal_set_message(t('Stanford profile content type has being resetted to default.'));
+}
+
+/**
+ * Removes all Stanford cap profiles from system.
+ *
+ * Calls stanford_cap_api_profiles_reset() before real removing to
+ * speed up the process.
+ *
+ * @param bool $batch
+ *   Set this if run with devel.
+ *
+ * @see stanford_cap_api_profiles_reset()
+ */
+function stanford_cap_api_profiles_remove($batch = FALSE) {
+  $nids = db_select('node', 'n')
+    ->condition('type', 'cap_stanford_profile')
+    ->fields('n', array('nid'))
+    ->execute()
+    ->fetchCol();
+  if ($batch) {
+    $operations = array();
+    stanford_cap_api_profiles_reset($batch);
+    foreach ($nids as $nid) {
+      $operations[] = array(
+        'node_delete',
+        array($nid),
+      );
+    }
+    batch_set(array('operations' => $operations));
+  }
+  else {
+    stanford_cap_api_profiles_reset($batch);
+    node_delete_multiple($nids);
+  }
+  drupal_set_message(t('Stanford profiles was removed from system.'));
 }
 
 /**
