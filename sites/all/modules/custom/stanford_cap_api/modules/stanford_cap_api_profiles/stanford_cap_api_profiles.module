@@ -203,9 +203,7 @@ function stanford_cap_api_profiles_profile_import($profile) {
       $profile = stanford_cap_api_profiles_get_profile($profile_id);
     }
     if ($profile) {
-      if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE)) {
-        stanford_cap_api_profiles_synchronize_schema();
-      }
+      stanford_cap_api_profiles_synchronize_schema();
       stanford_cap_api_profiles_synchronize_data($profile);
     }
   }
@@ -774,10 +772,7 @@ function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
   }
   $schema = stanford_cap_api_profiles_get_profile_schema();
   $stored_schema_hash = variable_get('stanford_cap_api_profiles_schema_hash');
-  if (!variable_get('stanford_cap_api_profiles_schema_synchronized') || $stored_schema_hash != _stanford_cap_api_profiles_schema_hash($schema)) {
-    // @TODO: At this point, schema is not synchronized:
-    // variable stanford_cap_api_profiles_schema_synchronized = FALSE?
-
+  if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE) || $stored_schema_hash != _stanford_cap_api_profiles_schema_hash($schema)) {
     // Basic check that we have an expected schema.
     if (is_array($schema) && $schema['type'] == 'object' && !empty($schema['properties'])) {
       foreach ($schema['properties'] as $f_name => $f_schema) {
