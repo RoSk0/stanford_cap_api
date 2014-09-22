@@ -2230,8 +2230,3 @@ function stanford_cap_api_profiles_views_default_views_alter(&$views) {
     $views['cap_api_manage_profiles']->disabled = TRUE;
   }
 }
-
-function test() {
-  $profile = stanford_cap_api_profiles_get_profile(18001);
-  $uri = _stanford_cap_api_profiles_get_cap_profile_url($profile);
-}
