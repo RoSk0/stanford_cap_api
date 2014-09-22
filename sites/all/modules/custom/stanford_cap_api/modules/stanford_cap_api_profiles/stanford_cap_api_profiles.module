@@ -844,9 +844,6 @@ function _stanford_cap_api_profiles_log_field($field_name) {
 /**
  * Generates CAP network profile URL.
  *
- * @todo Remove this when appropriate field would be available.
- * @TODO: Update to https://profiles.stanford.edu/ The other url's are wrong.
- *
  * @param array $profile
  *   CAP network profile.
  *
@@ -854,26 +851,17 @@ function _stanford_cap_api_profiles_log_field($field_name) {
  *   CAP network profile URL.
  */
 function _stanford_cap_api_profiles_get_cap_profile_url($profile) {
-  $href = '';
-  if (isset($profile['meta']) && !empty($profile['meta']['links'])) {
-    foreach ($profile['meta']['links'] as $link) {
-      // Searching for public link.
-      if ($link['rel'] == 'https://cap.stanford.edu/rel/public') {
-        $href = $link['href'];
-        break;
-      }
+  $url = variable_get('stanford_cap_uri', 'https://profiles.stanford.edu');
+
+  if (!empty($profile['alias'])) {
+    if (drupal_substr($url, -1) != '/') {
+      $url .= '/';
     }
-  }
-  if (empty($href)) {
-    // Fallback.
-    // Public profile link not found, lets generate it.
-    $href = variable_get('stanford_cap_uri', 'https://profiles-beta.stanford.edu/');
-    if (!empty($profile['alias'])) {
-      $href .= $profile['alias'];
-    }
+
+    $url .= $profile['alias'];
   }
 
-  return $href;
+  return $url;
 }
 
 /**
@@ -2241,4 +2229,9 @@ function stanford_cap_api_profiles_views_default_views_alter(&$views) {
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE) && isset($views['cap_api_manage_profiles'])) {
     $views['cap_api_manage_profiles']->disabled = TRUE;
   }
+}
+
+function test() {
+  $profile = stanford_cap_api_profiles_get_profile(18001);
+  $uri = _stanford_cap_api_profiles_get_cap_profile_url($profile);
 }
