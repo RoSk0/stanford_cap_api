@@ -512,10 +512,6 @@ function stanford_cap_api_profiles_reset($batch = FALSE) {
           'field_delete_field',
           array($field),
         );
-        $operations[] = array(
-          'field_purge_batch',
-          array(1),
-        );
       }
     }
     batch_set(array('operations' => $operations));
@@ -523,7 +519,6 @@ function stanford_cap_api_profiles_reset($batch = FALSE) {
   else {
     foreach ($fields as $field) {
       field_delete_field($field);
-      field_purge_batch(1);
     }
   }
 
