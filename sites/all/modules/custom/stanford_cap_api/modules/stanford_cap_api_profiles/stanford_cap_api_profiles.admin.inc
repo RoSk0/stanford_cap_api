@@ -191,6 +191,28 @@ function stanford_cap_api_profiles_form_stanford_cap_api_settings_form_alter(&$f
       '#default_value' => variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish'),
       '#options' => $options,
     );
+
+    $form['filter'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Filter profiles by type'),
+    );
+
+    $options = array(
+      'capFaculty' => t('Faculty'),
+      'capMdStudent' => t('MD Student'),
+      'capMsStudent' => t('MS Student'),
+      'capPhdStudent' => t('PHD Student'),
+      'capPostdoc' => t('Postdoc'),
+      'capStaff' => t('Staff'),
+      'physician' => t('Physician'),
+    );
+
+    $form['filter']['stanford_cap_api_profiles_filter'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Only import profiles of the specified types:'),
+      '#default_value' => stanford_cap_api_profiles_get_filters(),
+      '#options' => $options,
+    );
   }
 
   $form['#submit'][25] = 'stanford_cap_api_profiles_settings_form_submit';
@@ -227,6 +249,7 @@ function stanford_cap_api_profiles_settings_form_submit($form, &$form_state) {
     variable_set('stanford_cap_api_profile_allow_edit', $values['stanford_cap_api_profile_allow_edit']);
     variable_set('stanford_cap_api_profiles_orphaned_action', $values['stanford_cap_api_profiles_orphaned_action']);
     variable_set('stanford_cap_api_profile_update', $values['stanford_cap_api_profile_update']);
+    variable_set('stanford_cap_api_profiles_filter', $values['stanford_cap_api_profiles_filter']);
   }
 }
 

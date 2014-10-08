@@ -164,6 +164,11 @@ function stanford_cap_api_profiles_cron() {
 function stanford_cap_api_profiles_profile_import($profile) {
   $profile_id = (is_array($profile)) ? $profile['profileId'] : $profile;
 
+  // Checking filter settings, if this profile is allowed to be imported.
+  if (stanford_cap_api_profiles_profile_import_forbidden($profile_id)) {
+    return;
+  }
+
   $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
   $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
   if (empty($etag) && !empty($stored_metadata['etag'])) {
@@ -2231,4 +2236,50 @@ function stanford_cap_api_profiles_views_default_views_alter(&$views) {
   if (!variable_get('stanford_cap_api_profiles_schema_synchronized', FALSE) && isset($views['cap_api_manage_profiles'])) {
     $views['cap_api_manage_profiles']->disabled = TRUE;
   }
+}
+
+/**
+ * Defines if the profile import is forbidden.
+ *
+ * @param int $profile_id
+ *   Profile ID.
+ *
+ * @return bool
+ *   Returns TRUE if profile is forbidden to import based on profile type
+ *   and filter settings.
+ */
+function stanford_cap_api_profiles_profile_import_forbidden($profile_id) {
+  $profile = stanford_cap_api_profiles_get_profile($profile_id);
+  $filters = stanford_cap_api_profiles_get_filters();
+  // Returns array of allowed to import profile types profile belongs to.
+  $types = array_uintersect_assoc($filters, $profile['affiliations'], '_stanford_cap_api_profiles_filters_compare');
+
+  return empty($types);
+}
+
+/**
+ * Helper to get filter settings.
+ *
+ * @return array
+ *   Array of profile types allowed to be imported.
+ */
+function stanford_cap_api_profiles_get_filters() {
+  return variable_get('stanford_cap_api_profiles_filter', array('capFaculty' => 'capFaculty'));
+}
+
+/**
+ * Filter callback.
+ *
+ * Expecting first value to be from $filters array.
+ *
+ * @see stanford_cap_api_profiles_profile_import_forbidden()
+ */
+function _stanford_cap_api_profiles_filters_compare($a, $b) {
+  $return = -1;
+
+  if (!empty($a) && !empty($b)) {
+    $return = 0;
+  }
+
+  return $return;
 }
