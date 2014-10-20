@@ -1067,7 +1067,6 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
             $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
             $entity_type = method_exists($entity, 'entityType') ? 'field_collection_item' : 'node';
             $fc_item->setHostEntity($entity_type, $entity);
-            $fc_item->save(TRUE);
             $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
             foreach ($field_data as $fc_subfield => $fc_subfield_data) {
               $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
