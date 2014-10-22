@@ -325,9 +325,15 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
     }
     _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
     $nw->save();
-  } catch (EntityMetadataWrapperException $e) {
-    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(),
-      array('@profile_id' => $profile['profileId'], '@id' => $nw->getIdentifier(), '@entity_type' => $nw->type())));
+  }
+  catch (EntityMetadataWrapperException $e) {
+    $vars = array(
+      '@message' => $e->getMessage(),
+      '@profile_id' => $profile['profileId'],
+      '@id' => $nw->getIdentifier(),
+      '@entity_type' => $nw->type(),
+    );
+    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: @message', $vars));
   }
 
   _stanford_cap_api_profiles_store_node_field_hashes($profile['profileId'], $node, $nw);
@@ -419,6 +425,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
     $drupal_field_name = _stanford_cap_api_profiles_get_field_name($field_name, '', TRUE);
     if (isset($props_info[$drupal_field_name])) {
       if (isset($node->{$drupal_field_name})) {
+        $field_info = field_info_field($drupal_field_name);
         $stored_hash = db_select('cap_api_field_hashes', 'hashes')
           ->condition('profile_id', $profile_id)
           ->condition('field_name', $drupal_field_name)
@@ -427,7 +434,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
           ->fetchField();
         // Using raw values for all fields, but field_collections, they
         // return full field_collection object as raw.
-        if ($props_info[$drupal_field_name]['type'] == 'field_collection_item') {
+        if ($field_info['type'] == 'field_collection') {
           $hash = serialize($node->{$drupal_field_name});
         }
         else {
@@ -435,7 +442,36 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
         }
         if ($stored_hash == $hash) {
           // Field data didn't changed till import, this means we can update it.
+          // Field collections need special handling.
+          if ($field_info['type'] == 'field_collection') {
+            // We are dropping field collections instead of updating them
+            // because it's much simpler, that's why we need to clean up garbage.
+            $ids_2_drop = array();
+            switch ($field_info['cardinality']) {
+              case '1':
+                $ids_2_drop[] = $nw->{$drupal_field_name}->getIdentifier();
+                break;
+
+              default:
+                foreach ($nw->{$drupal_field_name}->getIterator() as $fc) {
+                  $ids_2_drop[] = $fc->getIdentifier();
+                }
+                break;
+            }
+          }
+
           $nw->{$drupal_field_name}->set(NULL);
+
+          // Field collections need special handling.
+          if ($field_info['type'] == 'field_collection') {
+            foreach (field_collection_item_load_multiple($ids_2_drop) as $fc_id => $fc) {
+              $fc->delete();
+              $table = _field_sql_storage_revision_tablename($field_info);
+              db_delete($table)
+                ->condition($drupal_field_name . '_value', $fc_id)
+                ->execute();
+            }
+          }
           _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
         }
       }
@@ -449,12 +485,15 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   try {
     _stanford_cap_api_profiles_fill_basic_fields($nw, $profile);
     $nw->save();
-  } catch (EntityMetadataWrapperException $e) {
-    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: '.$e->getMessage(),
-      array('@profile_id' => $profile['profileId'], '@id' => $nw->getIdentifier(), '@entity_type' => $nw->type())));
-
-
-
+  }
+  catch (EntityMetadataWrapperException $e) {
+    $vars = array(
+      '@message' => $e->getMessage(),
+      '@profile_id' => $profile['profileId'],
+      '@id' => $nw->getIdentifier(),
+      '@entity_type' => $nw->type(),
+    );
+    throw new Exception(t('EntityMetadataWrapper Exception while syncing profile @profile_id to @id @entity_type. Exception message: @message', $vars));
   }
 
   _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, $nw);
