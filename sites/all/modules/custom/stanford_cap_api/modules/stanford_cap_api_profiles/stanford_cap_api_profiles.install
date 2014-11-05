@@ -93,8 +93,10 @@ function stanford_cap_api_profiles_schema() {
       ),
       'etag' => array(
         'description' => 'Etag.',
-        'type' => 'int',
+        'type' => 'varchar',
+        'length' => 32,
         'not null' => TRUE,
+        'default' => '',
       ),
       'sync' => array(
         'description' => 'Does this profile needs to be synced?',
@@ -265,6 +267,24 @@ function stanford_cap_api_profiles_update_7003() {
     'size' => 'big',
     'description' => 'Raw JSON response from CAP.',
     'not null' => TRUE,
+  );
+
+  db_change_field($table, $field, $field, $schema);
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Update field 'etag' schema.
+ */
+function stanford_cap_api_profiles_update_7004() {
+  $table = 'cap_api_profiles';
+  $field = 'etag';
+  $schema = array(
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => TRUE,
+    'default' => '',
   );
 
   db_change_field($table, $field, $field, $schema);
