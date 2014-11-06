@@ -11,6 +11,8 @@ define('CAP_FIELDS_PREFIX', 'cap_');
 define('CAP_FIELDS_IMPORT_ALL', 'import_all');
 define('CAP_FIELDS_IMPORT_LIST', 'import_list');
 define('CAP_PROFILES_PER_REQUEST', 10);
+define('CAP_PROFILES_PROFILE_FAILED', 'failed');
+define('CAP_PROFILES_PROFILE_NOT_EXIST', 'not_exist');
 
 /**
  * Implements hook_menu().
@@ -171,7 +173,7 @@ function stanford_cap_api_profiles_profile_import($profile) {
 
   $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
   $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
-  if (empty($etag) && !empty($stored_metadata['etag'])) {
+  if ($etag == CAP_PROFILES_PROFILE_NOT_EXIST && !empty($stored_metadata['etag'])) {
     // Profile is synced, but deleted from CAP.
     $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
     switch ($action) {
@@ -202,7 +204,7 @@ function stanford_cap_api_profiles_profile_import($profile) {
   elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
     // Do nothing, we have synced flag off.
   }
-  elseif (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag']) {
+  elseif ($etag != CAP_PROFILES_PROFILE_FAILED && (empty($stored_metadata['etag']) || $etag != $stored_metadata['etag'])) {
     // Profile not stored or updated.
     if (!is_array($profile)) {
       $profile = stanford_cap_api_profiles_get_profile($profile_id);
@@ -536,9 +538,25 @@ function stanford_cap_api_profiles_update_profiles() {
 function stanford_cap_api_profiles_get_profile_etag($profile_id) {
   $etag = FALSE;
   if (is_numeric($profile_id)) {
-    $profile = stanford_cap_api_profiles_get_profile($profile_id);
-    if ($profile && isset($profile['meta']['etag'])) {
-      $etag = $profile['meta']['etag'];
+    $response = stanford_cap_api_raw_request('/profiles/v1/' . $profile_id, NULL);
+    switch ($response->code) {
+      case 200:
+        $profile = json_decode($response->data, TRUE);
+        if (!empty($profile['meta']['etag'])) {
+          $etag = $profile['meta']['etag'];
+        }
+        else {
+          $etag = CAP_PROFILES_PROFILE_FAILED;
+        }
+        break;
+
+      case 404:
+        $etag = CAP_PROFILES_PROFILE_NOT_EXIST;
+        break;
+
+      default:
+        $etag = CAP_PROFILES_PROFILE_FAILED;
+        break;
     }
   }
 
