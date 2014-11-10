@@ -174,32 +174,8 @@ function stanford_cap_api_profiles_profile_import($profile) {
   $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
   $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
   if ($etag == CAP_PROFILES_PROFILE_NOT_EXIST && !empty($stored_metadata['etag'])) {
-    // Profile is synced, but deleted from CAP.
-    $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
-    switch ($action) {
-      case 'unpublish':
-        $nid = db_select('cap_api_profiles', 'p')
-          ->condition('profile_id', $profile_id)
-          ->fields('p', array('nid'))
-          ->execute()
-          ->fetchField();
-        $node = node_load($nid);
-        $node->status = NODE_NOT_PUBLISHED;
-        node_save($node);
-        db_delete('cap_api_profiles')
-          ->condition('nid', $nid)
-          ->execute();
-        break;
-
-      case 'remove':
-        $nid = db_select('cap_api_profiles', 'p')
-          ->condition('profile_id', $profile_id)
-          ->fields('p', array('nid'))
-          ->execute()
-          ->fetchField();
-        node_delete($nid);
-        break;
-    }
+    // Profile exists in Drupal, but should no longer be synced.
+    stanford_cap_api_profiles_profile_orphaned($profile_id);
   }
   elseif (!empty($stored_metadata['etag']) && empty($stored_metadata['sync'])) {
     // Do nothing, we have synced flag off.
@@ -214,6 +190,63 @@ function stanford_cap_api_profiles_profile_import($profile) {
       stanford_cap_api_profiles_synchronize_data($profile);
     }
   }
+}
+
+/**
+ * Handle an orphaned profile by unpublishing or deleting it.
+ *
+ * @param int $profile_id
+ *   Profile ID.
+ */
+function stanford_cap_api_profiles_profile_orphaned($profile_id) {
+  // Look up the action to be applied to orphaned profiles.
+  $action = variable_get('stanford_cap_api_profiles_orphaned_action', 'unpublish');
+  switch ($action) {
+    case 'unpublish':
+      stanford_cap_api_profiles_profile_unpublish($profile_id);
+      break;
+
+    case 'remove':
+      stanford_cap_api_profiles_profile_delete($profile_id);
+      break;
+  }
+}
+
+/**
+ * Unpublish a CAP profile.
+ *
+ * @param int $profile_id
+ *   Profile ID.
+ */
+function stanford_cap_api_profiles_profile_unpublish($profile_id) {
+  $nid = db_select('cap_api_profiles', 'p')
+    ->condition('profile_id', $profile_id)
+    ->fields('p', array('nid'))
+    ->execute()
+    ->fetchField();
+  $node = node_load($nid);
+  $node->status = NODE_NOT_PUBLISHED;
+  node_save($node);
+
+  // Prevent further interaction with the profile by this module.
+  db_delete('cap_api_profiles')
+    ->condition('nid', $nid)
+    ->execute();
+}
+
+/**
+ * Delete a CAP profile.
+ *
+ * @param int $profile_id
+ *   Profile ID.
+ */
+function stanford_cap_api_profiles_profile_delete($profile_id) {
+  $nid = db_select('cap_api_profiles', 'p')
+    ->condition('profile_id', $profile_id)
+    ->fields('p', array('nid'))
+    ->execute()
+    ->fetchField();
+  node_delete($nid);
 }
 
 /**
