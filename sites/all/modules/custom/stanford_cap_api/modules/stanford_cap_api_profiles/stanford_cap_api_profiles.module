@@ -420,6 +420,8 @@ function _stanford_cap_api_profiles_fill_basic_fields(EntityDrupalWrapper &$nw, 
  *   Profile fetched from CAP API.
  */
 function stanford_cap_api_profiles_node_fields_update($node, $profile) {
+  $node->skip_revision = TRUE;
+  $node->revision = TRUE;
   $nw = entity_metadata_wrapper('node', $node);
   $props_info = $nw->getPropertyInfo();
   $profile_id = $profile['profileId'];
@@ -552,6 +554,10 @@ function stanford_cap_api_profiles_get_profile_etag($profile_id) {
 
       case 404:
         $etag = CAP_PROFILES_PROFILE_NOT_EXIST;
+        break;
+
+      case 500:
+        $etag = CAP_PROFILES_PROFILE_FAILED;
         break;
 
       default:
