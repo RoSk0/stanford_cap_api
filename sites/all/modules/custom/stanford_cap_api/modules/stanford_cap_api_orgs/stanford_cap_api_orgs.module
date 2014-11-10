@@ -189,12 +189,15 @@ function _stanford_cap_api_orgs_import_batch_save($org_term, $parent_codes) {
  * @TODO: This really should be configurable - at least via $conf.
  */
 function stanford_cap_api_orgs_cron() {
-  // Synchronize orgCodes between 1AM and 5AM.
+  // Synchronize orgCodes once daily between 1AM and 5AM.
   $tz = variable_get('date_default_timezone');
+  $last_run = variable_get('stanford_cap_api_orgs_import_date', NULL);
   $date = new DateObject('now', $tz);
   $hour_of_day = (int) $date->format('G');
-  if ($hour_of_day >= 1 && $hour_of_day <= 5) {
+
+  if ($hour_of_day >= 1 && $hour_of_day <= 5 && $last_run != $date->format('Y-m-d')) {
     stanford_cap_api_orgs_import();
+    variable_set('stanford_cap_api_orgs_import_date', $date->format('Y-m-d'));
   }
 }
 
