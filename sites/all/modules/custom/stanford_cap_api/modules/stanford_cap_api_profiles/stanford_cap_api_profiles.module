@@ -168,6 +168,8 @@ function stanford_cap_api_profiles_profile_import($profile) {
 
   // Checking filter settings, if this profile is allowed to be imported.
   if (stanford_cap_api_profiles_profile_import_forbidden($profile_id)) {
+    // Treat this profile like an orphan.
+    stanford_cap_api_profiles_profile_orphaned($profile_id);
     return;
   }
 
