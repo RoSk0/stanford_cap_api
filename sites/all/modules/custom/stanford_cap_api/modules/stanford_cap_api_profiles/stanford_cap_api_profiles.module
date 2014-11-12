@@ -401,7 +401,8 @@ function _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, 
     if (!in_array($field_name, $bundled_fields)) {
       // Using raw values for all fields, but field_collections, they
       // return full field_collection object as raw.
-      if ($props_info[$field_name]['type'] == 'field_collection_item') {
+      $field_info = field_info_field($field_name);
+      if ($field_info['type'] == 'field_collection') {
         $hash = $node->{$field_name};
       }
       else {
