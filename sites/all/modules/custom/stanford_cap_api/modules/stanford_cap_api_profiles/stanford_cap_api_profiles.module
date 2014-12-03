@@ -380,7 +380,7 @@ function stanford_cap_api_profiles_node_fields_import($node, $profile) {
  * Stores profile node field hashes in DB.
  *
  * We storing serialized raw field values for most fields and
- * entity/revision IDs  array for field colletions because raw()
+ * entity/revision IDs  array for field collections because raw()
  * metadata wrapper method returns full field collection object.
  * Doesn't use any hashing because we need to deal not only with strings.
  *
@@ -395,27 +395,28 @@ function _stanford_cap_api_profiles_store_node_field_hashes($profile_id, $node, 
     'cap_profile_image',
   );
   // Storing profile field hashes to check if data was changed later.
-  $props_info = $nw->getPropertyInfo();
   $fields = field_info_instances('node', 'cap_stanford_profile');
-  foreach ($fields as $field_name => $field_instance) {
-    if (!in_array($field_name, $bundled_fields)) {
-      // Using raw values for all fields, but field_collections, they
-      // return full field_collection object as raw.
-      $field_info = field_info_field($field_name);
-      if ($field_info['type'] == 'field_collection') {
-        $hash = $node->{$field_name};
+  foreach (array_keys($fields) as $field_name) {
+    if (!empty($node->{$field_name})) {
+      if (!in_array($field_name, $bundled_fields)) {
+        // Using raw values for all fields, but field_collections, they
+        // return full field_collection object as raw.
+        $field_info = field_info_field($field_name);
+        if ($field_info['type'] == 'field_collection') {
+          $value = $node->{$field_name};
+        }
+        else {
+          $value = $nw->{$field_name}->raw();
+        }
+        $key = array(
+          'profile_id' => $profile_id,
+          'field_name' => $field_name,
+        );
+        $record = $key + array(
+          'hash' => md5(serialize($value)),
+        );
+        db_merge('cap_api_field_hashes')->key($key)->fields($record)->execute();
       }
-      else {
-        $hash = $nw->{$field_name}->raw();
-      }
-      $key = array(
-        'profile_id' => $profile_id,
-        'field_name' => $field_name,
-      );
-      $record = $key + array(
-        'hash' => serialize($hash),
-      );
-      db_merge('cap_api_field_hashes')->key($key)->fields($record)->execute();
     }
   }
 }
@@ -459,26 +460,28 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
   $nw = entity_metadata_wrapper('node', $node);
   $props_info = $nw->getPropertyInfo();
   $profile_id = $profile['profileId'];
+  // Loading field hashes for current profile.
+  $hashes = db_select('cap_api_field_hashes', 'hashes')
+    ->condition('profile_id', $profile_id)
+    ->fields('hashes', array('field_name', 'hash'))
+    ->execute()
+    ->fetchAllKeyed();
+
   foreach ($profile as $field_name => $field_data) {
     $drupal_field_name = _stanford_cap_api_profiles_get_field_name($field_name, '', TRUE);
     if (isset($props_info[$drupal_field_name])) {
-      if (isset($node->{$drupal_field_name})) {
+      if (!empty($node->{$drupal_field_name})) {
         $field_info = field_info_field($drupal_field_name);
-        $stored_hash = db_select('cap_api_field_hashes', 'hashes')
-          ->condition('profile_id', $profile_id)
-          ->condition('field_name', $drupal_field_name)
-          ->fields('hashes', array('hash'))
-          ->execute()
-          ->fetchField();
         // Using raw values for all fields, but field_collections, they
         // return full field_collection object as raw.
         if ($field_info['type'] == 'field_collection') {
-          $hash = serialize($node->{$drupal_field_name});
+          $value = $node->{$drupal_field_name};
         }
         else {
-          $hash = serialize($nw->{$drupal_field_name}->raw());
+          $value = $nw->{$drupal_field_name}->raw();
         }
-        if ($stored_hash == $hash) {
+        $hash = md5(serialize($value));
+        if (empty($hashes[$drupal_field_name]) || $hashes[$drupal_field_name] == $hash) {
           // Field data didn't changed till import, this means we can update it.
           // Field collections need special handling.
           if ($field_info['type'] == 'field_collection') {
@@ -500,7 +503,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
 
           $nw->{$drupal_field_name}->set(NULL);
 
-          // Field collections need special handling.
+          // We need to manually delete revisions for FC.
           if ($field_info['type'] == 'field_collection') {
             foreach (field_collection_item_load_multiple($ids_2_drop) as $fc_id => $fc) {
               $fc->delete();

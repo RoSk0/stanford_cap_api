@@ -176,10 +176,12 @@ function stanford_cap_api_profiles_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'hash' => array(
-        'type' => 'blob',
-        'serialize' => TRUE,
-        'description' => 'A serialized array of the field data to be used as hash string.',
+      'field_hash' => array(
+        'description' => 'Field data hash.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
       ),
     ),
     'primary key' => array('id', 'profile_id'),
@@ -288,4 +290,22 @@ function stanford_cap_api_profiles_update_7004() {
   );
 
   db_change_field($table, $field, $field, $schema);
+}
+
+/**
+ * Use real hash instead of serialized field value.
+ *
+ * !!! Warning: This will update ALL profile fields from CAP even if this fields
+ * were updated manually!!!
+ */
+function stanford_cap_api_profiles_update_7005() {
+  db_drop_field('cap_api_field_hashes', 'hash');
+  $field_spec = array(
+    'description' => 'Field data hash.',
+    'type' => 'varchar',
+    'length' => 64,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_add_field('cap_api_field_hashes', 'hash', $field_spec);
 }
