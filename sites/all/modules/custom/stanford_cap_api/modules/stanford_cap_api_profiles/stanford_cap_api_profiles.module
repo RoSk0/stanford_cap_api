@@ -483,36 +483,6 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
         $hash = md5(serialize($value));
         if (empty($hashes[$drupal_field_name]) || $hashes[$drupal_field_name] == $hash) {
           // Field data didn't changed till import, this means we can update it.
-          // Field collections need special handling.
-          if ($field_info['type'] == 'field_collection') {
-            // We are dropping field collections instead of updating them
-            // because it's much simpler, that's why we need to clean up garbage.
-            $ids_2_drop = array();
-            switch ($field_info['cardinality']) {
-              case '1':
-                $ids_2_drop[] = $nw->{$drupal_field_name}->getIdentifier();
-                break;
-
-              default:
-                foreach ($nw->{$drupal_field_name}->getIterator() as $fc) {
-                  $ids_2_drop[] = $fc->getIdentifier();
-                }
-                break;
-            }
-          }
-
-          $nw->{$drupal_field_name}->set(NULL);
-
-          // We need to manually delete revisions for FC.
-          if ($field_info['type'] == 'field_collection') {
-            foreach (field_collection_item_load_multiple($ids_2_drop) as $fc_id => $fc) {
-              $fc->delete();
-              $table = _field_sql_storage_revision_tablename($field_info);
-              db_delete($table)
-                ->condition($drupal_field_name . '_value', $fc_id)
-                ->execute();
-            }
-          }
           _stanford_cap_api_profiles_save_field($node, $nw, $field_name, $field_data);
         }
       }
@@ -1173,21 +1143,48 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
       case 'field_collection':
         // This is multi-value field collection.
         if (is_array($field_data) && !empty($field_data) && array_key_exists(0, $field_data)) {
-          foreach ($field_data as $fc_subfield_data) {
-            _stanford_cap_api_profiles_save_field($entity, $wrapper, $field_name, $fc_subfield_data, $parent_field);
+          foreach ($field_data as $delta => $fc_data) {
+            $fc_wrapper = $wrapper->{$drupal_field_name}[$delta];
+            /* @var EntityDrupalWrapper $fc_wrapper */
+            $fcid = $fc_wrapper->getIdentifier();
+            // Empty ID means that there is no field collection item on this
+            // delta and we need to create one.
+            if (!$fcid) {
+              $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
+              /* @var FieldCollectionItemEntity $fc_item */
+              $fc_item->setHostEntity($wrapper->type(), $entity);
+              $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+            }
+            else {
+              $fc_item = $fc_wrapper->value();
+            }
+            // Processing incoming data/
+            foreach ($fc_data as $fc_field => $fc_field_data) {
+              $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
+              _stanford_cap_api_profiles_save_field($fc_item, $fc_wrapper, $fc_field, $fc_field_data, $field_path);
+            }
           }
         }
         else {
           if (is_array($field_data) && !empty($field_data)) {
-            $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
-            $entity_type = method_exists($entity, 'entityType') ? 'field_collection_item' : 'node';
-            $fc_item->setHostEntity($entity_type, $entity);
-            $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+            $fc_wrapper = $wrapper->{$drupal_field_name};
+            /* @var EntityDrupalWrapper $fc_wrapper */
+            $fcid = $fc_wrapper->getIdentifier();
+            // Empty ID means that there is no field collection item on this
+            // delta and we need to create one.
+            if (!$fcid) {
+              $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
+              /* @var FieldCollectionItemEntity $fc_item */
+              $fc_item->setHostEntity($wrapper->type(), $entity);
+              $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
+            }
+            else {
+              $fc_item = $fc_wrapper->value();
+            }
             foreach ($field_data as $fc_subfield => $fc_subfield_data) {
               $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
               _stanford_cap_api_profiles_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, $field_path);
             }
-            $fc_item->save(TRUE);
           }
         }
         break;
