@@ -445,10 +445,10 @@ function _stanford_cap_api_profiles_fill_basic_fields(EntityDrupalWrapper &$nw, 
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(time());
   // Organization relation handling.
-  $org_tid = _stanford_cap_api_profiles_get_orantization_tid($nw, 'short');
+  $org_tid = _stanford_cap_api_profiles_get_organization_tid($nw, 'short');
   if (!$org_tid) {
     // Lets try long title;
-    $org_tid = _stanford_cap_api_profiles_get_orantization_tid($nw, 'long');
+    $org_tid = _stanford_cap_api_profiles_get_organization_tid($nw, 'long');
   }
   if ($org_tid) {
     $nw->field_cap_profile_organization = $org_tid;
@@ -2332,7 +2332,7 @@ function stanford_cap_api_profiles_library() {
  * @return int
  *   Organization taxonomy term ID.
  */
-function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'short') {
+function _stanford_cap_api_profiles_get_organization_tid($nw, $title_type = 'short') {
   $tid = NULL;
   switch ($title_type) {
     case 'short':
