@@ -151,6 +151,7 @@ function stanford_cap_api_profiles_cron() {
   $hour_of_day = (int) $date->format('G');
   if ($hour_of_day >= 1 && $hour_of_day <= 5) {
     stanford_cap_api_profiles_synchronize_schema();
+    // @todo Remane this funcs removing '_cron'.
     stanford_cap_api_profiles_update_cron();
     stanford_cap_api_profiles_sync_group_cron();
     variable_set('stanford_cap_api_profiles_cron_last_run', REQUEST_TIME);
@@ -228,11 +229,18 @@ function stanford_cap_api_profiles_profile_unpublish($profile_id) {
     ->fetchField();
   $node = node_load($nid);
   $node->status = NODE_NOT_PUBLISHED;
+
+  $message = 'Profile with %id ID become orphan and corresponding node with %nid NID will be unpublished.';
+  $vars = array('%id' => $profile_id, '%nid' => $nid);
+  watchdog('stanford_cap_api_profiles', $message, $vars);
+  drupal_alter('stanford_cap_api_profiles_profile_pre_unpublish', $node, $profile_id);
   node_save($node);
 
   // Prevent further interaction with the profile by this module.
-  db_delete('cap_api_profiles')
+  db_update('cap_api_profiles')
     ->condition('nid', $nid)
+    ->condition('profile_id', $profile_id)
+    ->fields(array('sync' => 0))
     ->execute();
 }
 
@@ -248,6 +256,10 @@ function stanford_cap_api_profiles_profile_delete($profile_id) {
     ->fields('p', array('nid'))
     ->execute()
     ->fetchField();
+  $message = 'Profile with %id ID become orphan and corresponding node with %nid NID will be deleted.';
+  $vars = array('%id' => $profile_id, '%nid' => $nid);
+  watchdog('stanford_cap_api_profiles', $message, $vars);
+  drupal_alter('stanford_cap_api_profiles_profile_pre_delete', $node, $profile_id);
   node_delete($nid);
 }
 
@@ -480,6 +492,9 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
         else {
           $value = $nw->{$drupal_field_name}->raw();
         }
+
+        // @todo Store this in some variable to not calculate
+        // this again in _stanford_cap_api_profiles_store_node_field_hashes().
         $hash = md5(serialize($value));
         if (empty($hashes[$drupal_field_name]) || $hashes[$drupal_field_name] == $hash) {
           // Field data didn't changed till import, this means we can update it.
@@ -1029,6 +1044,7 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
   $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
   if (isset($props_info[$drupal_field_name]) && stanford_cap_api_profiles_synchronize_field($field_path)) {
     $field_info = field_info_field($drupal_field_name);
+    // @todo Convert each type handler to separate function.
     switch ($field_info['type']) {
       case 'date':
         if (is_string($field_data)) {
