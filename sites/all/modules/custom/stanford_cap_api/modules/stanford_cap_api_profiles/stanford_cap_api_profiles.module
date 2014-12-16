@@ -151,7 +151,7 @@ function stanford_cap_api_profiles_cron() {
   $hour_of_day = (int) $date->format('G');
   if ($hour_of_day >= 1 && $hour_of_day <= 5) {
     stanford_cap_api_profiles_synchronize_schema();
-    // @todo Remane this funcs removing '_cron'
+    // @todo Remane this funcs removing '_cron'.
     stanford_cap_api_profiles_update_cron();
     stanford_cap_api_profiles_sync_group_cron();
     variable_set('stanford_cap_api_profiles_cron_last_run', REQUEST_TIME);
@@ -262,11 +262,13 @@ function stanford_cap_api_profiles_profile_delete($profile_id) {
     ->fields('p', array('nid'))
     ->execute()
     ->fetchField();
-  $message = 'Profile with %id ID no longer exists and the corresponding node with %nid NID will be deleted.';
-  $vars = array('%id' => $profile_id, '%nid' => $nid);
-  watchdog('stanford_cap_api_profiles', $message, $vars);
-  drupal_alter('stanford_cap_api_profiles_profile_pre_delete', $node, $profile_id);
-  node_delete($nid);
+  if ($nid && $node = node_load($nid)) {
+    $message = 'Profile with %id ID no longer exists and the corresponding node with %nid NID will be deleted.';
+    $vars = array('%id' => $profile_id, '%nid' => $nid);
+    watchdog('stanford_cap_api_profiles', $message, $vars);
+    drupal_alter('stanford_cap_api_profiles_profile_pre_delete', $node, $profile_id);
+    node_delete($nid);
+  }
 }
 
 /**
@@ -452,10 +454,10 @@ function _stanford_cap_api_profiles_fill_basic_fields(EntityDrupalWrapper &$nw, 
   $nw->cap_profile_link->set(array('url' => _stanford_cap_api_profiles_get_cap_profile_url($profile)));
   $nw->cap_sync_date->set(time());
   // Organization relation handling.
-  $org_tid = _stanford_cap_api_profiles_get_orantization_tid($nw, 'short');
+  $org_tid = _stanford_cap_api_profiles_get_organization_tid($nw, 'short');
   if (!$org_tid) {
     // Lets try long title;
-    $org_tid = _stanford_cap_api_profiles_get_orantization_tid($nw, 'long');
+    $org_tid = _stanford_cap_api_profiles_get_organization_tid($nw, 'long');
   }
   if ($org_tid) {
     $nw->field_cap_profile_organization = $org_tid;
@@ -501,6 +503,7 @@ function stanford_cap_api_profiles_node_fields_update($node, $profile) {
         }
 
         // @todo Store this in some variable to not calculate
+        // this again in _stanford_cap_api_profiles_store_node_field_hashes().
         $hash = md5(serialize($value));
         if (empty($hashes[$drupal_field_name]) || $hashes[$drupal_field_name] == $hash) {
           // Field data didn't changed till import, this means we can update it.
@@ -2338,7 +2341,7 @@ function stanford_cap_api_profiles_library() {
  * @return int
  *   Organization taxonomy term ID.
  */
-function _stanford_cap_api_profiles_get_orantization_tid($nw, $title_type = 'short') {
+function _stanford_cap_api_profiles_get_organization_tid($nw, $title_type = 'short') {
   $tid = NULL;
   switch ($title_type) {
     case 'short':
