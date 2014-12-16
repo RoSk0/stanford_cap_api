@@ -227,7 +227,7 @@ function stanford_cap_api_profiles_profile_unpublish($profile_id) {
     ->fields('p', array('nid'))
     ->execute()
     ->fetchField();
-  if ($node = node_load($nid)) {
+  if ($nid && $node = node_load($nid)) {
     $node->status = NODE_NOT_PUBLISHED;
 
     $message = 'Profile with %id ID no longer exists and the corresponding node with %nid NID will be unpublished.';
@@ -235,19 +235,19 @@ function stanford_cap_api_profiles_profile_unpublish($profile_id) {
     watchdog('stanford_cap_api_profiles', $message, $vars);
     drupal_alter('stanford_cap_api_profiles_profile_pre_unpublish', $node, $profile_id);
     node_save($node);
-
-    // Prevent further interaction with the profile by this module.
-    db_update('cap_api_profiles')
-      ->condition('nid', $nid)
-      ->condition('profile_id', $profile_id)
-      ->fields(array('sync' => 0))
-      ->execute();
   }
   else {
-    $message = 'Profile with %id ID no longer exists, but the node with %nid NID couldn not be found either.';
+    $message = 'Profile with %id ID no longer exists, but the node with %nid NID could not be found either.';
     $vars = array('%id' => $profile_id, '%nid' => $nid);
     watchdog('stanford_cap_api_profiles', $message, $vars);
   }
+
+  // Prevent further interaction with the profile by this module.
+  db_update('cap_api_profiles')
+    ->condition('nid', $nid)
+    ->condition('profile_id', $profile_id)
+    ->fields(array('sync' => 0))
+    ->execute();
 }
 
 /**
