@@ -176,7 +176,7 @@ function stanford_cap_api_profiles_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'field_hash' => array(
+      'hash' => array(
         'description' => 'Field data hash.',
         'type' => 'varchar',
         'length' => 64,
