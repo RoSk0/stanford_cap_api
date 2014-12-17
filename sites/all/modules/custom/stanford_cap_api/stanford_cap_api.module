@@ -183,7 +183,7 @@ function stanford_cap_api_auth($user = '', $pass = '', $auth_uri = '') {
  *   Decoded JSON response or FALSE.
  */
 function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
-  $response = stanford_cap_api_raw_request($endpoint, $params = array());
+  $response = stanford_cap_api_raw_request($endpoint, $params);
   $request_url = stanford_cap_api_request_url($endpoint, $params);
 
   // Error could be here as well.

@@ -167,15 +167,28 @@ function stanford_cap_api_profiles_cron() {
 function stanford_cap_api_profiles_profile_import($profile) {
   $profile_id = (is_array($profile)) ? $profile['profileId'] : $profile;
 
+  // Check if it's set 'sync' to off.
+  $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
+  if ($stored_metadata && empty($stored_metadata['sync'])) {
+    // Do nothing, we have synced flag off.
+    return;
+  }
+
   // Checking filter settings, if this profile is allowed to be imported.
-  if (stanford_cap_api_profiles_profile_import_forbidden($profile_id)) {
+  if (stanford_cap_api_profiles_profile_import_forbidden($profile)) {
     // Treat this profile like an orphan.
     stanford_cap_api_profiles_profile_orphaned($profile_id);
     return;
   }
 
-  $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
-  $stored_metadata = stanford_cap_api_profiles_get_stored_profile_data($profile_id);
+  // If we have full profile array there is no need to query etag.
+  if (is_array($profile) && !empty($profile['meta']['etag'])) {
+    $etag = $profile['meta']['etag'];
+  }
+  else {
+    $etag = stanford_cap_api_profiles_get_profile_etag($profile_id);
+  }
+
   if ($etag == CAP_PROFILES_PROFILE_NOT_EXIST && !empty($stored_metadata['etag'])) {
     // Profile exists in Drupal, but should no longer be synced.
     stanford_cap_api_profiles_profile_orphaned($profile_id);
@@ -243,10 +256,14 @@ function stanford_cap_api_profiles_profile_unpublish($profile_id) {
   }
 
   // Prevent further interaction with the profile by this module.
-  db_update('cap_api_profiles')
-    ->condition('nid', $nid)
-    ->condition('profile_id', $profile_id)
-    ->fields(array('sync' => 0))
+  $fields = array(
+    'profile_id' => $profile_id,
+    'sync' => 0,
+    'nid' => 0,
+  );
+  db_merge('cap_api_profiles')
+    ->fields($fields)
+    ->key(array('profile_id' => $profile_id))
     ->execute();
 }
 
@@ -294,6 +311,99 @@ function stanford_cap_api_profiles_get_profile($profile_id, $raw = FALSE) {
 }
 
 /**
+ * Get profiles from the CAP.
+ *
+ * @param array $params
+ *   Params to request profiles:
+ *   - 'orgCodes' - Organization name
+ *   - 'includeChildren' - do we want to include profiles of the child
+ *      organizations
+ *   - 'privGroups' - work group name
+ *   - 'p' - Page num
+ *   - 'ps' - Page size, default is CAP_PROFILES_PER_REQUEST.
+ *   - 'affiliations' - profiles affiliation type. One of 'capFaculty',
+ *    'capMdStudent', 'capMsStudent', 'capPhdStudent', 'capPostdoc',
+ *    'capStaff', 'physician'. Or multiple glued with ','
+ *     like 'capFaculty,physician'. Set to FALSE to disable
+ *     site wide filtering.
+ *
+ * @return array
+ *   Array of profiles.
+ */
+function stanford_cap_api_profiles_get_profiles($params) {
+  $cache =& drupal_static(__FUNCTION__);
+  $individual_cache_type = 'php';
+  $individual_cache =& drupal_static('stanford_cap_api_profiles_get_profile');
+  $cid = _stanford_cap_api_profiles_params_hash($params);
+
+  if (empty($cache[$cid])) {
+    // Page size.
+    $params['ps'] = isset($params['ps']) ? $params['ps'] : CAP_PROFILES_PER_REQUEST;
+
+    // Affiliation filtering.
+    if (isset($params['affiliations']) && $params['affiliations'] === FALSE) {
+      // Disabling filtering.
+      unset($params['affiliations']);
+    }
+    elseif (empty($params['affiliations'])) {
+      // Setting site wide filtering.
+      $filters = stanford_cap_api_profiles_get_filters();
+      $filters = array_filter($filters);
+      $params['affiliations'] = implode(',', $filters);
+    }
+
+    // Also we can't use filtering for work groups - endpoint doesn't allow.
+    if (isset($params['privGroups'])) {
+      unset($params['affiliations']);
+    }
+
+    // Define endpoint to use based on filtering settings.
+    // Request with filtering returning less profiles, but more metadata
+    // resulting bigger request time.
+    if (isset($params['affiliations'])) {
+      // We need to get organization alias for query with filtering.
+      $data = stanford_cap_api_request('/cap/v1/orgs' , array('orgCodes' => $params['orgCodes'], 'ps' => 1));
+      $data = array_shift($data);
+      if (empty($data['alias'])) {
+        $message = 'Failed to get organization alias for organization with @code orgCode.';
+        watchdog('stanford_cap_api_profiles', $message, array('@code' => $params['orgCodes']), WATCHDOG_ERROR);
+        return FALSE;
+      }
+      $endpoint = format_string('/cap/v1/orgs/@alias/profiles', array('@alias' => $data['alias']));
+    }
+    else {
+      $endpoint = '/profiles/v1';
+    }
+
+    $data = stanford_cap_api_request($endpoint, $params);
+    if ($data && !empty($data['values']) && is_array($data['values'])) {
+      // Putting all fetched profiles to individual cache.
+      foreach ($data['values'] as $profile) {
+        $profile_id = $profile['profileId'];
+        if (empty($individual_cache[$profile_id]) || empty($individual_cache[$profile_id][$individual_cache_type])) {
+          $individual_cache[$profile_id][$individual_cache_type] = $profile;
+        }
+      }
+      // Caching response.
+      $cache[$cid] = $data['values'];
+    }
+    else {
+      $message = 'Failed to get data from CAP with the following parameters: endpoint - @endpoint; params - @params; full request URL - @url.';
+      $vars = array(
+        '@endpoint' => $endpoint,
+        '@params' => var_export($params, TRUE),
+        '@url' => stanford_cap_api_request_url($endpoint, $params),
+      );
+      watchdog('stanford_cap_api_profiles', $message, $vars, WATCHDOG_ERROR);
+      return FALSE;
+    }
+  }
+
+  // If we reached this point we definitely have something in cache.
+  return $cache[$cid];
+}
+
+/**
  * Returns profile type.
  *
  * @param array $profile
@@ -303,6 +413,8 @@ function stanford_cap_api_profiles_get_profile($profile_id, $raw = FALSE) {
  *   Type.
  */
 function stanford_cap_api_profiles_get_profile_type($profile) {
+  $type = FALSE;
+
   foreach ($profile['affiliations'] as $affiliation => $enabled) {
     if ($affiliation == 'capFaculty' && $enabled) {
       $type = 'faculty';
@@ -628,15 +740,16 @@ function stanford_cap_api_profiles_get_profile_etag($profile_id) {
  *   CAP profile metadata or FALSE.
  */
 function stanford_cap_api_profiles_get_stored_profile_data($profile_id) {
-  $data = FALSE;
-  if (is_numeric($profile_id)) {
-    $data = db_select('cap_api_profiles', 'cap')
+  $cache =& drupal_static(__FUNCTION__, array());
+
+  if (empty($cache)) {
+    $cache = db_select('cap_api_profiles', 'cap')
       ->fields('cap')
-      ->condition('profile_id', $profile_id)
-      ->execute()->fetchAssoc();
+      ->execute()
+      ->fetchAllAssoc('profile_id', PDO::FETCH_ASSOC);
   }
 
-  return $data;
+  return isset($cache[$profile_id]) ? $cache[$profile_id] : FALSE;
 }
 
 /**
@@ -679,38 +792,37 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = ar
  */
 function _stanford_cap_api_sync_members($group, &$operations, $params) {
   $count = 0;
-  // This request used to get count of profiles of this group.
-  $data = stanford_cap_api_request('/profiles/v1', $params);
-  if ($data && $data['totalCount'] > 0) {
-    $params['ps'] = CAP_PROFILES_PER_REQUEST;
-    $requests_count = $data['totalPages'];
-    for ($i = 0; $i < $requests_count; $i++) {
-      $params['p'] = $i + 1;
-      $data = stanford_cap_api_request('/profiles/v1', $params);
-      if (!empty($data['values']) && is_array($data['values'])) {
-        // Summing up received profiles.
-        $count += count($data['values']);
-        foreach ($data['values'] as $profile) {
-          if (!empty($operations)) {
-            $operations[] = array(
-              'stanford_cap_api_profiles_profile_import',
-              array($profile['profileId']),
-            );
-          }
-          else {
-            stanford_cap_api_profiles_profile_import($profile['profileId']);
-          }
-        }
+
+  // Starting from the first page.
+  $params['p'] = 1;
+  while ($profiles = stanford_cap_api_profiles_get_profiles($params)) {
+    // Summing up received profiles.
+    $count += count($profiles);
+    foreach ($profiles as $profile) {
+      if (!empty($operations)) {
+        $operations[] = array(
+          'stanford_cap_api_profiles_profile_import',
+          array($profile),
+        );
       }
       else {
-        watchdog(
-          'stanford_cap_api_profiles',
-          'There was an issue while retrieving data from CAP service for "@group" group.',
-          array('@group' => $group)
-        );
+        stanford_cap_api_profiles_profile_import($profile);
       }
     }
 
+    $params['p']++;
+    $profiles_2_update = variable_get('stanford_cap_api_profiles_update_per_cron_run', 100);
+    if ($count >= $profiles_2_update) {
+      break;
+    }
+  }
+
+  if ($count === 0) {
+    watchdog(
+      'stanford_cap_api_profiles',
+      'There was an issue while retrieving data from CAP service for "@group" group.',
+      array('@group' => $group)
+    );
   }
 
   return $count;
@@ -776,7 +888,8 @@ function stanford_cap_api_profiles_sync_group_save($type, $name, $count = 0, $la
 function stanford_cap_api_profiles_sync_group_sync($type, $name, $sync_children = 0) {
   switch ($type) {
     case 'organization':
-      $count = stanford_cap_api_profiles_sync_org_members($name, $ops = array(), $sync_children);
+      $ops = array();
+      $count = stanford_cap_api_profiles_sync_org_members($name, $ops, $sync_children);
       stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME, $sync_children);
       break;
 
@@ -2386,15 +2499,18 @@ function stanford_cap_api_profiles_views_default_views_alter(&$views) {
 /**
  * Defines if the profile import is forbidden.
  *
- * @param int $profile_id
- *   Profile ID.
+ * @param int|array $profile
+ *   Profile ID or profile itself.
  *
  * @return bool
  *   Returns TRUE if profile is forbidden to import based on profile type
  *   and filter settings.
  */
-function stanford_cap_api_profiles_profile_import_forbidden($profile_id) {
-  $profile = stanford_cap_api_profiles_get_profile($profile_id);
+function stanford_cap_api_profiles_profile_import_forbidden($profile) {
+  $profile_id = (is_array($profile)) ? $profile['profileId'] : $profile;
+  if (!is_array($profile)) {
+    $profile = stanford_cap_api_profiles_get_profile($profile_id);
+  }
   $filters = stanford_cap_api_profiles_get_filters();
   // Returns array of allowed to import profile types profile belongs to.
   $types = array_uintersect_assoc($filters, $profile['affiliations'], '_stanford_cap_api_profiles_filters_compare');
@@ -2427,4 +2543,19 @@ function _stanford_cap_api_profiles_filters_compare($a, $b) {
   }
 
   return $return;
+}
+
+/**
+ * CAP request params to get hash of.
+ *
+ * @param array $params
+ *   Request params.
+ *
+ * @return string
+ *   Params hash.
+ */
+function _stanford_cap_api_profiles_params_hash($params) {
+  array_multisort($params);
+
+  return md5(json_encode($params));
 }
