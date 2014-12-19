@@ -152,8 +152,8 @@ function stanford_cap_api_profiles_cron() {
   if ($hour_of_day >= 1 && $hour_of_day <= 5) {
     stanford_cap_api_profiles_synchronize_schema();
     // @todo Remane this funcs removing '_cron'.
-    stanford_cap_api_profiles_update_cron();
     stanford_cap_api_profiles_sync_group_cron();
+    stanford_cap_api_profiles_update_cron();
     variable_set('stanford_cap_api_profiles_cron_last_run', REQUEST_TIME);
   }
 }
@@ -792,9 +792,16 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = ar
  */
 function _stanford_cap_api_sync_members($group, &$operations, $params) {
   $count = 0;
+  $save_page = FALSE;
+
+  // We want to process profiles by bulks "pages" in CAP terms.
+  // Page size determined by CAP_PROFILES_PER_REQUEST
+  // and respected in stanford_cap_api_profiles_get_profiles().
+  $pages = variable_get('stanford_cap_api_profiles_update_pages', array());
+  $page = empty($pages[$group]) ? 1 : $pages[$group];
 
   // Starting from the first page.
-  $params['p'] = 1;
+  $params['p'] = $page;
   while ($profiles = stanford_cap_api_profiles_get_profiles($params)) {
     // Summing up received profiles.
     $count += count($profiles);
@@ -813,8 +820,20 @@ function _stanford_cap_api_sync_members($group, &$operations, $params) {
     $params['p']++;
     $profiles_2_update = variable_get('stanford_cap_api_profiles_update_per_cron_run', 100);
     if ($count >= $profiles_2_update) {
+      // Saving current page if we hit limit.
+      $save_page = TRUE;
       break;
     }
+  }
+
+  if ($save_page) {
+    $pages[$group] = $params['p'];
+    variable_set('stanford_cap_api_profiles_update_pages', $pages);
+  }
+  else {
+    // Make sure we will start from the beginning next time.
+    $pages[$group] = 0;
+    variable_set('stanford_cap_api_profiles_update_pages', $pages);
   }
 
   if ($count === 0) {
