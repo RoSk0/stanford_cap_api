@@ -760,19 +760,23 @@ function stanford_cap_api_profiles_get_stored_profile_data($profile_id) {
  * @param array $operations
  *   Array to gather operations for batch processing, also used as indicator
  *   for batch mode.
+ * @param int $sync_children
+ *   Sync child organization profiles.
+ * @param int $limit
+ *   Limit amount of profiles to sync.
  *
  * @return int
  *   Count of synced profiles.
  *
  * @see http://www.stanford.edu/dept/pres-provost/budget/org/orgchart/
  */
-function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = array(), $sync_children = 0) {
+function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = array(), $sync_children = 0, $limit = 0) {
   $params = array('orgCodes' => $org_code);
   if (!empty($sync_children)) {
     $params['includeChildren'] = TRUE;
   }
 
-  return _stanford_cap_api_sync_members($org_code, $operations, $params);
+  return _stanford_cap_api_sync_members($org_code, $operations, $params, $limit);
 }
 
 /**
@@ -784,13 +788,15 @@ function stanford_cap_api_profiles_sync_org_members($org_code, &$operations = ar
  *   Array of operations to use in batch set definition.
  * @param array $params
  *   Array of params for stanford_cap_api_request().
+ * @param int $limit
+ *   Limit amount of profiles to sync.
  *
  * @return int
  *   Number of synced profiles.
  *
  * @see stanford_cap_api_request()
  */
-function _stanford_cap_api_sync_members($group, &$operations, $params) {
+function _stanford_cap_api_sync_members($group, &$operations, $params, $limit = 0) {
   $count = 0;
   $save_page = FALSE;
 
@@ -818,8 +824,7 @@ function _stanford_cap_api_sync_members($group, &$operations, $params) {
     }
 
     $params['p']++;
-    $profiles_2_update = variable_get('stanford_cap_api_profiles_update_per_cron_run', 100);
-    if ($count >= $profiles_2_update) {
+    if (!empty($limit) && $count >= $limit) {
       // Saving current page if we hit limit.
       $save_page = TRUE;
       break;
@@ -854,15 +859,17 @@ function _stanford_cap_api_sync_members($group, &$operations, $params) {
  *   CAP workgroup ID.
  * @param array $operations
  *   Array to gather operations for batch processing, also used as indicator
- *  for batch mode.
+ *   for batch mode.
+ * @param int $limit
+ *   Limit amount of profiles to sync.
  *
  * @return int
  *   Count of synced profiles.
  */
-function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$operations = array()) {
+function stanford_cap_api_profiles_sync_workgroup_members($workgroup_id, &$operations = array(), $limit = 0) {
   $params = array('privGroups' => $workgroup_id);
 
-  return _stanford_cap_api_sync_members($workgroup_id, $operations, $params);
+  return _stanford_cap_api_sync_members($workgroup_id, $operations, $params, $limit);
 }
 
 /**
@@ -903,17 +910,21 @@ function stanford_cap_api_profiles_sync_group_save($type, $name, $count = 0, $la
  *   Type of group.
  * @param string $name
  *   Group name.
+ * @param int $sync_children
+ *   Sync child organization profiles.
+ * @param int $limit
+ *   Limit amount of profiles to sync.
  */
-function stanford_cap_api_profiles_sync_group_sync($type, $name, $sync_children = 0) {
+function stanford_cap_api_profiles_sync_group_sync($type, $name, $sync_children = 0, $limit = 0) {
+  $ops = array();
   switch ($type) {
     case 'organization':
-      $ops = array();
-      $count = stanford_cap_api_profiles_sync_org_members($name, $ops, $sync_children);
+      $count = stanford_cap_api_profiles_sync_org_members($name, $ops, $sync_children, $limit);
       stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME, $sync_children);
       break;
 
     case 'workgroup':
-      $count = stanford_cap_api_profiles_sync_workgroup_members($name);
+      $count = stanford_cap_api_profiles_sync_workgroup_members($name, $ops, $limit);
       stanford_cap_api_profiles_sync_group_save($type, $name, $count, REQUEST_TIME);
       break;
   }
@@ -933,12 +944,15 @@ function stanford_cap_api_profiles_sync_group_drop($id) {
  * Callback for cron groups synchronization.
  */
 function stanford_cap_api_profiles_sync_group_cron() {
+  $limit = variable_get('stanford_cap_api_profiles_update_per_cron_run', 100);
+
   $groups = db_select('cap_api_sync_groups', 'groups')
     ->fields('groups')
     ->execute()
     ->fetchAll();
+
   foreach ($groups as $group) {
-    stanford_cap_api_profiles_sync_group_sync($group->type, $group->name, $group->sync_children);
+    stanford_cap_api_profiles_sync_group_sync($group->type, $group->name, $group->sync_children, $limit);
   }
 }
 
