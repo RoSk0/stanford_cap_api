@@ -151,9 +151,8 @@ function stanford_cap_api_profiles_cron() {
   $hour_of_day = (int) $date->format('G');
   if ($hour_of_day >= 1 && $hour_of_day <= 5) {
     stanford_cap_api_profiles_synchronize_schema();
-    // @todo Remane this funcs removing '_cron'.
-    stanford_cap_api_profiles_sync_group_cron();
-    stanford_cap_api_profiles_update_cron();
+    _stanford_cap_api_profiles_cron_sync_group();
+    _stanford_cap_api_profiles_cron_update();
     variable_set('stanford_cap_api_profiles_cron_last_run', REQUEST_TIME);
   }
 }
@@ -665,7 +664,7 @@ function stanford_cap_api_profiles_profile_import_multiple($profile_ids) {
  * and only quantity defined by 'stanford_cap_api_profiles_update_per_cron_run'
  * variable(100 by default).
  */
-function stanford_cap_api_profiles_update_cron() {
+function _stanford_cap_api_profiles_cron_update() {
   $profiles_2_update = variable_get('stanford_cap_api_profiles_update_per_cron_run', 100);
   $date = new DateObject();
   $date->sub(new DateInterval('PT12H'));
@@ -943,7 +942,7 @@ function stanford_cap_api_profiles_sync_group_drop($id) {
 /**
  * Callback for cron groups synchronization.
  */
-function stanford_cap_api_profiles_sync_group_cron() {
+function _stanford_cap_api_profiles_cron_sync_group() {
   $limit = variable_get('stanford_cap_api_profiles_update_per_cron_run', 100);
 
   $groups = db_select('cap_api_sync_groups', 'groups')
