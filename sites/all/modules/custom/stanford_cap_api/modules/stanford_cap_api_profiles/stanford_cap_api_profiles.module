@@ -835,7 +835,7 @@ function _stanford_cap_api_sync_members($group, &$operations, $params, $limit = 
     variable_set('stanford_cap_api_profiles_update_pages', $pages);
   }
   else {
-    // Make sure we will start from the beginning next time.
+    // Start from the beginning when no profiles are returned from CAP.
     $pages[$group] = 0;
     variable_set('stanford_cap_api_profiles_update_pages', $pages);
   }
