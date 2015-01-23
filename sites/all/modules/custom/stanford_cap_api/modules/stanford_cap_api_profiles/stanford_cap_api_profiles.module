@@ -1317,7 +1317,7 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
             $fc_wrapper = $wrapper->{$drupal_field_name}[$delta];
             /* @var EntityDrupalWrapper $fc_wrapper */
             $fc_item = $fc_wrapper->value();
-            // No field collection item on this delta and we need to create one.
+            // No field collection item on this delta, we need to create one.
             if (!$fc_item) {
               $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
               /* @var FieldCollectionItemEntity $fc_item */
@@ -1335,18 +1335,15 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
           if (is_array($field_data) && !empty($field_data)) {
             $fc_wrapper = $wrapper->{$drupal_field_name};
             /* @var EntityDrupalWrapper $fc_wrapper */
-            $fcid = $fc_wrapper->getIdentifier();
-            // Empty ID means that there is no field collection item on this
-            // delta and we need to create one.
-            if (!$fcid) {
+            $fc_item = $fc_wrapper->value();
+            // No field collection item here, we need to create one.
+            if (!$fc_item) {
               $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
               /* @var FieldCollectionItemEntity $fc_item */
               $fc_item->setHostEntity($wrapper->type(), $entity);
               $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
             }
-            else {
-              $fc_item = $fc_wrapper->value();
-            }
+            // Processing incoming data.
             foreach ($field_data as $fc_subfield => $fc_subfield_data) {
               $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
               _stanford_cap_api_profiles_save_field($fc_item, $fc_wrapper, $fc_subfield, $fc_subfield_data, $field_path);
