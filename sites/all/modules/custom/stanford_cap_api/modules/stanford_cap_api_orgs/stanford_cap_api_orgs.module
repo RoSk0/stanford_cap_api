@@ -242,3 +242,23 @@ function stanford_cap_api_orgs_form_stanford_cap_api_details_form_alter(&$form, 
     '#markup' => theme('cap_info_item', array('info' => $orgs_count, 'message' => t('Organizations imported.'))),
   );
 }
+
+/**
+ * Returns an organization alias from the local orgCode vocabulary (cache).
+ *
+ * @param $orgcodes
+ */
+function stanford_cap_api_orgs_org_alias($org_code) {
+//  $voc = taxonomy_vocabulary_machine_name_load(CAP_ORGS_VOCAB);
+  $query = new EntityFieldQuery();
+  $results = $query->entityCondition('entity_type', 'taxonomy_term')
+    ->entityCondition('bundle', CAP_ORGS_VOCAB)
+    ->fieldCondition('field_org_codes', 'value', $org_code)
+    ->execute();
+
+  if (!empty($results['taxonomy_term'])) {
+    $org = taxonomy_term_load(current($results['taxonomy_term'])->tid);
+    return $org->field_alias[LANGUAGE_NONE][0]['value'];
+  }
+  return FALSE;
+}

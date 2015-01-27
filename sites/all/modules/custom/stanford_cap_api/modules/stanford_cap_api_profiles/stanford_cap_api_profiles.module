@@ -361,14 +361,13 @@ function stanford_cap_api_profiles_get_profiles($params) {
     // resulting bigger request time.
     if (isset($params['affiliations'])) {
       // We need to get organization alias for query with filtering.
-      $data = stanford_cap_api_request('/cap/v1/orgs' , array('orgCodes' => $params['orgCodes'], 'ps' => 1));
-      $data = array_shift($data);
-      if (empty($data['alias'])) {
+      $alias = stanford_cap_api_orgs_org_alias($params['orgCodes']);
+      if (empty($alias)) {
         $message = 'Failed to get organization alias for organization with @code orgCode.';
         watchdog('stanford_cap_api_profiles', $message, array('@code' => $params['orgCodes']), WATCHDOG_ERROR);
         return FALSE;
       }
-      $endpoint = format_string('/cap/v1/orgs/@alias/profiles', array('@alias' => $data['alias']));
+      $endpoint = format_string('/cap/v1/orgs/@alias/profiles', array('@alias' => $alias));
     }
     else {
       $endpoint = '/profiles/v1';
