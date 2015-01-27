@@ -4,6 +4,9 @@
  * Code for the Stanford CAP API feature.
  */
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 /**
  * Implements hook_menu().
  */
@@ -182,27 +185,49 @@ function stanford_cap_api_auth($user = '', $pass = '', $auth_uri = '') {
  * @return array
  *   Decoded JSON response or FALSE.
  */
-function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
+function stanford_cap_api_request($endpoint, $params = [], $raw = FALSE) {
   $response = stanford_cap_api_raw_request($endpoint, $params);
-  $request_url = stanford_cap_api_request_url($endpoint, $params);
-
-  // Error could be here as well.
-  if (property_exists($response, 'error')) {
-    $error_msg = 'Failed to fetch data from CAP API service. Error code is'
-      . ' %code, error message is "%msg", request string was "%request".';
-    $vars = array(
-      '%code' => $response->code,
-      '%msg' => isset($response->status_message) ? $response->status_message : $response->error,
-      '%request' => $request_url,
-    );
-    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_WARNING);
-
+  if (!$response) {
     return FALSE;
   }
 
   // Convert JSON response to an array.
-  $data = json_decode($response->data, TRUE);
-  if (empty($data)) {
+  $data = _stanford_cap_api_response_data_get($response);
+
+  // CAP API handled error.
+  if (!$data || array_key_exists('error', $data)) {
+    $error_msg = 'Error found in CAP API response. Error message is "%msg", response data was "%data".';
+    $vars = [
+      '%msg' => $data['error_description'],
+      '%data' => print_r($data, TRUE),
+    ];
+    watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_ERROR);
+
+    return FALSE;
+  }
+  else {
+    // Success.
+    if ($raw) {
+      return $response->getBody();
+    }
+    else {
+      return $data;
+    }
+  }
+}
+
+/**
+ * Helper to decode response data to JSON.
+ *
+ * @param \GuzzleHttp\Message\ResponseInterface $response
+ *
+ * @return array|false
+ */
+function _stanford_cap_api_response_data_get($response) {
+  try {
+    $data = $response->json();
+  }
+  catch (RuntimeException $e) {
     // JSON from response cannot be decoded.
     $message = '';
     switch (json_last_error()) {
@@ -238,33 +263,13 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
       $message .= ' Additional error info "' . json_last_error_msg() . '".';
     }
     $message .= ' Request string was "%request".';
-    $vars = array('%request' => $request_url);
+    $vars = ['%request' => $response->getEffectiveUrl()];
     watchdog('stanford_cap_api', $message, $vars, WATCHDOG_ERROR);
 
     return FALSE;
   }
-  else {
-    // CAP API handled error.
-    if (array_key_exists('error', $data)) {
-      $error_msg = 'Error found in CAP API response. Error message is "%msg", response data was "%data".';
-      $vars = array(
-        '%msg' => $data['error_description'],
-        '%data' => print_r($data, TRUE),
-      );
-      watchdog('stanford_cap_api', $error_msg, $vars, WATCHDOG_ERROR);
 
-      return FALSE;
-    }
-    else {
-      // Success.
-      if ($raw) {
-        return $response->data;
-      }
-      else {
-        return $data;
-      }
-    }
-  }
+  return $data;
 }
 
 /**
@@ -276,13 +281,38 @@ function stanford_cap_api_request($endpoint, $params = array(), $raw = FALSE) {
  * @param array $params
  *   Additional parameters for request.
  *
- * @return array
- *   Raw response.
+ * @return \GuzzleHttp\Message\ResponseInterface
+ *   Raw response object.
  */
-function stanford_cap_api_raw_request($endpoint, $params = array()) {
+function stanford_cap_api_raw_request($endpoint, $params = []) {
   $request_url = stanford_cap_api_request_url($endpoint, $params);
 
-  return drupal_http_request($request_url, array('timeout' => 120));
+  $client = new Client();
+
+  try {
+    $response = $client->get($request_url);
+  }
+  catch (RequestException $e) {
+    $message = 'Failed to fetch data from CAP API service. Request to resource "%resource" failed with message: "@message".';
+    $vars = [
+      '%request' => $request_url,
+      '%resource' => $endpoint,
+      '@message' => $e->getMessage(),
+    ];
+
+    if ($e->hasResponse()) {
+      $response = $e->getResponse();
+      $message .= ' Request status code is "@code".';
+      $vars['@code'] = $response->getStatusCode();
+    }
+
+    $message .= ' Request URI was "%request".';
+    watchdog('stanford_cap_api', $message, $vars, WATCHDOG_ERROR);
+    // There is no need to process this response further.
+    $response = NULL;
+  }
+
+  return isset($response) ? $response : NULL;
 }
 
 /**

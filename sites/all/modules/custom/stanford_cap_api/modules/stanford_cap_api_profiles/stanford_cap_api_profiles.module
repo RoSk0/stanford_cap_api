@@ -701,28 +701,27 @@ function stanford_cap_api_profiles_get_profile_etag($profile_id) {
   $etag = FALSE;
   if (is_numeric($profile_id)) {
     $response = stanford_cap_api_raw_request('/profiles/v1/' . $profile_id, NULL);
-    switch ($response->code) {
-      case 200:
-        $profile = json_decode($response->data, TRUE);
-        if (!empty($profile['meta']['etag'])) {
-          $etag = $profile['meta']['etag'];
-        }
-        else {
+    if ($response) {
+      switch ($response->getStatusCode()) {
+        case 200:
+          $profile = _stanford_cap_api_response_data_get($response);;
+          if ($profile_id && !empty($profile['meta']['etag'])) {
+            $etag = $profile['meta']['etag'];
+          }
+          else {
+            $etag = CAP_PROFILES_PROFILE_FAILED;
+          }
+          break;
+
+        case 404:
+          $etag = CAP_PROFILES_PROFILE_NOT_EXIST;
+          break;
+
+        case 500:
+        default:
           $etag = CAP_PROFILES_PROFILE_FAILED;
-        }
-        break;
-
-      case 404:
-        $etag = CAP_PROFILES_PROFILE_NOT_EXIST;
-        break;
-
-      case 500:
-        $etag = CAP_PROFILES_PROFILE_FAILED;
-        break;
-
-      default:
-        $etag = CAP_PROFILES_PROFILE_FAILED;
-        break;
+          break;
+      }
     }
   }
 
