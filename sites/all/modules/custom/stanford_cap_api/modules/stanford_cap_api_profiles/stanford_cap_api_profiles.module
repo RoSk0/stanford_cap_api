@@ -1074,7 +1074,14 @@ function stanford_cap_api_profiles_synchronize_schema($batch = FALSE) {
  *   Profile type schema.
  */
 function stanford_cap_api_profiles_get_profile_schema($raw = FALSE) {
-  return stanford_cap_api_request('/cap/v1/schemas/profile', NULL, $raw);
+  $cache =& drupal_static(__FUNCTION__, []);
+  $cache_type = $raw ? 'json' : 'php';
+
+  if (empty($cache[$cache_type])) {
+    $cache[$cache_type] = stanford_cap_api_request('/cap/v1/schemas/profile', NULL, $raw);
+  }
+
+  return $cache[$cache_type];
 }
 
 /**
