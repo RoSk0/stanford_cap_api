@@ -460,6 +460,7 @@ function stanford_cap_api_profiles_synchronize_data($profile) {
     $node->changed = REQUEST_TIME;
     $node->is_new = TRUE;
     $node->language = LANGUAGE_NONE;
+    // @todo Do we really need to save and load here?
     node_save($node);
     $node = node_load($node->nid, NULL, TRUE);
     stanford_cap_api_profiles_node_fields_import($node, $profile);
