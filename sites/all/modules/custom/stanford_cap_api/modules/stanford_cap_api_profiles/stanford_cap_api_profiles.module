@@ -1319,17 +1319,15 @@ function _stanford_cap_api_profiles_save_field(&$entity, &$wrapper, $field_name,
       case 'field_collection':
         // This is multi-value field collection.
         if (is_array($field_data) && !empty($field_data) && array_key_exists(0, $field_data)) {
+          // Removing all data from this field.
+          // Real data removal will be handled by field_collection module.
+          // @see field_collection_field_update()
+          $entity->{$drupal_field_name}[LANGUAGE_NONE] = array();
           foreach ($field_data as $delta => $fc_data) {
-            $fc_wrapper = $wrapper->{$drupal_field_name}[$delta];
-            /* @var EntityDrupalWrapper $fc_wrapper */
-            $fc_item = $fc_wrapper->value();
-            // No field collection item on this delta, we need to create one.
-            if (!$fc_item) {
-              $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
-              /* @var FieldCollectionItemEntity $fc_item */
-              $fc_item->setHostEntity($wrapper->type(), $entity);
-              $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
-            }
+            $fc_item = entity_create('field_collection_item', array('field_name' => $drupal_field_name));
+            /* @var FieldCollectionItemEntity $fc_item */
+            $fc_item->setHostEntity($wrapper->type(), $entity);
+            $fc_wrapper = entity_metadata_wrapper('field_collection_item', $fc_item);
             // Processing incoming data.
             foreach ($fc_data as $fc_field => $fc_field_data) {
               $field_path = empty($parent_field) ? $field_name : $parent_field . '.' . $field_name;
